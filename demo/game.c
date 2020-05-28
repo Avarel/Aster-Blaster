@@ -31,7 +31,7 @@
  * Licensed for non-commercial use
  * Downloaded from fontspace.com/andromeda-font-f31762
  */
-#define FONT_TTF_PATH "../andromeda.ttf"
+#define FONT_PATH "../andromeda.ttf"
 // Asteroid settings
 #define ASTEROID_SPEED 100
 #define ASTEROID_RADIUS_MIN 30
@@ -137,7 +137,7 @@ int main() {
         double dt = time_since_last_tick();
 
         if (frame % debug_print_rate == 0) {
-            printf("Window: %s\n", keypress_aux->window == MENU ? "menu" : "game");
+            printf("window: %s\n", keypress_aux->window == MENU ? "menu" : "game");
         }
 
         // TODO: split window_types into different loops... but how is sdl_is_done() handled?
