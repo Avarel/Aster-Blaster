@@ -1,0 +1,225 @@
+#include "forces.h"
+#include "body.h"
+#include "collision.h"
+#include "scene.h"
+#include "utils.h"
+#include <math.h>
+#include <stdlib.h>
+
+// NEWTONIAN GRAVITY
+
+typedef struct newtonian_gravity_aux {
+    double G;
+    body_t *body1;
+    body_t *body2;
+} newtonian_gravity_aux_t;
+
+void newtonian_gravity_handler(newtonian_gravity_aux_t *aux) {
+    vector_t radius_vector =
+    vec_subtract(body_get_centroid(aux->body2), body_get_centroid(aux->body1));
+    double radius = vec_norm(radius_vector);
+
+    double mass1 = body_get_mass(aux->body1);
+    double mass2 = body_get_mass(aux->body2);
+    vector_t force =
+        radius >= 0.001 ? vec_multiply(-aux->G * mass1 * mass2 / (radius * radius), vec_normalize(radius_vector))
+                   : VEC_ZERO;
+
+    body_add_force(aux->body2, force);
+    body_add_force(aux->body1, vec_negate(force));
+}
+
+void create_newtonian_gravity(scene_t *scene, double G, body_t *body1, body_t *body2) {
+    newtonian_gravity_aux_t *aux = malloc(sizeof(newtonian_gravity_aux_t));
+    aux->G = G;
+    aux->body1 = body1;
+    aux->body2 = body2;
+    list_t *list = list_init(2, NULL);
+    list_add(list, body1);
+    list_add(list, body2);
+    scene_add_bodies_force_creator(scene, (force_creator_t)newtonian_gravity_handler, aux, list, free);
+}
+
+
+
+// SPRING FORCE
+
+typedef struct spring_aux {
+    double k;
+    body_t *body1;
+    body_t *body2;
+} spring_aux_t;
+
+void spring_handler(spring_aux_t *aux) {
+    vector_t radius_vector =
+        vec_subtract(body_get_centroid(aux->body1), body_get_centroid(aux->body2));
+    vector_t force = vec_multiply(-aux->k, radius_vector);
+    body_add_force(aux->body1, force);
+    body_add_force(aux->body2, vec_negate(force));
+}
+
+void create_spring(scene_t *scene, double k, body_t *body1, body_t *body2) {
+    spring_aux_t *aux = malloc(sizeof(spring_aux_t));
+    aux->k = k;
+    aux->body1 = body1;
+    aux->body2 = body2;
+    list_t *list = list_init(2, NULL);
+    list_add(list, body1);
+    list_add(list, body2);
+    scene_add_bodies_force_creator(scene, (force_creator_t)spring_handler, aux, list, free);
+}
+
+
+
+// DRAG FORCE
+
+typedef struct drag_aux {
+    double gamma;
+    body_t *body;
+} drag_aux_t;
+
+void drag_force_handler(drag_aux_t *aux) {
+    body_add_force(aux->body, vec_negate(vec_multiply(aux->gamma, body_get_velocity(aux->body))));
+}
+
+void create_drag(scene_t *scene, double gamma, body_t *body) {
+    drag_aux_t *aux = malloc(sizeof(drag_aux_t));
+    aux->gamma = gamma;
+    aux->body = body;
+    list_t *list = list_init(1, NULL);
+    list_add(list, body);
+    scene_add_bodies_force_creator(scene, (force_creator_t)drag_force_handler, aux, list, free);
+}
+
+
+
+// COLLISION HANDLES
+
+typedef struct collision_aux {
+    body_t *body1; // BORROWED
+    body_t *body2; // BORROWED
+    collision_handler_t handler;
+    void *aux;
+    free_func_t freer;
+    bool prev_tick_collided;
+} collision_aux_t;
+
+
+void collision_aux_free(collision_aux_t *ptr) {
+    if (ptr->freer != NULL & ptr->aux != NULL) {
+        ptr->freer(ptr->aux);
+    }
+    free(ptr);
+}
+
+void collision_handle(collision_aux_t *aux) {
+    list_t *shape1 = body_get_shape(aux->body1);
+    list_t *shape2 = body_get_shape(aux->body2);
+
+    // printf("test\n");
+    collision_info_t info = find_collision(shape1, shape2);
+    if (info.collided) {
+        // if (!aux->prev_tick_collided) {
+            aux->handler(aux->body1, aux->body2, info.axis, aux->aux);
+        // }
+        // aux->prev_tick_collided = true;
+    } else {
+        // aux->prev_tick_collided = false;
+    }
+
+    list_free(shape1);
+    list_free(shape2);
+}
+
+void create_collision(
+    scene_t *scene,
+    body_t *body1,
+    body_t *body2,
+    collision_handler_t handler,
+    void *aux,
+    free_func_t freer) {
+    collision_aux_t *caux = malloc(sizeof(collision_aux_t));
+    caux->body1 = body1;
+    caux->body2 = body2;
+    caux->handler = handler;
+    caux->aux = aux;
+    caux->freer = freer;
+
+    list_t *list = list_init(2, NULL);
+    list_add(list, body1);
+    list_add(list, body2);
+
+    scene_add_bodies_force_creator(scene, (force_creator_t)collision_handle, caux, list, (free_func_t)collision_aux_free);
+}
+
+
+
+
+
+// MUTUALLY DESTRUCTIVE COLLISION
+
+void destructive_collision_handler(body_t *body1, body_t *body2, vector_t axis, void *aux) {
+    body_remove(body1);
+    body_remove(body2);
+}
+
+void create_destructive_collision(scene_t *scene, body_t *body1, body_t *body2) {
+    // destruction is simple, has no aux
+    create_collision(scene, body1, body2, destructive_collision_handler, NULL, NULL);
+}
+
+
+
+
+
+// PHYSICAL COLLISION
+
+typedef struct physics_collision_aux {
+    double elasticity;
+} physics_collision_aux;
+
+void physics_collision_handler(body_t *body1, body_t *body2, vector_t axis, physics_collision_aux *aux) {
+    double b1m = body_get_mass(body1);
+    double b2m = body_get_mass(body2);
+
+    double rm = isinf(b1m) || isinf(b2m) ? (isinf(b1m) ? (isinf(b2m) ? 0 : b2m) : b1m)  : b1m * b2m / (b1m + b2m);
+
+    vector_t pos1 = body_get_centroid(body1);
+    vector_t pos2 = body_get_centroid(body2);
+    vector_t line = vec_subtract(pos2, pos1);
+    if (vec_dot(line, axis) < 0.0) {
+        axis = vec_negate(axis);
+    }
+
+    vector_t axis_norm = vec_normalize(axis);
+
+    double ub = vec_dot(body_get_velocity(body2), axis_norm);
+    double ua = vec_dot(body_get_velocity(body1), axis_norm);
+
+    double factor = rm * (1 + aux->elasticity) * (ub - ua);
+    vector_t impulse = vec_multiply(factor, axis_norm);
+
+    // debugging information
+    // printf("b1m: %f\nb2m: %f\nrm: %f\n", b1m, b2m, rm);
+    // print_vec("axis:", axis_norm);
+    // printf("ub - ua: %f - %f\n", ub, ua);
+
+    // printf("factor: %f\n", factor);
+    // print_vec("impulse:", impulse);
+
+    // magical displacement factor?
+    body_translate(body1, vec_multiply(1.0, vec_negate(axis)));
+
+    body_add_impulse(body1, impulse);
+    body_add_impulse(body2, vec_negate(impulse));
+}
+
+void create_physics_collision(
+    scene_t *scene,
+    double elasticity,
+    body_t *body1,
+    body_t *body2) {
+    physics_collision_aux *aux = malloc(sizeof(physics_collision_aux));
+    aux->elasticity = elasticity;
+    create_collision(scene, body1, body2, (collision_handler_t)physics_collision_handler, aux, free);
+}
