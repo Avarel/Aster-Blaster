@@ -2,7 +2,6 @@
 #include <math.h>
 #include <stdlib.h>
 #include <time.h>
-#include <string.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL2_gfxPrimitives.h>
 #include <SDL2/SDL_ttf.h>
@@ -228,14 +227,14 @@ int sdl_render_text(text_box_t *text_box) {
     SDL_Texture *text = NULL;
     SDL_Rect textRect;
 
-    char *text_box_text = text_box_get_text(text_box);
+    /* char *text_box_text = text_box_get_text(text_box);
     int len;
     for (len = 0; *(text_box_text + len) != '\0'; len++);
     len++;
     char render_text[len];
-    strcpy(render_text, text_box_text);
+    strcpy(render_text, text_box_text); */
 
-    SDL_Surface *textSurface = TTF_RenderText_Shaded(font, render_text, textColor, textBackgroundColor);
+    SDL_Surface *textSurface = TTF_RenderText_Shaded(font, text_box_get_text(text_box), textColor, textBackgroundColor);
     if(!textSurface) {
         printf("Unable to render text surface!\n"
                "SDL2_ttf Error: %s\n", TTF_GetError());

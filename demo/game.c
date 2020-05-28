@@ -158,7 +158,7 @@ int main() {
         double dt = time_since_last_tick();
 
         if (frame % debug_print_rate == 0) {
-            printf("window: %s\n", keypress_aux->window == MENU ? "menu" : "game");
+            // printf("window: %s\n", keypress_aux->window == MENU ? "menu" : "game");
         }
 
         // TODO: split window_types into different loops... but how is sdl_is_done() handled?
