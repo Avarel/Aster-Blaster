@@ -4,12 +4,16 @@
 #include <time.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL2_gfxPrimitives.h>
+#include <SDL2/SDL_ttf.h>
 #include "sdl_wrapper.h"
 
-const char WINDOW_TITLE[] = "CS 3";
+const char WINDOW_TITLE[] = "Aster Blaster";
 const int WINDOW_WIDTH = 1200;
 const int WINDOW_HEIGHT = 800;
 const double MS_PER_S = 1e3;
+
+// TODO: TTF impl
+// see: https://github.com/aminosbh/sdl2-ttf-sample/blob/master/src/main.c
 
 /**
  * The coordinate at the center of the screen.
@@ -117,6 +121,8 @@ void sdl_init(vector_t min, vector_t max) {
         SDL_WINDOW_RESIZABLE
     );
     renderer = SDL_CreateRenderer(window, -1, 0);
+    
+    TTF_Init();
 }
 
 bool sdl_is_done(void *aux) {
@@ -124,7 +130,7 @@ bool sdl_is_done(void *aux) {
     assert(event != NULL);
     while (SDL_PollEvent(event)) {
         switch (event->type) {
-            case SDL_QUIT:
+            case SDL_QUIT: // TODO: do we need to call TTF_Quit() here? SDL_Quit() not called?
                 free(event);
                 return true;
             case SDL_KEYDOWN:

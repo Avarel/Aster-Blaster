@@ -26,6 +26,12 @@
 // SDL settings
 #define SDL_MIN ((vector_t) {.x =    0, .y =   0})
 #define SDL_MAX ((vector_t) {.x = 1200, .y = 800})
+/**
+ * Font designed by JoannaVu
+ * Licensed for non-commercial use
+ * Downloaded from fontspace.com/andromeda-font-f31762
+ */
+#define FONT_TTF_PATH "../andromeda.ttf"
 
 /********************
  * STRUCTS & ENUMS
@@ -103,6 +109,13 @@ int main() {
 
         if (frame % debug_print_rate == 0) {
             printf("Window: %s\n", keypress_aux->window == MENU ? "menu" : "game");
+        }
+
+        switch (keypress_aux->window) {
+            case MENU:
+                break;
+            case GAME:
+                break;
         }
 
         scene_tick(scene, dt);
