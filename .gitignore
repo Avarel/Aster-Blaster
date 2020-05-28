@@ -36,3 +36,4 @@ out/*
 
 # Other
 .vscode/
+.DS_Store

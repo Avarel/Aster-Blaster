@@ -24,7 +24,7 @@ STUDENT_LIBS = vector list \
 	color body scene \
 	polygon forces \
 	collision \
-	utils
+	utils text_box
 
 STUDENT_TESTS = $(subst .c,, $(subst tests/student/,,$(wildcard tests/student/*.c)))
 

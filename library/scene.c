@@ -1,11 +1,13 @@
 #include "list.h"
 #include "body.h"
+#include "text_box.h"
 #include "scene.h"
 #include <assert.h>
 #include <stdlib.h>
 
 const size_t INITIAL_BODY_LIST_SIZE = 10;
 const size_t INITIAL_FORCE_CREATOR_LIST_SIZE = 2;
+const size_t INITIAL_TEXT_BOXES_LIST_SIZE = 1;
 
 typedef struct force_creator_bundle {
     force_creator_t forcer;
@@ -17,6 +19,7 @@ typedef struct force_creator_bundle {
 typedef struct scene { // TODO: incorporate bounding boxes?
     list_t *bodies;
     list_t *force_creators;
+    list_t *text_boxes;
 } scene_t;
 
 void force_creator_bundle_free(force_creator_bundle_t *bundle) {
@@ -34,6 +37,7 @@ scene_t *scene_init() {
     assert(scene != NULL);
     scene->bodies = list_init(INITIAL_BODY_LIST_SIZE, (free_func_t)body_free);
     scene->force_creators = list_init(INITIAL_FORCE_CREATOR_LIST_SIZE, (free_func_t)force_creator_bundle_free);
+    scene->text_boxes = list_init(INITIAL_TEXT_BOXES_LIST_SIZE, (free_func_t)text_box_free);
     return scene;
 }
 
