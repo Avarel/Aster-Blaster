@@ -48,6 +48,14 @@ typedef void (*key_handler_t)(char key, key_event_type_t type, double held_time,
 void sdl_init(vector_t min, vector_t max);
 
 /**
+ * Sets the font that SDL will use.
+ * Must be set before rendering any text.
+ *
+ * @param font_path a char pointer to the file path of the .ttf file
+ */
+void sdl_set_font(const char *font_path);
+
+/**
  * Processes all SDL events and returns whether the window has been closed.
  * This function must be called in order to handle keypresses.
  *

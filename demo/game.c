@@ -31,7 +31,7 @@
  * Licensed for non-commercial use
  * Downloaded from fontspace.com/andromeda-font-f31762
  */
-#define FONT_PATH "../andromeda.ttf"
+const char FONT_PATH_ASTER_BLASTER[] = "./andromeda.ttf";
 // Asteroid settings
 #define ASTEROID_SPEED 100
 #define ASTEROID_RADIUS_MIN 30
@@ -120,6 +120,7 @@ void spawn_asteroid(scene_t *scene, list_t *bullets, body_t *player){
  ********************/
 int main() {
     sdl_init(SDL_MIN, SDL_MAX);
+    sdl_set_font(&FONT_PATH_ASTER_BLASTER[0]);
     init_random();
 
     scene_t *scene = scene_init();

@@ -11,10 +11,7 @@ const char WINDOW_TITLE[] = "Aster Blaster";
 const int WINDOW_WIDTH = 1200;
 const int WINDOW_HEIGHT = 800;
 const double MS_PER_S = 1e3;
-
-// TODO: TTF impl
-// see: https://github.com/aminosbh/sdl2-ttf-sample/blob/master/src/main.c
-#define FONT_PATH "./andromeda.ttf"
+const char *FONT_PATH;
 
 /**
  * The coordinate at the center of the screen.
@@ -123,6 +120,10 @@ void sdl_init(vector_t min, vector_t max) {
         SDL_WINDOW_RESIZABLE
     );
     renderer = SDL_CreateRenderer(window, -1, 0);
+}
+
+void sdl_set_font(const char *font_path) {
+    FONT_PATH = font_path;
 }
 
 bool sdl_is_done(void *aux) {
