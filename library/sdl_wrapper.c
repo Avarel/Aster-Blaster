@@ -2,6 +2,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include <time.h>
+#include <string.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL2_gfxPrimitives.h>
 #include <SDL2/SDL_ttf.h>
@@ -213,23 +214,12 @@ void sdl_show(void) {
     SDL_RenderPresent(renderer);
 }
 
-int show_test_text() {
-    // Declare rect of square
-    SDL_Rect squareRect;
-
-    // Square dimensions: Half of the min(SCREEN_WIDTH, SCREEN_HEIGHT)
-    squareRect.w = WINDOW_WIDTH / 2;
-    squareRect.h = WINDOW_HEIGHT / 2;
-
-    // Square position: In the middle of the screen
-    squareRect.x = WINDOW_WIDTH / 2 - squareRect.w / 2;
-    squareRect.y = WINDOW_HEIGHT / 2 - squareRect.h / 2;
-
-    TTF_Font *font = TTF_OpenFont(FONT_PATH, 40);
-
+// see: github.com/aminosbh/sdl2-ttf-sample/blob/master/src/main.c
+int sdl_render_text(text_box_t *text_box) {
+    TTF_Font *font = TTF_OpenFont(FONT_PATH, text_box_get_font_size(text_box));
     if(!font) {
         printf("Unable to load font: '%s'!\n"
-                "SDL2_ttf Error: %s\n", FONT_PATH, TTF_GetError());
+               "SDL2_ttf Error: %s\n", FONT_PATH, TTF_GetError());
         return 0;
     }
 
@@ -238,29 +228,34 @@ int show_test_text() {
     SDL_Texture *text = NULL;
     SDL_Rect textRect;
 
-    SDL_Surface *textSurface = TTF_RenderText_Shaded(font, "Aster Blaster", textColor, textBackgroundColor);
+    char *text_box_text = text_box_get_text(text_box);
+    int len;
+    for (len = 0; *(text_box_text + len) != '\0'; len++);
+    len++;
+    char render_text[len];
+    strcpy(render_text, text_box_text);
 
+    SDL_Surface *textSurface = TTF_RenderText_Shaded(font, render_text, textColor, textBackgroundColor);
     if(!textSurface) {
         printf("Unable to render text surface!\n"
-                "SDL2_ttf Error: %s\n", TTF_GetError());
-    } else {
-        // Create texture from surface pixels
-        text = SDL_CreateTextureFromSurface(renderer, textSurface);
-        if(!text) {
-            printf("Unable to create texture from rendered text!\n"
-                    "SDL2 Error: %s\n", SDL_GetError());
-            return 0;
-        }
-
-        // Get text dimensions
-        textRect.w = textSurface->w;
-        textRect.h = textSurface->h;
-
-        SDL_FreeSurface(textSurface);
+               "SDL2_ttf Error: %s\n", TTF_GetError());
+        return 0;
     }
 
-    textRect.x = (WINDOW_WIDTH - textRect.w) / 2;
-    textRect.y = squareRect.y - textRect.h - 10;
+    text = SDL_CreateTextureFromSurface(renderer, textSurface);
+    if(!text) {
+        printf("Unable to create texture from rendered text!\n"
+               "SDL2 Error: %s\n", SDL_GetError());
+        return 0;
+    }
+
+    textRect.w = textSurface->w;
+    textRect.h = textSurface->h;
+
+    SDL_FreeSurface(textSurface);
+
+    textRect.x = WINDOW_WIDTH - text_box_get_origin(text_box).x;
+    textRect.y = WINDOW_HEIGHT - text_box_get_origin(text_box).y;
 
     SDL_RenderCopy(renderer, text, NULL, &textRect);
 
@@ -276,7 +271,10 @@ void sdl_render_scene(scene_t *scene) {
         sdl_draw_polygon(shape, body_get_color(body));
         list_free(shape);
     }
-    show_test_text();
+    size_t text_box_count = scene_text_boxes(scene);
+    for (size_t i = 0; i < text_box_count; i++) {
+        sdl_render_text(scene_get_text_box(scene, i));
+    }
     sdl_show();
 }
 

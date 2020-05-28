@@ -60,6 +60,10 @@ body_t *scene_get_body(scene_t *scene, size_t index) {
     return list_get(scene->bodies, index);
 }
 
+text_box_t *scene_get_text_box(scene_t *scene, size_t index) {
+    return list_get(scene->text_boxes, index);
+}
+
 void scene_add_body(scene_t *scene, body_t *body) {
     list_add(scene->bodies, body);
 }
@@ -70,6 +74,10 @@ void scene_add_text_box(scene_t *scene, text_box_t *text_box) {
 
 void scene_remove_body(scene_t *scene, size_t index) {
     body_remove(scene_get_body(scene, index));
+}
+
+void scene_remove_text_box(scene_t *scene, size_t index) {
+    text_box_free(list_remove(scene->text_boxes, index));
 }
 
 force_creator_bundle_t *force_creator_bundle_init(force_creator_t forcer, void *aux, free_func_t freer, list_t *bodies) {

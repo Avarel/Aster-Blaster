@@ -6,6 +6,7 @@
 #include "list.h"
 #include "scene.h"
 #include "vector.h"
+#include "text_box.h"
 
 // Values passed to a key handler when the given arrow key is pressed
 #define LEFT_ARROW 1

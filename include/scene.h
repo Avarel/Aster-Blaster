@@ -63,6 +63,16 @@ size_t scene_text_boxes(scene_t *scene);
 body_t *scene_get_body(scene_t *scene, size_t index);
 
 /**
+ * Gets the text_box at a given index in a scene.
+ * Asserts that the index is valid.
+ *
+ * @param scene a pointer to a scene returned from scene_init()
+ * @param index the index of the text_box in the scene (starting at 0)
+ * @return a pointer to the text_box at the given index
+ */
+text_box_t *scene_get_text_box(scene_t *scene, size_t index);
+
+/**
  * Adds a body to a scene.
  *
  * @param scene a pointer to a scene returned from scene_init()
@@ -88,6 +98,15 @@ void scene_add_text_box(scene_t *scene, text_box_t *text_box);
  * @param index the index of the body in the scene (starting at 0)
  */
 void scene_remove_body(scene_t *scene, size_t index);
+
+/**
+ * Removes and frees the text_box at a given index from a scene.
+ * Asserts that the index is valid.
+ *
+ * @param scene a pointer to a scene returned from scene_init()
+ * @param index the index of the text_box in the scene (starting at 0)
+ */
+void scene_remove_text_box(scene_t *scene, size_t index);
 
 /**
  * @deprecated Use scene_add_bodies_force_creator() instead

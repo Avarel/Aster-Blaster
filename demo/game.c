@@ -31,12 +31,18 @@
  * Licensed for non-commercial use
  * Downloaded from fontspace.com/andromeda-font-f31762
  */
-const char FONT_PATH_ASTER_BLASTER[] = "./andromeda.ttf\0";
+char FONT_PATH_ASTER_BLASTER[] = "./andromeda.ttf\0";
 // Menu settings
-const char MENU_TITLE_TEXT[] = "Aster Blaster\0";
+// note: text_box's size element currently isn't used by renderer
+char MENU_TITLE_TEXT[] = "Aster Blaster\0";
 #define MENU_TITLE_FONT_SIZE 40
-#define MENU_TITLE_SIZE ((vector_t) {.x = SDL_MAX.x / 4, .y = SDL_MAX.y / 10})
-#define MENU_TITLE_ORIGIN ((vector_t) {.x = (SDL_MAX.x - MENU_TITLE_SIZE.x) / 2, .y = (SDL_MAX.y - MENU_TITLE_SIZE.y) / 2})
+//#define MENU_TITLE_SIZE ((vector_t) {.x = SDL_MAX.x / 4, .y = SDL_MAX.y / 10})
+#define MENU_TITLE_ORIGIN ((vector_t) {.x = 0.5 * SDL_MAX.x, .y = 0.75 * SDL_MAX.y})
+
+char MENU_GAME_START_TEXT[] = "Press space to begin!\0";
+#define MENU_GAME_START_FONT_SIZE 20
+//#define MENU_GAME_START_SIZE ((vector_t) {.x = SDL_MAX.x / 4, .y = SDL_MAX.y / 15})
+#define MENU_GAME_START_ORIGIN ((vector_t) {.x = 0.5 * SDL_MAX.x, .y = 0.6 * SDL_MAX.y})
 
 // Asteroid settings
 #define ASTEROID_SPEED 100
@@ -98,6 +104,9 @@ void on_key_menu(char key, key_event_type_t type, double held_time, keypress_aux
         switch (key) {
         case SPACE_BAR:
             if (keypress_aux->window == MENU) {
+                // assumes specific text_box state
+                scene_remove_text_box(keypress_aux->scene, 1);
+                scene_remove_text_box(keypress_aux->scene, 0);
                 keypress_aux->window = GAME;
             }
             break;
@@ -137,9 +146,11 @@ int main() {
     keypress_aux->scene = scene;
     keypress_aux->window = MENU;
 
-    text_box_t *menu_title_text_box = text_box_init(&MENU_TITLE_TEXT[0], MENU_TITLE_FONT_SIZE, MENU_TITLE_ORIGIN, MENU_TITLE_SIZE);
+    text_box_t *menu_title_text_box = text_box_init(&MENU_TITLE_TEXT[0], MENU_TITLE_FONT_SIZE, MENU_TITLE_ORIGIN);
     scene_add_text_box(scene, menu_title_text_box);
-    
+    text_box_t *menu_game_start_text_box = text_box_init(&MENU_GAME_START_TEXT[0], MENU_GAME_START_FONT_SIZE, MENU_GAME_START_ORIGIN);
+    scene_add_text_box(scene, menu_game_start_text_box);
+
     size_t frame = 0;
     size_t debug_print_rate = 200;
 
