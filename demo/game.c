@@ -1,3 +1,6 @@
+/********************
+ * IMPORTS
+ ********************/
 // C lib
 #include <stdbool.h>
 #include <stdlib.h>
@@ -17,20 +20,32 @@
 #include "utils.h"
 #include "math.h"
 
+/********************
+ * SETTINGS
+ ********************/
 // SDL settings
-const vector_t SDL_MIN = {0, 0}; // TODO: check we use all these settings! Implement or remove if not
-const vector_t SDL_MAX = {1200, 800}; // linked to by INIT_PLAYER_POS
+#define SDL_MIN ((vector_t) {.x =    0, .y =   0})
+#define SDL_MAX ((vector_t) {.x = 1200, .y = 800})
+
+/********************
+ * STRUCTS & ENUMS
+ ********************/
+typedef enum window {
+    MENU,
+    GAME
+} window_e;
 
 typedef struct keypress_aux {
     scene_t *scene;
     body_t *player;
     size_t key_down;
     size_t last_key_down;
+    window_e window;
 } keypress_aux_t;
 
-/**********
+/********************
  * KEYBOARD INPUT
- **********/
+ ********************/
 /**
  * Updates the keypress_aux key values
  * @param key the key pressed or released
@@ -50,43 +65,45 @@ void set_key_down(char key, bool key_is_down, keypress_aux_t *keypress_aux) {
  * @param type whether the key was pressed or released
  * @param held_time the time the key has been held
  */
-void on_key(char key, key_event_type_t type, double held_time, keypress_aux_t *keypress_aux) {
+void on_key_menu(char key, key_event_type_t type, double held_time, keypress_aux_t *keypress_aux) {
     if (type == KEY_PRESSED) {
         switch (key) {
-        case LEFT_ARROW:
-            // body_set_velocity(keypress_aux->player, vec_x(-PLAYER_SPEED));
-            break;
-        case RIGHT_ARROW:
-            // body_set_velocity(keypress_aux->player, vec_x(PLAYER_SPEED));
+        case SPACE_BAR:
+            if (keypress_aux->window == MENU) {
+                keypress_aux->window = GAME;
+            }
             break;
         }
         set_key_down(key, true, keypress_aux);
     } else if (type == KEY_RELEASED && key == keypress_aux->last_key_down) {
         set_key_down(key, false, keypress_aux);
-        if (key == RIGHT_ARROW || key == LEFT_ARROW) {
-            // body_set_velocity(keypress_aux->player, VEC_ZERO);
-        }
     }
 }
 
+/********************
+ * GAME LOGIC
+ ********************/
 int main() {
     sdl_init(SDL_MIN, SDL_MAX);
     init_random();
 
-    sdl_on_key((key_handler_t)on_key);
-
     scene_t *scene = scene_init();
 
+
+    sdl_on_key((key_handler_t)on_key_menu);
     keypress_aux_t *keypress_aux = malloc(sizeof(keypress_aux_t));
     keypress_aux->scene = scene;
-    // keypress_aux->player = player;
-    keypress_aux->key_down = 0;
-    keypress_aux->last_key_down = 0;
+    keypress_aux->window = MENU;
 
     size_t frame = 0;
+    size_t debug_print_rate = 200;
 
     while (!sdl_is_done(keypress_aux)) {
         double dt = time_since_last_tick();
+
+        if (frame % debug_print_rate == 0) {
+            printf("Window: %s\n", keypress_aux->window == MENU ? "menu" : "game");
+        }
 
         scene_tick(scene, dt);
         sdl_render_scene(scene);
@@ -94,4 +111,7 @@ int main() {
     }
 
     printf("Frames rendered: %zu\n", frame);
+
+    // free mallocs
+    free(keypress_aux);
 }
