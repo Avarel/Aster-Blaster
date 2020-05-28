@@ -32,6 +32,12 @@
  * Downloaded from fontspace.com/andromeda-font-f31762
  */
 #define FONT_TTF_PATH "../andromeda.ttf"
+//Asteroid settings
+const int ASTEROID_SPEED = 100;
+const int ASTEROID_RADIUS_MIN = 30;
+const int ASTEROID_RADIUS_MAX = 70;
+const rgb_color_t ASTEROID_COLOR = {0.8, 0.8, 0.8};
+
 
 /********************
  * STRUCTS & ENUMS
@@ -40,6 +46,16 @@ typedef enum window {
     MENU,
     GAME
 } window_e;
+
+typedef enum etype {
+    BULLET,
+    PLAYER,
+    ASTEROID
+} etype_t;
+
+typedef struct aster_aux {
+    etype_t type;
+} aster_aux_t;
 
 typedef struct keypress_aux {
     scene_t *scene;
@@ -85,6 +101,21 @@ void on_key_menu(char key, key_event_type_t type, double held_time, keypress_aux
         set_key_down(key, false, keypress_aux);
     }
 }
+
+/********************
+ * ASTEROID GENERATION
+ ********************/
+void spawn_asteroid(scene_t *scene, list_t *bullets, body_t *player){
+    //random later
+    num_sides = 5;
+    ast_radius = ASTEROID_RADIUS_MIN;
+    ast_center = vec(0,0);
+    ast_velocity = vec(ASTEROID_SPEED, -ASTEROID_SPEED);
+    
+    list_t *aster_shape = polygon_reg_ngon()
+}
+
+
 
 /********************
  * GAME LOGIC
