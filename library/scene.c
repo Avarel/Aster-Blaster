@@ -16,7 +16,7 @@ typedef struct force_creator_bundle {
     free_func_t freer;
 } force_creator_bundle_t;
 
-typedef struct scene { // TODO: incorporate bounding boxes?
+typedef struct scene {
     list_t *bodies;
     list_t *force_creators;
     list_t *text_boxes;
@@ -44,11 +44,16 @@ scene_t *scene_init() {
 void scene_free(scene_t *scene) {
     list_free(scene->bodies);
     list_free(scene->force_creators);
+    list_free(scene->text_boxes);
     free(scene);
 }
 
 size_t scene_bodies(scene_t *scene) {
     return list_size(scene->bodies);
+}
+
+size_t scene_text_boxes(scene_t *scene) {
+    return list_size(scene->text_boxes);
 }
 
 body_t *scene_get_body(scene_t *scene, size_t index) {
@@ -57,6 +62,10 @@ body_t *scene_get_body(scene_t *scene, size_t index) {
 
 void scene_add_body(scene_t *scene, body_t *body) {
     list_add(scene->bodies, body);
+}
+
+void scene_add_text_box(scene_t *scene, text_box_t *text_box) {
+    list_add(scene->text_boxes, text_box);
 }
 
 void scene_remove_body(scene_t *scene, size_t index) {
@@ -70,11 +79,6 @@ force_creator_bundle_t *force_creator_bundle_init(force_creator_t forcer, void *
     bundle->freer = freer;
     bundle->bodies = bodies;
     return bundle;
-}
-
-// DEPRECATED
-void scene_add_force_creator(scene_t *scene, force_creator_t forcer, void *aux, free_func_t freer) {
-    list_add(scene->force_creators, force_creator_bundle_init(forcer, aux, freer, NULL));
 }
 
 void scene_add_bodies_force_creator(

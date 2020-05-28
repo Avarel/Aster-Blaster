@@ -2,6 +2,7 @@
 #define __SCENE_H__
 
 #include "body.h"
+#include "text_box.h"
 #include "list.h"
 
 /**
@@ -44,6 +45,14 @@ void scene_free(scene_t *scene);
 size_t scene_bodies(scene_t *scene);
 
 /**
+ * Gets the number of text_boxes in a given scene.
+ *
+ * @param scene a pointer to a scene returned from scene_init()
+ * @return the number of text_bodies added with scene_add_text_box()
+ */
+size_t scene_text_boxes(scene_t *scene);
+
+/**
  * Gets the body at a given index in a scene.
  * Asserts that the index is valid.
  *
@@ -60,6 +69,14 @@ body_t *scene_get_body(scene_t *scene, size_t index);
  * @param body a pointer to the body to add to the scene
  */
 void scene_add_body(scene_t *scene, body_t *body);
+
+/**
+ * Adds a text_box to a scene.
+ *
+ * @param scene a pointer to a scene returned from scene_init()
+ * @param text_box a pointer to the text_box to add to the scene
+ */
+void scene_add_text_box(scene_t *scene, text_box_t *text_box);
 
 /**
  * @deprecated Use body_remove() instead

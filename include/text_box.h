@@ -16,8 +16,10 @@ typedef struct text_box text_box_t;
  * @param text the text
  * @param font_size the font size
  * @param origin the coordinate vector of the lower left corner of the text box
+ * @param size a vector containing the width as x and height as y
+ * @return a text_box_t pointer
  */
-text_box_t *text_box_init(char *text, size_t font_size, vector_t origin);
+text_box_t *text_box_init(char *text, size_t font_size, vector_t origin, vector_t size);
 
 /**
  * Frees a text_box_t

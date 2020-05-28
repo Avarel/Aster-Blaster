@@ -101,6 +101,7 @@ void centripetal_force(void *aux) {
     body_add_force(body, force);
 }
 
+// Depreciated functionality
 /* void test_force_creator() {
     const double OMEGA = 3;
     const double R = 2;
@@ -150,6 +151,7 @@ void air_drag(void *aux) {
     }
 }
 
+// Depreciated functionality
 /* void test_force_creator_aux() {
     const double LIGHT_MASS = 10, HEAVY_MASS = 20;
     const double GRAVITY = 9.8, DRAG = 3;
@@ -242,6 +244,7 @@ int main(int argc, char *argv[]) {
 
     DO_TEST(test_empty_scene)
     DO_TEST(test_scene)
+    // Depreciated functionality
     /* DO_TEST(test_force_creator)
     DO_TEST(test_force_creator_aux) */
     DO_TEST(test_reaping)

@@ -31,7 +31,13 @@
  * Licensed for non-commercial use
  * Downloaded from fontspace.com/andromeda-font-f31762
  */
-const char FONT_PATH_ASTER_BLASTER[] = "./andromeda.ttf";
+const char FONT_PATH_ASTER_BLASTER[] = "./andromeda.ttf\0";
+// Menu settings
+const char MENU_TITLE_TEXT[] = "Aster Blaster\0";
+#define MENU_TITLE_FONT_SIZE 40
+#define MENU_TITLE_SIZE ((vector_t) {.x = SDL_MAX.x / 4, .y = SDL_MAX.y / 10})
+#define MENU_TITLE_ORIGIN ((vector_t) {.x = (SDL_MAX.x - MENU_TITLE_SIZE.x) / 2, .y = (SDL_MAX.y - MENU_TITLE_SIZE.y) / 2})
+
 // Asteroid settings
 #define ASTEROID_SPEED 100
 #define ASTEROID_RADIUS_MIN 30
@@ -131,6 +137,9 @@ int main() {
     keypress_aux->scene = scene;
     keypress_aux->window = MENU;
 
+    text_box_t *menu_title_text_box = text_box_init(&MENU_TITLE_TEXT[0], MENU_TITLE_FONT_SIZE, MENU_TITLE_ORIGIN, MENU_TITLE_SIZE);
+    scene_add_text_box(scene, menu_title_text_box);
+    
     size_t frame = 0;
     size_t debug_print_rate = 200;
 
