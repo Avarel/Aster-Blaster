@@ -32,29 +32,29 @@
  * Downloaded from fontspace.com/andromeda-font-f31762
  */
 #define FONT_TTF_PATH "../andromeda.ttf"
-//Asteroid settings
-const int ASTEROID_SPEED = 100;
-const int ASTEROID_RADIUS_MIN = 30;
-const int ASTEROID_RADIUS_MAX = 70;
-const rgb_color_t ASTEROID_COLOR = {0.8, 0.8, 0.8};
+// Asteroid settings
+#define ASTEROID_SPEED 100
+#define ASTEROID_RADIUS_MIN 30
+#define ASTEROID_RADIUS_MAX 70
+#define ASTEROID_COLOR ((rgb_color_t){0.8, 0.8, 0.8})
 
 
 /********************
  * STRUCTS & ENUMS
  ********************/
-typedef enum window {
+typedef enum window_type {
     MENU,
     GAME
-} window_e;
+} window_type_e;
 
-typedef enum etype {
+typedef enum body_type {
     BULLET,
     PLAYER,
     ASTEROID
-} etype_t;
+} body_type_e;
 
 typedef struct aster_aux {
-    etype_t type;
+    body_type_e body_type;
 } aster_aux_t;
 
 typedef struct keypress_aux {
@@ -62,7 +62,7 @@ typedef struct keypress_aux {
     body_t *player;
     size_t key_down;
     size_t last_key_down;
-    window_e window;
+    window_type_e window;
 } keypress_aux_t;
 
 /********************
@@ -107,15 +107,13 @@ void on_key_menu(char key, key_event_type_t type, double held_time, keypress_aux
  ********************/
 void spawn_asteroid(scene_t *scene, list_t *bullets, body_t *player){
     //random later
-    num_sides = 5;
+    /* num_sides = 5;
     ast_radius = ASTEROID_RADIUS_MIN;
     ast_center = vec(0,0);
     ast_velocity = vec(ASTEROID_SPEED, -ASTEROID_SPEED);
     
-    list_t *aster_shape = polygon_reg_ngon()
+    list_t *aster_shape = polygon_reg_ngon() */
 }
-
-
 
 /********************
  * GAME LOGIC
@@ -142,7 +140,8 @@ int main() {
             printf("Window: %s\n", keypress_aux->window == MENU ? "menu" : "game");
         }
 
-        switch (keypress_aux->window) {
+        // TODO: split window_types into different loops... but how is sdl_is_done() handled?
+        switch (keypress_aux->window) { // different logic depending on window type
             case MENU:
                 break;
             case GAME:
