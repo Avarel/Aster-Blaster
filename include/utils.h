@@ -136,10 +136,22 @@ rgb_color_t rand_color(double min, double max);
 /**
  * Initializes the random seeds using current system time
  */ 
-void init_random(); // TODO: tests
+void init_random();
 
-double fmin(double a, double b);
+/**
+ * Set the nth bit of a number to 1.
+ */
+size_t set_nth_bit(size_t num, size_t n);
 
-double fmax(double a, double b);
+/**
+ * Set the nth bit of a number to 0.
+ */
+size_t clear_nth_bit(size_t num, size_t n);
+
+/**
+ * Get the nth bit of a number.
+ */
+size_t get_nth_bit(size_t num, size_t n);
+
 
 #endif // #ifndef __UTILS__

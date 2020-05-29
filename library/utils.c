@@ -52,6 +52,18 @@ rgb_color_t rand_color(double min, double max) {
                drand_range(min, max));
 }
 
+size_t set_nth_bit(size_t num, size_t n) {
+    return (1 << n) | num;
+}
+
+size_t clear_nth_bit(size_t num, size_t n) {
+    return num & (~(1 << n));
+}
+
+size_t get_nth_bit(size_t num, size_t n) {
+    return (num >> n) & 1;
+}
+
 void init_random() {
     srand(time(NULL));
     srand48(time(NULL));
