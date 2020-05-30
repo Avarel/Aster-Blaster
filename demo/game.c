@@ -181,14 +181,59 @@ void create_background_stars(scene_t *scene, body_t *bound) {
 /********************
  * ASTEROID GENERATION
  ********************/
-void spawn_asteroid(scene_t *scene, list_t *bullets, body_t *player) {
-    //random later
-    /* num_sides = 5;
-    ast_radius = ASTEROID_RADIUS_MIN;
-    ast_center = vec(0,0);
-    ast_velocity = vec(ASTEROID_SPEED, -ASTEROID_SPEED);
+ void create_destructive_collision_force_single(body_t *body1, body_t *body_immortal, vector_t axis) {
+     body_remove(body1);
+ }
 
-    list_t *aster_shape = polygon_reg_ngon() */
+ void create_destructive_collision_single(scene_t *scene, body_t *body1, body_t *body_immortal) {
+     create_collision(scene, body1, body_immortal, create_destructive_collision_force_single, NULL, NULL);
+ }
+
+ void create_special_collision_force(body_t *ast, body_t *player, vector_t axis) {
+     body_remove(ast);
+     //Bruno, do what you want to here
+ }
+
+ void create_special_collision(scene_t *scene, body_t *ast, body_t *player) {
+     create_collision(scene, ast, body_player, create_destructive_collision_force_single, NULL, NULL);
+ }
+
+
+void spawn_asteroid(
+    scene_t *scene,
+    body_t *left_bound,
+    body_t *right_bound,
+    body_t *top_bound,
+    body_t *bottom_bound) {
+    //random later
+    size_t num_sides = 5;
+    double ast_radius = ASTEROID_RADIUS_MIN;
+    vector_t *ast_center = vec(0,SDL_MAX.y);
+    vector_t *ast_velocity = vec(ASTEROID_SPEED, -ASTEROID_SPEED);
+
+    aster_aux_t *asteroid_aux = malloc(sizeof(aster_aux_t));
+    asteroid_aux->type = ASTEROID;
+
+    list_t *aster_shape = polygon_reg_ngon(ast_center, ast_radius, num_sides);
+    body_t *asteroid = body_init_with_info(aster_shape, 0, ASTEROID_COLOR, asteroid_aux, free);
+
+    scene_add_body(scene, asteroid);
+    for(size_t i = 0; i < scene_bodies(scene) - 1; i++) {
+        body_t *other_body = scene_get_body(scene, i);
+        invaders_aux_t *other_aux = body_get_info(other_body);
+        if(other_aux != NULL){
+            if (other_aux->type == BULLET) {
+                create_destructive_collision(scene, asteroid, other_body);
+            }
+            elseif(other_aux->type == PLAYER){
+                create_special_collision(scene, asteroid, other_body);
+            }
+        }
+    }
+    create_destructive_collision_single(scene, asteroid, top_bound);
+    create_destructive_collision_single(scene, asteroid, bottom_bound);
+    create_destructive_collision_single(scene, asteroid, right_bound);
+    create_destructive_collision_single(scene, asteroid, left_bound);
 }
 
 
@@ -268,13 +313,25 @@ void game_loop() {
 
     sdl_on_key((key_handler_t)on_key_game);
 
+    //Using ASTEROID_RADIUS for bounds because it's maximum size
+    body_t *top_bound = body_init(polygon_rect(vec(SDL_MIN.x, SDL_MAX.y + ASTEROID_RADIUS_MAX, SDL_MAX.x, ASTEROID_RADIUS_MAX), INFINITY, COLOR_BLACK);
     // when stars collide with this offscreen they'll teleport to just off the
     // top of the scene so it loops.
-    body_t *star_bound = body_init(polygon_rect(vec(SDL_MIN.x, SDL_MIN.y - 6 * STAR_RADIUS_MAX), SDL_MAX.x, 2 * STAR_RADIUS_MAX), INFINITY, COLOR_BLACK);
-    create_background_stars(scene, star_bound);
+    body_t *bottom_bound = body_init(polygon_rect(vec(SDL_MIN.x, SDL_MIN.y - 3 * ASTEROID_RADIUS_MAX), SDL_MAX.x, ASTEROID_RADIUS_MAX), INFINITY, COLOR_BLACK);
+    body_t *left_bound = body_init(polygon_rect(vec(SDL_MIN.x - 3 * ASTEROID_RADIUS_MAX, SDL_MIN.y), ASTEROID_RADIUS_MAX, SDL_MAX.y), INFINITY, COLOR_BLACK);
+    body_t *right_bound = body_init(polygon_rect(vec(SDL_MAX.x + ASTEROID_RADIUS_MAX, SDL_MIN.y), ASTEROID_RADIUS_MAX, SDL_MAX.y), INFINITY, COLOR_BLACK);
+
+    scene_add_body(scene, left_bound);
+    scene_add_body(scene, right_bound);
+    scene_add_body(scene, top_bound);
+    scene_add_body(scene, bottom_bound);
+
+    create_background_stars(scene, bottom_bound);
 
     body_t *body = body_init(polygon_star(vec(500, 500), 100, 50, 5), 50, COLOR_WHITE);
     scene_add_body(scene, body);
+
+    spawn_asteroid(scene, left_bound, right_bound, top_bound, bottom_bound);
 
     game_keypress_aux_t *game_keypress_aux = malloc(sizeof(game_keypress_aux_t));
     game_keypress_aux->scene = scene;
