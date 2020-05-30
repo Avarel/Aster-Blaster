@@ -315,9 +315,7 @@ void game_loop() {
     sdl_on_key((key_handler_t)on_key_game);
 
     //Using ASTEROID_RADIUS for bounds because it's maximum size
-    body_t *top_bound = body_init(polygon_rect(vec(SDL_MIN.x, SDL_MAX.y + ASTEROID_RADIUS_MAX), SDL_MAX.x, ASTEROID_RADIUS_MAX), INFINITY, COLOR_BLACK);
-    // when stars collide with this offscreen they'll teleport to just off the
-    // top of the scene so it loops.
+    body_t *top_bound = body_init(polygon_rect(vec(SDL_MIN.x, SDL_MAX.y + ASTEROID_RADIUS_MAX), SDL_MAX.x, ASTEROID_RADIUS_MAX), INFINITY, COLOR_BLACK);.
     body_t *bottom_bound = body_init(polygon_rect(vec(SDL_MIN.x, SDL_MIN.y - 3 * ASTEROID_RADIUS_MAX), SDL_MAX.x, ASTEROID_RADIUS_MAX), INFINITY, COLOR_BLACK);
     body_t *left_bound = body_init(polygon_rect(vec(SDL_MIN.x - 3 * ASTEROID_RADIUS_MAX, SDL_MIN.y), ASTEROID_RADIUS_MAX, SDL_MAX.y), INFINITY, COLOR_BLACK);
     body_t *right_bound = body_init(polygon_rect(vec(SDL_MAX.x + ASTEROID_RADIUS_MAX, SDL_MIN.y), ASTEROID_RADIUS_MAX, SDL_MAX.y), INFINITY, COLOR_BLACK);
@@ -327,7 +325,10 @@ void game_loop() {
     scene_add_body(scene, top_bound);
     scene_add_body(scene, bottom_bound);
 
-    create_background_stars(scene, bottom_bound);
+    // when stars collide with this offscreen they'll teleport to just off the
+    // top of the scene so it loops.
+    body_t *star_bound = body_init(polygon_rect(vec(SDL_MIN.x, SDL_MIN.y - 6 * STAR_RADIUS_MAX), SDL_MAX.x, 2 * STAR_RADIUS_MAX), INFINITY, COLOR_BLACK);
+    create_background_stars(scene, star_bound);
 
     body_t *body = body_init(polygon_star(vec(500, 500), 100, 50, 5), 50, COLOR_WHITE);
     scene_add_body(scene, body);
