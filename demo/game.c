@@ -51,12 +51,13 @@ char MENU_GAME_START_TEXT[] = "Press space to begin!\0";
 #define ASTEROID_COLOR ((rgb_color_t){0.8, 0.8, 0.8})
 
 // Background settings
-#define NUM_STARS 100
+#define NUM_STARS 150
 #define STAR_RADIUS_MIN 3
 #define STAR_RADIUS_MAX 8
 #define STAR_POINTS_MIN 7
 #define STAR_POINTS_MAX 10
-#define STAR_VELOCITY ((vector_t){.x = 0, .y = -0.05 * SDL_MAX.y})
+#define STAR_VELOCITY_1 ((vector_t){.x = 0, .y = -0.1 * SDL_MAX.y})
+#define STAR_VELOCITY_2 ((vector_t){.x = 0, .y = -0.15 * SDL_MAX.y})
 #define STAR_COLOR ((rgb_color_t){1.0, 1.0, 1.0})
 
 
@@ -134,14 +135,24 @@ void on_key_game(char key, key_event_type_t type, double held_time, game_keypres
 /********************
  * Background Stuff
  ********************/
+
+ /**
+  * Handles looping of the background sars. When the yhit the bound below the
+  * bottom of the screen they teleport back to the top.
+  */
  void create_star_collision_force(body_t *star, body_t *bound, vector_t axis, void *aux) {
-     body_set_centroid(star, vec_add(body_get_centroid(star), vec(0, SDL_MAX.y + 3 * STAR_RADIUS_MAX)));
+     body_set_centroid(star, vec_add(body_get_centroid(star), vec(0, SDL_MAX.y + 8 * STAR_RADIUS_MAX)));
  }
 
  void create_star_collision(scene_t *scene, body_t *star, body_t *bound) {
      create_collision(scene, star, bound, create_star_collision_force, NULL, free);
  }
 
+ /**
+  * Creates all of the background stars and adds them to the scene. It is
+  * important that this is called before any other bodies are added to the
+  * scene so the stars go in the background.
+  */
 void create_background_stars(scene_t *scene, body_t *bound) {
     for(int i = 0; i < NUM_STARS; i++) {
         double r = drand_range(STAR_RADIUS_MIN, STAR_RADIUS_MAX);
@@ -150,9 +161,19 @@ void create_background_stars(scene_t *scene, body_t *bound) {
         list_t *shape = polygon_star(center, r, r/2, degree);
         body_t *star = body_init(shape, 0, STAR_COLOR);
 
-        body_set_velocity(star, STAR_VELOCITY);
+        // Gives the star one of two velocities to create the illusion of
+        // parallax.
+        int which_velocity = irand_range(1,2);
+        switch (which_velocity) {
+            case 1:
+                body_set_velocity(star, STAR_VELOCITY_1);
+                break;
+            case 2:
+                body_set_velocity(star, STAR_VELOCITY_2);
+                break;
+        }
         create_star_collision(scene, star, bound);
-        
+
         scene_add_body(scene, star);
     }
 }
@@ -249,7 +270,7 @@ void game_loop() {
 
     // when stars collide with this offscreen they'll teleport to just off the
     // top of the scene so it loops.
-    body_t *star_bound = body_init(polygon_rect(vec(SDL_MIN.x, SDL_MIN.y - 5 * STAR_RADIUS_MAX), SDL_MAX.x, 2.5 * STAR_RADIUS_MAX), INFINITY, COLOR_BLACK);
+    body_t *star_bound = body_init(polygon_rect(vec(SDL_MIN.x, SDL_MIN.y - 6 * STAR_RADIUS_MAX), SDL_MAX.x, 2 * STAR_RADIUS_MAX), INFINITY, COLOR_BLACK);
     create_background_stars(scene, star_bound);
 
     body_t *body = body_init(polygon_star(vec(500, 500), 100, 50, 5), 50, COLOR_WHITE);
