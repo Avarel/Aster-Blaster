@@ -181,7 +181,7 @@ void create_background_stars(scene_t *scene, body_t *bound) {
 /********************
  * ASTEROID GENERATION
  ********************/
- void create_destructive_collision_force_single(body_t *body1, body_t *body_immortal, vector_t axis) {
+ void create_destructive_collision_force_single(body_t *body1, body_t *body_immortal, vector_t axis, void *aux) {
      body_remove(body1);
  }
 
@@ -189,13 +189,13 @@ void create_background_stars(scene_t *scene, body_t *bound) {
      create_collision(scene, body1, body_immortal, create_destructive_collision_force_single, NULL, NULL);
  }
 
- void create_special_collision_force(body_t *ast, body_t *player, vector_t axis) {
+ void create_special_collision_force(body_t *ast, body_t *player, vector_t axis, void *aux) {
      body_remove(ast);
      //Bruno, do what you want to here
  }
 
  void create_special_collision(scene_t *scene, body_t *ast, body_t *player) {
-     create_collision(scene, ast, body_player, create_destructive_collision_force_single, NULL, NULL);
+     create_collision(scene, ast, player, create_destructive_collision_force_single, NULL, NULL);
  }
 
 
@@ -208,24 +208,25 @@ void spawn_asteroid(
     //random later
     size_t num_sides = 5;
     double ast_radius = ASTEROID_RADIUS_MIN;
-    vector_t *ast_center = vec(0,SDL_MAX.y);
-    vector_t *ast_velocity = vec(ASTEROID_SPEED, -ASTEROID_SPEED);
+    vector_t ast_center = vec(0,SDL_MAX.y);
+    vector_t ast_velocity = vec(ASTEROID_SPEED, -ASTEROID_SPEED);
 
     aster_aux_t *asteroid_aux = malloc(sizeof(aster_aux_t));
-    asteroid_aux->type = ASTEROID;
+    asteroid_aux->body_type = ASTEROID;
 
     list_t *aster_shape = polygon_reg_ngon(ast_center, ast_radius, num_sides);
     body_t *asteroid = body_init_with_info(aster_shape, 0, ASTEROID_COLOR, asteroid_aux, free);
+    body_set_velocity(asteroid, ast_velocity);
 
     scene_add_body(scene, asteroid);
     for(size_t i = 0; i < scene_bodies(scene) - 1; i++) {
         body_t *other_body = scene_get_body(scene, i);
-        invaders_aux_t *other_aux = body_get_info(other_body);
+        aster_aux_t *other_aux = body_get_info(other_body);
         if(other_aux != NULL){
-            if (other_aux->type == BULLET) {
+            if (other_aux->body_type == BULLET) {
                 create_destructive_collision(scene, asteroid, other_body);
             }
-            elseif(other_aux->type == PLAYER){
+            else if(other_aux->body_type == PLAYER){
                 create_special_collision(scene, asteroid, other_body);
             }
         }
@@ -314,7 +315,7 @@ void game_loop() {
     sdl_on_key((key_handler_t)on_key_game);
 
     //Using ASTEROID_RADIUS for bounds because it's maximum size
-    body_t *top_bound = body_init(polygon_rect(vec(SDL_MIN.x, SDL_MAX.y + ASTEROID_RADIUS_MAX, SDL_MAX.x, ASTEROID_RADIUS_MAX), INFINITY, COLOR_BLACK);
+    body_t *top_bound = body_init(polygon_rect(vec(SDL_MIN.x, SDL_MAX.y + ASTEROID_RADIUS_MAX), SDL_MAX.x, ASTEROID_RADIUS_MAX), INFINITY, COLOR_BLACK);
     // when stars collide with this offscreen they'll teleport to just off the
     // top of the scene so it loops.
     body_t *bottom_bound = body_init(polygon_rect(vec(SDL_MIN.x, SDL_MIN.y - 3 * ASTEROID_RADIUS_MAX), SDL_MAX.x, ASTEROID_RADIUS_MAX), INFINITY, COLOR_BLACK);
