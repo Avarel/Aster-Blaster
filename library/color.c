@@ -2,6 +2,7 @@
 #include <math.h>
 
 const rgb_color_t COLOR_BLACK = { .r = 0, .g = 0, .b = 0 };
+const rgb_color_t COLOR_WHITE = { .r = 1, .g = 1, .b = 1 };
 
 rgb_color_t rgb(float r, float g, float b) {
     return (rgb_color_t){.r = r, .g = g, .b = b};

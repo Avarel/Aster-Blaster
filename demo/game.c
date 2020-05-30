@@ -50,6 +50,15 @@ char MENU_GAME_START_TEXT[] = "Press space to begin!\0";
 #define ASTEROID_RADIUS_MAX 70
 #define ASTEROID_COLOR ((rgb_color_t){0.8, 0.8, 0.8})
 
+// Background settings
+#define NUM_STARS 50
+#define STAR_RADIUS_MIN 2
+#define STAR_RADIUS_MAX 8
+#define STAR_POINTS_MIN 6
+#define STAR_POINTS_MAX 10
+#define STAR_COLOR ((rgb_color_t){1.0, 1.0, 1.0})
+
+
 const size_t debug_print_rate = 200;
 
 /********************
@@ -122,6 +131,23 @@ void on_key_game(char key, key_event_type_t type, double held_time, game_keypres
 }
 
 /********************
+ * Background Stuff
+ ********************/
+void create_background_stars(scene_t *scene) {
+    for(int i = 0; i < NUM_STARS; i++) {
+        double r = drand_range(STAR_RADIUS_MIN, STAR_RADIUS_MAX);
+        size_t degree = (size_t) irand_range(STAR_POINTS_MIN, STAR_POINTS_MAX);
+        vector_t center = rand_vec(SDL_MIN, SDL_MAX);
+        list_t *shape = polygon_star(center, r, r/2, degree);
+        body_t *star = body_init(shape, 0, STAR_COLOR);
+
+        //TODO add velocity.
+
+        scene_add_body(scene, star);
+    }
+}
+
+/********************
  * ASTEROID GENERATION
  ********************/
 void spawn_asteroid(scene_t *scene, list_t *bullets, body_t *player) {
@@ -130,9 +156,10 @@ void spawn_asteroid(scene_t *scene, list_t *bullets, body_t *player) {
     ast_radius = ASTEROID_RADIUS_MIN;
     ast_center = vec(0,0);
     ast_velocity = vec(ASTEROID_SPEED, -ASTEROID_SPEED);
-    
+
     list_t *aster_shape = polygon_reg_ngon() */
 }
+
 
 /********************
  * GAME LOGIC
@@ -210,7 +237,9 @@ void game_loop() {
 
     sdl_on_key((key_handler_t)on_key_game);
 
-    body_t *body = body_init(polygon_star(vec(500, 500), 100, 50, 5), 50, COLOR_BLACK);
+    create_background_stars(scene);
+
+    body_t *body = body_init(polygon_star(vec(500, 500), 100, 50, 5), 50, COLOR_WHITE);
     scene_add_body(scene, body);
 
     game_keypress_aux_t *game_keypress_aux = malloc(sizeof(game_keypress_aux_t));
@@ -220,7 +249,7 @@ void game_loop() {
     game_keypress_aux->window = MENU;
 
     size_t frame = 0;
-    
+
     while (!sdl_is_done(game_keypress_aux)) {
         double dt = time_since_last_tick();
 
@@ -231,7 +260,7 @@ void game_loop() {
         printBits(game_keypress_aux->key_down);
 
         scene_tick(scene, dt);
-        sdl_render_scene(scene);
+        sdl_render_scene_black(scene);
         frame++;
     }
 

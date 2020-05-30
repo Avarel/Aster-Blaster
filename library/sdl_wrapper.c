@@ -162,6 +162,11 @@ void sdl_clear(void) {
     SDL_RenderClear(renderer);
 }
 
+void sdl_clear_black(void) {
+     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
+     SDL_RenderClear(renderer);
+ }
+
 void sdl_draw_polygon(list_t *points, rgb_color_t color) {
     // Check parameters
     size_t n = list_size(points);
@@ -263,6 +268,23 @@ int sdl_render_text(text_box_t *text_box) {
 
 void sdl_render_scene(scene_t *scene) {
     sdl_clear();
+    size_t body_count = scene_bodies(scene);
+    for (size_t i = 0; i < body_count; i++) {
+        body_t *body = scene_get_body(scene, i);
+        list_t *shape = body_get_shape(body);
+        sdl_draw_polygon(shape, body_get_color(body));
+        list_free(shape);
+    }
+    size_t text_box_count = scene_text_boxes(scene);
+    for (size_t i = 0; i < text_box_count; i++) {
+        sdl_render_text(scene_get_text_box(scene, i));
+    }
+    sdl_show();
+}
+
+// More of a temporry solution, as it reuses a ton of code.
+void sdl_render_scene_black(scene_t *scene) {
+    sdl_clear_black();
     size_t body_count = scene_bodies(scene);
     for (size_t i = 0; i < body_count; i++) {
         body_t *body = scene_get_body(scene, i);

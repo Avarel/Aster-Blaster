@@ -70,6 +70,12 @@ bool sdl_is_done(void *data);
 void sdl_clear(void);
 
 /**
+ * Clears the screen with a black background. Should be called before drawing
+ * polygons in each frame.
+ */
+void sdl_clear_black(void);
+
+/**
  * Draws a polygon from the given list of vertices and a color.
  *
  * @param points the list of vertices of the polygon
@@ -91,6 +97,15 @@ void sdl_show(void);
  * @param scene the scene to draw
  */
 void sdl_render_scene(scene_t *scene);
+
+/**
+ * Draws all bodies in a scene with a black background.
+ * This internally calls sdl_clear_black(), sdl_draw_polygon(), and sdl_show(),
+ * so those functions should not be called directly.
+ *
+ * @param scene the scene to draw
+ */
+void sdl_render_scene_black(scene_t *scene);
 
 /**
  * Registers a function to be called every time a key is pressed.

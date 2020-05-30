@@ -52,6 +52,11 @@ rgb_color_t rand_color(double min, double max) {
                drand_range(min, max));
 }
 
+vector_t rand_vec(vector_t min, vector_t max) {
+    return vec(drand_range(min.x, max.x),
+               drand_range(min.y, max.y));
+}
+
 size_t set_nth_bit(size_t num, size_t n) {
     return (1 << n) | num;
 }
