@@ -64,8 +64,8 @@ char MENU_GAME_START_TEXT[] = "Press space to begin!\0";
 #define ASTEROID_RADIUS_MIN 30.0
 #define ASTEROID_RADIUS_MAX 50.0
 #define ASTEROID_COLOR ((rgb_color_t){0.7, 0.7, 0.7})
-//1 in 4 chance of asteroid spawning every 0.5 seconds
-#define ASTEROID_SPAWN_CHANCE 4
+//1 in 3 chance of asteroid spawning every 0.5 seconds
+#define ASTEROID_SPAWN_CHANCE 3
 #define ASTEROID_SPAWN_RATE 0.5
 
 // Background settings
