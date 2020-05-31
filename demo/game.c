@@ -367,7 +367,7 @@ void game_loop() {
     sdl_on_key((key_handler_t)on_key_game);
 
     // using ASTEROID_RADIUS for bounds because it's maximum size
-    body_t *top_bound = body_init(polygon_rect(vec(SDL_MIN.x, SDL_MAX.y + ASTEROID_RADIUS_MAX), SDL_MAX.x, ASTEROID_RADIUS_MAX), INFINITY, COLOR_BLACK);
+    body_t *top_bound = body_init(polygon_rect(vec(SDL_MIN.x, SDL_MAX.y + 2*ASTEROID_RADIUS_MAX), SDL_MAX.x, ASTEROID_RADIUS_MAX), INFINITY, COLOR_BLACK);
     body_t *bottom_bound = body_init(polygon_rect(vec(SDL_MIN.x, SDL_MIN.y - 3 * ASTEROID_RADIUS_MAX), SDL_MAX.x, ASTEROID_RADIUS_MAX), INFINITY, COLOR_BLACK);
     body_t *left_bound = body_init(polygon_rect(vec(SDL_MIN.x - 3 * ASTEROID_RADIUS_MAX, SDL_MIN.y), ASTEROID_RADIUS_MAX, SDL_MAX.y), INFINITY, COLOR_BLACK);
     body_t *right_bound = body_init(polygon_rect(vec(SDL_MAX.x + ASTEROID_RADIUS_MAX, SDL_MIN.y), ASTEROID_RADIUS_MAX, SDL_MAX.y), INFINITY, COLOR_BLACK);
