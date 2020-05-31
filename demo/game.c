@@ -60,7 +60,7 @@ char MENU_GAME_START_TEXT[] = "Press space to begin!\0";
 // Asteroid settings
 #define ASTEROID_SIDES_MIN 5
 #define ASTEROID_SIDES_MAX 10
-#define ASTEROID_SPEED 100
+#define ASTEROID_SPEED 200
 #define ASTEROID_RADIUS_MIN 30.0
 #define ASTEROID_RADIUS_MAX 50.0
 #define ASTEROID_COLOR ((rgb_color_t){0.7, 0.7, 0.7})
