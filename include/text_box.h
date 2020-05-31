@@ -38,4 +38,6 @@ size_t text_box_get_font_size(text_box_t *text_box);
 
 vector_t text_box_get_origin(text_box_t *text_box);
 
+justification_e text_box_get_justification(text_box_t *text_box);
+
 #endif // #ifndef __TEXT_BOX_H__

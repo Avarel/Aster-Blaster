@@ -37,10 +37,12 @@ char FONT_PATH_ASTER_BLASTER[] = "./andromeda.ttf\0";
 char MENU_TITLE_TEXT[] = "Aster Blaster\0";
 #define MENU_TITLE_FONT_SIZE 40
 #define MENU_TITLE_ORIGIN ((vector_t){.x = 0.5 * SDL_MAX.x, .y = 0.75 * SDL_MAX.y})
+#define MENU_TITLE_JUSTIFICATION CENTER
 
 char MENU_GAME_START_TEXT[] = "Press space to begin!\0";
 #define MENU_GAME_START_FONT_SIZE 20
 #define MENU_GAME_START_ORIGIN ((vector_t){.x = 0.5 * SDL_MAX.x, .y = 0.6 * SDL_MAX.y})
+#define MENU_GAME_START_JUSTIFICATION CENTER
 
 // Asteroid settings
 #define ASTEROID_SPEED 100
@@ -236,7 +238,7 @@ void spawn_asteroid(
 
 
 /********************
- * GAME LOGIC
+ * GAME LOOPS
  ********************/
 void menu_loop();
 void game_loop();
@@ -268,9 +270,9 @@ void menu_loop() {
     menu_keypress_aux->key_down = 0;
     menu_keypress_aux->window = MENU;
 
-    text_box_t *menu_title_text_box = text_box_init(&MENU_TITLE_TEXT[0], MENU_TITLE_FONT_SIZE, MENU_TITLE_ORIGIN, CENTER);
+    text_box_t *menu_title_text_box = text_box_init(&MENU_TITLE_TEXT[0], MENU_TITLE_FONT_SIZE, MENU_TITLE_ORIGIN, MENU_TITLE_JUSTIFICATION);
     scene_add_text_box(scene, menu_title_text_box);
-    text_box_t *menu_game_start_text_box = text_box_init(&MENU_GAME_START_TEXT[0], MENU_GAME_START_FONT_SIZE, MENU_GAME_START_ORIGIN, CENTER);
+    text_box_t *menu_game_start_text_box = text_box_init(&MENU_GAME_START_TEXT[0], MENU_GAME_START_FONT_SIZE, MENU_GAME_START_ORIGIN, MENU_GAME_START_JUSTIFICATION);
     scene_add_text_box(scene, menu_game_start_text_box);
 
     size_t frame = 0;

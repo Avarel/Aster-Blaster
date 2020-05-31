@@ -6,6 +6,7 @@
 #include <SDL2/SDL2_gfxPrimitives.h>
 #include <SDL2/SDL_ttf.h>
 #include "sdl_wrapper.h"
+#include "text_box.h"
 
 const char WINDOW_TITLE[] = "Aster Blaster";
 const int WINDOW_WIDTH = 1200;
@@ -232,13 +233,6 @@ int sdl_render_text(text_box_t *text_box) {
     SDL_Texture *text = NULL;
     SDL_Rect textRect;
 
-    /* char *text_box_text = text_box_get_text(text_box);
-    int len;
-    for (len = 0; *(text_box_text + len) != '\0'; len++);
-    len++;
-    char render_text[len];
-    strcpy(render_text, text_box_text); */
-
     SDL_Surface *textSurface = TTF_RenderText_Shaded(font, text_box_get_text(text_box), textColor, textBackgroundColor);
     if(!textSurface) {
         printf("Unable to render text surface!\n"
@@ -258,7 +252,20 @@ int sdl_render_text(text_box_t *text_box) {
 
     SDL_FreeSurface(textSurface);
 
-    textRect.x = WINDOW_WIDTH - text_box_get_origin(text_box).x;
+    switch (text_box_get_justification(text_box)) {
+        case LEFT: {
+            textRect.x = WINDOW_WIDTH - text_box_get_origin(text_box).x;
+            break;
+        }
+        case RIGHT: {
+            textRect.x = WINDOW_WIDTH - text_box_get_origin(text_box).x - textRect.w;
+            break;
+        }
+        case CENTER: {
+            textRect.x = WINDOW_WIDTH - text_box_get_origin(text_box).x - (textRect.w / 2.0);
+            break;
+        }
+    }
     textRect.y = WINDOW_HEIGHT - text_box_get_origin(text_box).y;
 
     SDL_RenderCopy(renderer, text, NULL, &textRect);
@@ -282,7 +289,7 @@ void sdl_render_scene(scene_t *scene) {
     sdl_show();
 }
 
-// More of a temporry solution, as it reuses a ton of code.
+// TODO: more of a temporay solution, as it reuses a ton of code.
 void sdl_render_scene_black(scene_t *scene) {
     sdl_clear_black();
     size_t body_count = scene_bodies(scene);
