@@ -21,7 +21,8 @@ typedef struct text_box text_box_t;
  * 
  * @param text the text
  * @param font_size the font size
- * @param origin the coordinate vector of the lower left corner of the text box
+ * @param origin the coordinate vector of the origin
+ *        (justification determines where it is placed relative to text)
  * @param justification how the text is position relative to origin
  * @return a text_box_t pointer
  */

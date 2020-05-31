@@ -44,6 +44,15 @@ char MENU_GAME_START_TEXT[] = "Press space to begin!\0";
 #define MENU_GAME_START_ORIGIN ((vector_t){.x = 0.5 * SDL_MAX.x, .y = 0.6 * SDL_MAX.y})
 #define MENU_GAME_START_JUSTIFICATION CENTER
 
+// Player settings
+#define PLAYER_INIT_POS ((vector_t){.x = SDL_MAX.x / 2, .y = 0.1 * SDL_MAX.y})
+#define PLAYER_RADIUS 50
+#define PLAYER_SIDES 15
+#define PLAYER_SECTOR_SIDES 12
+#define PLAYER_ANGLE (M_PI / 2)
+#define PLAYER_MASS 100
+#define PLAYER_COLOR ((rgb_color_t){0.8, 0.3, 0.5})
+
 // Asteroid settings
 #define ASTEROID_SPEED 100
 #define ASTEROID_RADIUS_MIN 30
@@ -236,6 +245,14 @@ void spawn_asteroid(
     create_destructive_collision_single(scene, asteroid, left_bound);
 }
 
+/********************
+ * PLAYER
+ ********************/
+body_t *body_init_player() {
+    list_t *player_shape = polygon_ngon_sector(PLAYER_INIT_POS, PLAYER_RADIUS, PLAYER_SIDES, PLAYER_SECTOR_SIDES, PLAYER_ANGLE);
+    body_t *player = body_init(player_shape, PLAYER_MASS, PLAYER_COLOR);
+    return player;
+}
 
 /********************
  * GAME LOOPS
@@ -311,7 +328,7 @@ void game_loop() {
 
     sdl_on_key((key_handler_t)on_key_game);
 
-    //Using ASTEROID_RADIUS for bounds because it's maximum size
+    // using ASTEROID_RADIUS for bounds because it's maximum size
     body_t *top_bound = body_init(polygon_rect(vec(SDL_MIN.x, SDL_MAX.y + ASTEROID_RADIUS_MAX), SDL_MAX.x, ASTEROID_RADIUS_MAX), INFINITY, COLOR_BLACK);
     body_t *bottom_bound = body_init(polygon_rect(vec(SDL_MIN.x, SDL_MIN.y - 3 * ASTEROID_RADIUS_MAX), SDL_MAX.x, ASTEROID_RADIUS_MAX), INFINITY, COLOR_BLACK);
     body_t *left_bound = body_init(polygon_rect(vec(SDL_MIN.x - 3 * ASTEROID_RADIUS_MAX, SDL_MIN.y), ASTEROID_RADIUS_MAX, SDL_MAX.y), INFINITY, COLOR_BLACK);
@@ -337,6 +354,9 @@ void game_loop() {
     game_keypress_aux->player = body; // temporary
     game_keypress_aux->key_down = 0;
     game_keypress_aux->window = MENU;
+
+    body_t *player = body_init_player();
+    scene_add_body(scene, player);
 
     size_t frame = 0;
 
