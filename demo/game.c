@@ -10,6 +10,7 @@
 #include "sdl_wrapper.h"
 // mid level
 #include "body.h"
+#include "text_box.h"
 #include "collision.h"
 #include "forces.h"
 #include "polygon.h"
@@ -33,15 +34,12 @@
  */
 char FONT_PATH_ASTER_BLASTER[] = "./andromeda.ttf\0";
 // Menu settings
-// note: text_box's size element currently isn't used by renderer
 char MENU_TITLE_TEXT[] = "Aster Blaster\0";
 #define MENU_TITLE_FONT_SIZE 40
-//#define MENU_TITLE_SIZE ((vector_t) {.x = SDL_MAX.x / 4, .y = SDL_MAX.y / 10})
 #define MENU_TITLE_ORIGIN ((vector_t){.x = 0.5 * SDL_MAX.x, .y = 0.75 * SDL_MAX.y})
 
 char MENU_GAME_START_TEXT[] = "Press space to begin!\0";
 #define MENU_GAME_START_FONT_SIZE 20
-//#define MENU_GAME_START_SIZE ((vector_t) {.x = SDL_MAX.x / 4, .y = SDL_MAX.y / 15})
 #define MENU_GAME_START_ORIGIN ((vector_t){.x = 0.5 * SDL_MAX.x, .y = 0.6 * SDL_MAX.y})
 
 // Asteroid settings
@@ -60,8 +58,7 @@ char MENU_GAME_START_TEXT[] = "Press space to begin!\0";
 #define STAR_VELOCITY_2 ((vector_t){.x = 0, .y = -0.15 * SDL_MAX.y})
 #define STAR_COLOR ((rgb_color_t){1.0, 1.0, 1.0})
 
-
-const size_t debug_print_rate = 200;
+#define DEBUG_PRINT_RATE 200
 
 /********************
  * STRUCTS & ENUMS
@@ -83,9 +80,6 @@ typedef struct aster_aux {
     body_type_e body_type;
 } aster_aux_t;
 
-/********************
- * KEYBOARD INPUT
- ********************/
 
 typedef struct menu_keypress_aux {
     scene_t *scene;
@@ -93,6 +87,9 @@ typedef struct menu_keypress_aux {
     window_type_e window;
 } menu_keypress_aux_t;
 
+/********************
+ * KEYBOARD INPUT
+ ********************/
 /**
  * Handles the player controls. Allows for lateral player movement and player bullet firing.
  * @param key the key pressed or released
@@ -191,7 +188,7 @@ void create_background_stars(scene_t *scene, body_t *bound) {
 
  void create_special_collision_force(body_t *ast, body_t *player, vector_t axis, void *aux) {
      body_remove(ast);
-     //Bruno, do what you want to here
+     // Bruno, do what you want to here
  }
 
  void create_special_collision(scene_t *scene, body_t *ast, body_t *player) {
@@ -253,10 +250,8 @@ int main() {
     menu_loop();
 }
 
-void printBits(unsigned int num)
-{
-   for(int bit=0;bit<(sizeof(unsigned int) * 2); bit++)
-   {
+void print_bits(unsigned int num) {
+   for(int bit=0 ;bit < (sizeof(unsigned int) * 2); bit++) {
       printf("%i ", num & 0x01);
       num = num >> 1;
    }
@@ -273,9 +268,9 @@ void menu_loop() {
     menu_keypress_aux->key_down = 0;
     menu_keypress_aux->window = MENU;
 
-    text_box_t *menu_title_text_box = text_box_init(&MENU_TITLE_TEXT[0], MENU_TITLE_FONT_SIZE, MENU_TITLE_ORIGIN);
+    text_box_t *menu_title_text_box = text_box_init(&MENU_TITLE_TEXT[0], MENU_TITLE_FONT_SIZE, MENU_TITLE_ORIGIN, CENTER);
     scene_add_text_box(scene, menu_title_text_box);
-    text_box_t *menu_game_start_text_box = text_box_init(&MENU_GAME_START_TEXT[0], MENU_GAME_START_FONT_SIZE, MENU_GAME_START_ORIGIN);
+    text_box_t *menu_game_start_text_box = text_box_init(&MENU_GAME_START_TEXT[0], MENU_GAME_START_FONT_SIZE, MENU_GAME_START_ORIGIN, CENTER);
     scene_add_text_box(scene, menu_game_start_text_box);
 
     size_t frame = 0;
@@ -284,7 +279,7 @@ void menu_loop() {
     while (!sdl_is_done(menu_keypress_aux)) {
         double dt = time_since_last_tick();
 
-        if (frame % debug_print_rate == 0) {
+        if (frame % DEBUG_PRINT_RATE == 0) {
             // printf("window: %s\n", keypress_aux->window == MENU ? "menu" : "game");
         }
 
@@ -346,11 +341,12 @@ void game_loop() {
     while (!sdl_is_done(game_keypress_aux)) {
         double dt = time_since_last_tick();
 
-        if (frame % debug_print_rate == 0) {
+        if (frame % DEBUG_PRINT_RATE == 0) {
             // printf("window: %s\n", keypress_aux->window == MENU ? "menu" : "game");
+            // print_bits(game_keypress_aux->key_down);
         }
 
-        printBits(game_keypress_aux->key_down);
+        
 
         scene_tick(scene, dt);
         sdl_render_scene_black(scene);
