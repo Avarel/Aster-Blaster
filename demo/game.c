@@ -380,7 +380,6 @@ void game_loop() {
     body_t *player = body_init_player();
     body_set_manual_acceleration(player, true);
     scene_add_body(scene, player);
-
     spawn_asteroid(scene, left_bound, right_bound, top_bound, bottom_bound);
 
     game_keypress_aux_t *game_keypress_aux = malloc(sizeof(game_keypress_aux_t));
@@ -390,9 +389,16 @@ void game_loop() {
     game_keypress_aux->window = GAME;
 
     size_t frame = 0;
+    double timeElapsed = 0;
 
     while (!sdl_is_done(game_keypress_aux)) {
         double dt = time_since_last_tick();
+        timeElapsed += dt;
+        if(timeElapsed >= 2){
+            timeElapsed = 0;
+            spawn_asteroid(scene, left_bound, right_bound, top_bound, bottom_bound);
+        }
+
 
         if (frame % DEBUG_PRINT_RATE == 0) {
             // print_bits(game_keypress_aux->key_down);
