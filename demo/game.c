@@ -227,15 +227,15 @@ void spawn_asteroid(
     vector_t ast_center = vec(ast_x, SDL_MAX.y + ast_radius);
 
     //if the asteroid spawns at the left of the screen,x velocity should be
-    //negative, so theta between pi and 3*pi/2
-    //otherwise, theta between 3*pi/2 and 2*pi, so x velocity is positive
+    //positive, so theta between 3*pi/2 and 2*pi
+    //otherwise, theta between pi and 3*pi/2, so x velocity is negative
     double theta = 0;
     double midpoint = (SDL_MAX.x - SDL_MIN.x)/2;
     if(ast_x<midpoint){
-        theta = drand_range(M_PI, 3*M_PI/2);
+        theta = drand_range(3*M_PI/2, 2*M_PI);
     }
     else{
-        theta = drand_range(3*M_PI/2, 2*M_PI);
+        theta = drand_range(M_PI, 3*M_PI/2);
     }
     vector_t ast_velocity = vec(ASTEROID_SPEED*cos(theta), ASTEROID_SPEED*sin(theta));
 
