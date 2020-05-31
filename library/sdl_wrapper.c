@@ -219,31 +219,32 @@ void sdl_show(void) {
     SDL_RenderPresent(renderer);
 }
 
-// see: github.com/aminosbh/sdl2-ttf-sample/blob/master/src/main.c
 int sdl_render_text(text_box_t *text_box) {
     TTF_Font *font = TTF_OpenFont(FONT_PATH, text_box_get_font_size(text_box));
-    if(!font) {
+    if (!font) {
         printf("Unable to load font: '%s'!\n"
                "SDL2_ttf Error: %s\n", FONT_PATH, TTF_GetError());
         return 0;
     }
 
-    SDL_Color textColor           = { 0x00, 0x00, 0x00, 0xFF };
-    SDL_Color textBackgroundColor = { 0xFF, 0xFF, 0xFF, 0xFF };
+    SDL_Color textColor = {0, 0, 0, 255};
+    SDL_Color textBackgroundColor = {255, 255, 255, 255};
     SDL_Texture *text = NULL;
     SDL_Rect textRect;
 
     SDL_Surface *textSurface = TTF_RenderText_Shaded(font, text_box_get_text(text_box), textColor, textBackgroundColor);
-    if(!textSurface) {
+    if (!textSurface) {
         printf("Unable to render text surface!\n"
                "SDL2_ttf Error: %s\n", TTF_GetError());
+        TTF_CloseFont(font);
         return 0;
     }
 
     text = SDL_CreateTextureFromSurface(renderer, textSurface);
-    if(!text) {
+    if( !text) {
         printf("Unable to create texture from rendered text!\n"
                "SDL2 Error: %s\n", SDL_GetError());
+        TTF_CloseFont(font);
         return 0;
     }
 
@@ -269,6 +270,8 @@ int sdl_render_text(text_box_t *text_box) {
     textRect.y = WINDOW_HEIGHT - text_box_get_origin(text_box).y;
 
     SDL_RenderCopy(renderer, text, NULL, &textRect);
+
+    TTF_CloseFont(font);
 
     return 1;
 }

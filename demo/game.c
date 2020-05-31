@@ -20,6 +20,7 @@
 #include "math.h"
 #include "utils.h"
 #include "vector.h"
+//#include "string.h"
 
 /********************
  * SETTINGS
@@ -35,12 +36,12 @@
 char FONT_PATH_ASTER_BLASTER[] = "./andromeda.ttf\0";
 // Menu settings
 char MENU_TITLE_TEXT[] = "Aster Blaster\0";
-#define MENU_TITLE_FONT_SIZE 40
+#define MENU_TITLE_FONT_SIZE 64
 #define MENU_TITLE_ORIGIN ((vector_t){.x = 0.5 * SDL_MAX.x, .y = 0.75 * SDL_MAX.y})
 #define MENU_TITLE_JUSTIFICATION CENTER
 
 char MENU_GAME_START_TEXT[] = "Press space to begin!\0";
-#define MENU_GAME_START_FONT_SIZE 20
+#define MENU_GAME_START_FONT_SIZE 32
 #define MENU_GAME_START_ORIGIN ((vector_t){.x = 0.5 * SDL_MAX.x, .y = 0.6 * SDL_MAX.y})
 #define MENU_GAME_START_JUSTIFICATION CENTER
 
@@ -263,10 +264,14 @@ void control_loop(); // TODO: later
 
 int main() {
     sdl_init(SDL_MIN, SDL_MAX);
+    //char *font_path_ptr = malloc(sizeof(char) * 17);
+    //strcpy(font_path_ptr, FONT_PATH_ASTER_BLASTER);
     sdl_set_font(&FONT_PATH_ASTER_BLASTER[0]);
+    //sdl_set_font(font_path_ptr);
     init_random();
 
     menu_loop();
+    //free (font_path_ptr);
 }
 
 void print_bits(unsigned int num) {
@@ -367,8 +372,6 @@ void game_loop() {
             // printf("window: %s\n", keypress_aux->window == MENU ? "menu" : "game");
             // print_bits(game_keypress_aux->key_down);
         }
-
-        
 
         scene_tick(scene, dt);
         sdl_render_scene_black(scene);
