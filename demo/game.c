@@ -223,8 +223,21 @@ void spawn_asteroid(
     //random later
     size_t num_sides = irand_range(ASTEROID_SIDES_MIN, ASTEROID_SIDES_MAX);
     double ast_radius = drand_range(ASTEROID_RADIUS_MIN, ASTEROID_RADIUS_MAX);
-    vector_t ast_center = vec(0, SDL_MAX.y + ast_radius);
-    vector_t ast_velocity = vec(ASTEROID_SPEED, -ASTEROID_SPEED);
+    double ast_x = drand_range(SDL_MIN.x, SDL_MAX.x);
+    vector_t ast_center = vec(ast_x, SDL_MAX.y + ast_radius);
+
+    //if the asteroid spawns at the left of the screen,x velocity should be
+    //negative, so theta between pi and 3*pi/2
+    //otherwise, theta between 3*pi/2 and 2*pi, so x velocity is positive
+    double theta = 0;
+    double midpoint = (SDL_MAX.x - SDL_MIN.x)/2;
+    if(ast_x<midpoint){
+        theta = drand_range(M_PI, 3*M_PI/2);
+    }
+    else{
+        theta = drand_range(3*M_PI/2, 2*M_PI);
+    }
+    vector_t ast_velocity = vec(ASTEROID_SPEED*cos(theta), ASTEROID_SPEED*sin(theta));
 
     aster_aux_t *asteroid_aux = malloc(sizeof(aster_aux_t));
     asteroid_aux->body_type = ASTEROID;
