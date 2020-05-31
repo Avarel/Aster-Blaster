@@ -64,7 +64,6 @@ char MENU_GAME_START_TEXT[] = "Press space to begin!\0";
 #define ASTEROID_RADIUS_MIN 30.0
 #define ASTEROID_RADIUS_MAX 50.0
 #define ASTEROID_COLOR ((rgb_color_t){0.7, 0.7, 0.7})
-//1 in 3 chance of asteroid spawning every 0.5 seconds
 #define ASTEROID_SPAWN_CHANCE 3
 #define ASTEROID_SPAWN_RATE 0.5
 
@@ -408,15 +407,19 @@ void game_loop() {
     game_keypress_aux->window = GAME;
 
     size_t frame = 0;
-    double time_elapsed = 0;
+    double ast_time = 0;
 
     while (!sdl_is_done(game_keypress_aux)) {
         double dt = time_since_last_tick();
-        time_elapsed += dt;
-        if(time_elapsed >= ASTEROID_SPAWN_RATE){
-            time_elapsed = 0;
+        ast_time += dt;
+
+        //ast_time completely resets when an asteroid spawns
+        //and decreases by half when it's met without an asteroid spawning
+        if(ast_time >= ASTEROID_SPAWN_RATE){
+            ast_time = ASTEROID_SPAWN_RATE/2;
             int spawnChance = irand_range(1, ASTEROID_SPAWN_CHANCE);
             if(spawnChance == 1){
+                ast_time = 0;
                 spawn_asteroid(scene, left_bound, right_bound, top_bound, bottom_bound);
             }
         }
