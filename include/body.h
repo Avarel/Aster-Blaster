@@ -236,4 +236,8 @@ bool body_is_removed(body_t *body);
 
 list_t *body_prev_tick_colliding(body_t *body);
 
+bool body_get_manual_acceleration(body_t *body);
+
+void body_set_manual_acceleration(body_t *body, bool f);
+
 #endif // #ifndef __BODY_H__

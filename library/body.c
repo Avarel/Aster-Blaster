@@ -22,7 +22,7 @@ typedef struct body {
     double theta; // Angular displacement
     double omega; // Angular velocity
 
-    bool colliding;
+    bool manual_acceleration;
 
     rgb_color_t color;
 
@@ -48,7 +48,7 @@ body_t *body_init(list_t *shape, double mass, rgb_color_t color) {
     body->theta = 0;
     body->omega = 0;
 
-    body->colliding = false;
+    body->manual_acceleration = false;
 
     body->color = color;
 
@@ -118,6 +118,10 @@ vector_t body_get_acceleration(body_t *body) {
     return body->acceleration;
 }
 
+bool body_get_manual_acceleration(body_t *body) {
+    return body->manual_acceleration;
+}
+
 double body_get_omega(body_t *body) {
     return body->omega;
 }
@@ -149,6 +153,10 @@ void body_set_velocity(body_t *body, vector_t v) {
 
 void body_set_acceleration(body_t *body, vector_t v) {
     body->acceleration = v;
+}
+
+void body_set_manual_acceleration(body_t *body, bool f) {
+    body->manual_acceleration = f;
 }
 
 void body_set_omega(body_t *body, double o) {

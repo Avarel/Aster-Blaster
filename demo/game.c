@@ -10,10 +10,10 @@
 #include "sdl_wrapper.h"
 // mid level
 #include "body.h"
-#include "text_box.h"
 #include "collision.h"
 #include "forces.h"
 #include "polygon.h"
+#include "text_box.h"
 // low level
 #include "color.h"
 #include "list.h"
@@ -53,6 +53,9 @@ char MENU_GAME_START_TEXT[] = "Press space to begin!\0";
 #define PLAYER_ANGLE (M_PI / 2)
 #define PLAYER_MASS 100
 #define PLAYER_COLOR ((rgb_color_t){0.8, 0.3, 0.5})
+#define PLAYER_VELOCITY 600
+#define PLAYER_ACCELERATION 3000
+#define PLAYER_SPACE_FRICTION 10.0
 
 // Asteroid settings
 #define ASTEROID_SPEED 100
@@ -91,7 +94,6 @@ typedef enum body_type {
 typedef struct aster_aux {
     body_type_e body_type;
 } aster_aux_t;
-
 
 typedef struct menu_keypress_aux {
     scene_t *scene;
@@ -145,41 +147,41 @@ void on_key_game(char key, key_event_type_t type, double held_time, game_keypres
  * Background Stuff
  ********************/
 
- /**
+/**
   * Handles looping of the background sars. When the yhit the bound below the
   * bottom of the screen they teleport back to the top.
   */
- void create_star_collision_force(body_t *star, body_t *bound, vector_t axis, void *aux) {
-     body_set_centroid(star, vec_add(body_get_centroid(star), vec(0, SDL_MAX.y + 8 * STAR_RADIUS_MAX)));
- }
+void create_star_collision_force(body_t *star, body_t *bound, vector_t axis, void *aux) {
+    body_set_centroid(star, vec_add(body_get_centroid(star), vec(0, SDL_MAX.y + 8 * STAR_RADIUS_MAX)));
+}
 
- void create_star_collision(scene_t *scene, body_t *star, body_t *bound) {
-     create_collision(scene, star, bound, create_star_collision_force, NULL, free);
- }
+void create_star_collision(scene_t *scene, body_t *star, body_t *bound) {
+    create_collision(scene, star, bound, create_star_collision_force, NULL, free);
+}
 
- /**
+/**
   * Creates all of the background stars and adds them to the scene. It is
   * important that this is called before any other bodies are added to the
   * scene so the stars go in the background.
   */
 void create_background_stars(scene_t *scene, body_t *bound) {
-    for(int i = 0; i < NUM_STARS; i++) {
+    for (int i = 0; i < NUM_STARS; i++) {
         double r = drand_range(STAR_RADIUS_MIN, STAR_RADIUS_MAX);
-        size_t degree = (size_t) irand_range(STAR_POINTS_MIN, STAR_POINTS_MAX);
+        size_t degree = (size_t)irand_range(STAR_POINTS_MIN, STAR_POINTS_MAX);
         vector_t center = rand_vec(SDL_MIN, SDL_MAX);
-        list_t *shape = polygon_star(center, r, r/2, degree);
+        list_t *shape = polygon_star(center, r, r / 2, degree);
         body_t *star = body_init(shape, 0, STAR_COLOR);
 
         // Gives the star one of two velocities to create the illusion of
         // parallax.
-        int which_velocity = irand_range(1,2);
+        int which_velocity = irand_range(1, 2);
         switch (which_velocity) {
-            case 1:
-                body_set_velocity(star, STAR_VELOCITY_1);
-                break;
-            case 2:
-                body_set_velocity(star, STAR_VELOCITY_2);
-                break;
+        case 1:
+            body_set_velocity(star, STAR_VELOCITY_1);
+            break;
+        case 2:
+            body_set_velocity(star, STAR_VELOCITY_2);
+            break;
         }
         create_star_collision(scene, star, bound);
 
@@ -190,23 +192,22 @@ void create_background_stars(scene_t *scene, body_t *bound) {
 /********************
  * ASTEROID GENERATION
  ********************/
- void create_destructive_collision_force_single(body_t *body1, body_t *body_immortal, vector_t axis, void *aux) {
-     body_remove(body1);
- }
+void create_destructive_collision_force_single(body_t *body1, body_t *body_immortal, vector_t axis, void *aux) {
+    body_remove(body1);
+}
 
- void create_destructive_collision_single(scene_t *scene, body_t *body1, body_t *body_immortal) {
-     create_collision(scene, body1, body_immortal, create_destructive_collision_force_single, NULL, NULL);
- }
+void create_destructive_collision_single(scene_t *scene, body_t *body1, body_t *body_immortal) {
+    create_collision(scene, body1, body_immortal, create_destructive_collision_force_single, NULL, NULL);
+}
 
- void create_special_collision_force(body_t *ast, body_t *player, vector_t axis, void *aux) {
-     body_remove(ast);
-     // Bruno, do what you want to here
- }
+void create_special_collision_force(body_t *ast, body_t *player, vector_t axis, void *aux) {
+    body_remove(ast);
+    // Bruno, do what you want to here
+}
 
- void create_special_collision(scene_t *scene, body_t *ast, body_t *player) {
-     create_collision(scene, ast, player, create_destructive_collision_force_single, NULL, NULL);
- }
-
+void create_special_collision(scene_t *scene, body_t *ast, body_t *player) {
+    create_collision(scene, ast, player, create_destructive_collision_force_single, NULL, NULL);
+}
 
 void spawn_asteroid(
     scene_t *scene,
@@ -217,7 +218,7 @@ void spawn_asteroid(
     //random later
     size_t num_sides = 5;
     double ast_radius = ASTEROID_RADIUS_MIN;
-    vector_t ast_center = vec(0,SDL_MAX.y);
+    vector_t ast_center = vec(0, SDL_MAX.y);
     vector_t ast_velocity = vec(ASTEROID_SPEED, -ASTEROID_SPEED);
 
     aster_aux_t *asteroid_aux = malloc(sizeof(aster_aux_t));
@@ -228,14 +229,13 @@ void spawn_asteroid(
     body_set_velocity(asteroid, ast_velocity);
 
     scene_add_body(scene, asteroid);
-    for(size_t i = 0; i < scene_bodies(scene) - 1; i++) {
+    for (size_t i = 0; i < scene_bodies(scene) - 1; i++) {
         body_t *other_body = scene_get_body(scene, i);
         aster_aux_t *other_aux = body_get_info(other_body);
-        if(other_aux != NULL){
+        if (other_aux != NULL) {
             if (other_aux->body_type == BULLET) {
                 create_destructive_collision(scene, asteroid, other_body);
-            }
-            else if(other_aux->body_type == PLAYER){
+            } else if (other_aux->body_type == PLAYER) {
                 create_special_collision(scene, asteroid, other_body);
             }
         }
@@ -275,11 +275,11 @@ int main() {
 }
 
 void print_bits(unsigned int num) {
-   for(int bit=0 ;bit < (sizeof(unsigned int) * 2); bit++) {
-      printf("%i ", num & 0x01);
-      num = num >> 1;
-   }
-   printf("\n");
+    for (int bit = 0; bit < (sizeof(unsigned int) * 2); bit++) {
+        printf("%i ", num & 0x01);
+        num = num >> 1;
+    }
+    printf("\n");
 }
 
 void menu_loop() {
@@ -328,6 +328,34 @@ void menu_loop() {
     }
 }
 
+void velocity_handle(body_t *body, size_t key_down) {
+    vector_t dv = VEC_ZERO;
+    if (get_nth_bit(key_down, LEFT_ARROW)) {
+        dv.x -= 1;
+    }
+    if (get_nth_bit(key_down, RIGHT_ARROW)) {
+        dv.x += 1;
+    }
+    if (get_nth_bit(key_down, DOWN_ARROW)) {
+        dv.y -= 1;
+    }
+    if (get_nth_bit(key_down, UP_ARROW)) {
+        dv.y += 1;
+    }
+
+    vector_t bvel = body_get_velocity(body);
+
+    if (dv.x != 0.0 || dv.y != 0.0) {
+        dv = vec_normalize(dv);
+        body_set_acceleration(body, vec_multiply(PLAYER_ACCELERATION, dv));
+    } else {
+        body_set_acceleration(body, vec_multiply(PLAYER_SPACE_FRICTION, vec_negate(bvel)));
+    }
+    if (vec_norm(bvel) > PLAYER_VELOCITY) {
+        body_set_velocity(body, vec_multiply(PLAYER_VELOCITY, vec_normalize(bvel)));
+    }
+}
+
 void game_loop() {
     scene_t *scene = scene_init();
 
@@ -349,19 +377,17 @@ void game_loop() {
     body_t *star_bound = body_init(polygon_rect(vec(SDL_MIN.x, SDL_MIN.y - 6 * STAR_RADIUS_MAX), SDL_MAX.x, 2 * STAR_RADIUS_MAX), INFINITY, COLOR_BLACK);
     create_background_stars(scene, star_bound);
 
-    body_t *body = body_init(polygon_star(vec(500, 500), 100, 50, 5), 50, COLOR_WHITE);
-    scene_add_body(scene, body);
+    body_t *player = body_init_player();
+    body_set_manual_acceleration(player, true);
+    scene_add_body(scene, player);
 
     spawn_asteroid(scene, left_bound, right_bound, top_bound, bottom_bound);
 
     game_keypress_aux_t *game_keypress_aux = malloc(sizeof(game_keypress_aux_t));
     game_keypress_aux->scene = scene;
-    game_keypress_aux->player = body; // temporary
+    game_keypress_aux->player = player;
     game_keypress_aux->key_down = 0;
-    game_keypress_aux->window = MENU;
-
-    body_t *player = body_init_player();
-    scene_add_body(scene, player);
+    game_keypress_aux->window = GAME;
 
     size_t frame = 0;
 
@@ -369,9 +395,10 @@ void game_loop() {
         double dt = time_since_last_tick();
 
         if (frame % DEBUG_PRINT_RATE == 0) {
-            // printf("window: %s\n", keypress_aux->window == MENU ? "menu" : "game");
             // print_bits(game_keypress_aux->key_down);
         }
+
+        velocity_handle(player, game_keypress_aux->key_down);
 
         scene_tick(scene, dt);
         sdl_render_scene_black(scene);

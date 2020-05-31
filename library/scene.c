@@ -102,9 +102,10 @@ void scene_add_bodies_force_creator(
 void scene_tick(scene_t *scene, double dt) {
     // If the force management is automatically done, then set the acceleration
     // to zero if there is no force creation.
-    if (list_size(scene->force_creators) != 0) {
-        for (size_t i = 0; i < scene_bodies(scene); i++) {
-            body_set_acceleration(scene_get_body(scene, i), VEC_ZERO);
+    for (size_t i = 0; i < scene_bodies(scene); i++) {
+        body_t *body = scene_get_body(scene, i);
+        if (!body_get_manual_acceleration(body)) {
+            body_set_acceleration(body, VEC_ZERO);
         }
     }
     for (size_t i = 0; i < list_size(scene->force_creators); i++) {
@@ -129,11 +130,9 @@ void scene_tick(scene_t *scene, double dt) {
                         i--;
                     }
                 }
-
             }
         } else {
             body_tick(body, dt);
         }
     }
-
 }
