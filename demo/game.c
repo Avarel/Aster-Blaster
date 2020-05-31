@@ -58,9 +58,11 @@ char MENU_GAME_START_TEXT[] = "Press space to begin!\0";
 #define PLAYER_SPACE_FRICTION 10.0
 
 // Asteroid settings
+#define ASTEROID_SIDES_MIN 5
+#define ASTEROID_SIDES_MAX 10
 #define ASTEROID_SPEED 100
-#define ASTEROID_RADIUS_MIN 30
-#define ASTEROID_RADIUS_MAX 70
+#define ASTEROID_RADIUS_MIN 30.0
+#define ASTEROID_RADIUS_MAX 70.0
 #define ASTEROID_COLOR ((rgb_color_t){0.8, 0.8, 0.8})
 //1 in 3 chance of asteroid spawning every 0.5 seconds
 #define ASTEROID_SPAWN_CHANCE 3
@@ -219,9 +221,9 @@ void spawn_asteroid(
     body_t *top_bound,
     body_t *bottom_bound) {
     //random later
-    size_t num_sides = 5;
-    double ast_radius = ASTEROID_RADIUS_MIN;
-    vector_t ast_center = vec(0, SDL_MAX.y);
+    size_t num_sides = irand_range(ASTEROID_SIDES_MIN, ASTEROID_SIDES_MAX);
+    double ast_radius = drand_range(ASTEROID_RADIUS_MIN, ASTEROID_RADIUS_MAX);
+    vector_t ast_center = vec(0, SDL_MAX.y + ast_radius);
     vector_t ast_velocity = vec(ASTEROID_SPEED, -ASTEROID_SPEED);
 
     aster_aux_t *asteroid_aux = malloc(sizeof(aster_aux_t));
@@ -383,6 +385,7 @@ void game_loop() {
     body_t *player = body_init_player();
     body_set_manual_acceleration(player, true);
     scene_add_body(scene, player);
+
     spawn_asteroid(scene, left_bound, right_bound, top_bound, bottom_bound);
 
     game_keypress_aux_t *game_keypress_aux = malloc(sizeof(game_keypress_aux_t));
