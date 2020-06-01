@@ -77,6 +77,17 @@ char MENU_GAME_START_TEXT[] = "Press space to begin!\0";
 #define STAR_VELOCITY_2 ((vector_t){.x = 0, .y = -0.15 * SDL_MAX.y})
 #define STAR_COLOR ((rgb_color_t){1.0, 1.0, 1.0})
 
+// Health bar settings
+#define HEALTH_BAR_BACKGROUND_POS ((vector_t){.x = 0.0125 * SDL_MAX.y, .y = 0.0125 * SDL_MAX.y})
+#define HEALTH_BAR_BACKGROUND_W (0.25 * SDL_MAX.x)
+#define HEALTH_BAR_BACKGROUND_H (0.075 * SDL_MAX.y)
+#define HEALTH_BAR_BACKGROUND_COLOR ((rgb_color_t){1.0, 1.0, 1.0})
+#define HEALTH_BAR_PADDING 5
+#define HEALTH_BAR_POS ((vector_t){.x = HEALTH_BAR_BACKGROUND_POS.x + HEALTH_BAR_PADDING, .y = HEALTH_BAR_BACKGROUND_POS.y + HEALTH_BAR_PADDING})
+#define HEALTH_BAR_W (HEALTH_BAR_BACKGROUND_W - 2 * HEALTH_BAR_PADDING)
+#define HEALTH_BAR_H (HEALTH_BAR_BACKGROUND_H - 2 * HEALTH_BAR_PADDING)
+#define HEALTH_BAR_COLOR ((rgb_color_t){1.0, 0.25, 0.25})
+
 #define DEBUG_PRINT_RATE 200
 
 /********************
@@ -273,6 +284,21 @@ body_t *body_init_player() {
 }
 
 /********************
+ * BODY INITS
+ ********************/
+body_t *body_health_bar_background_init() {
+    list_t *shape = polygon_rect(HEALTH_BAR_BACKGROUND_POS, HEALTH_BAR_BACKGROUND_W, HEALTH_BAR_BACKGROUND_H);
+    body_t *health_bar_background = body_init(shape, 0, HEALTH_BAR_BACKGROUND_COLOR);
+    return health_bar_background;
+}
+
+body_t *body_health_bar_init() {
+    list_t *shape = polygon_rect(HEALTH_BAR_POS, HEALTH_BAR_W, HEALTH_BAR_H);
+    body_t *health_bar_background = body_init(shape, 0, HEALTH_BAR_COLOR);
+    return health_bar_background;
+}
+
+/********************
  * GAME LOOPS
  ********************/
 void menu_loop();
@@ -281,14 +307,10 @@ void control_loop(); // TODO: later
 
 int main() {
     sdl_init(SDL_MIN, SDL_MAX);
-    //char *font_path_ptr = malloc(sizeof(char) * 17);
-    //strcpy(font_path_ptr, FONT_PATH_ASTER_BLASTER);
     sdl_set_font(&FONT_PATH_ASTER_BLASTER[0]);
-    //sdl_set_font(font_path_ptr);
     init_random();
 
     menu_loop();
-    //free (font_path_ptr);
 }
 
 void print_bits(unsigned int num) {
@@ -405,6 +427,13 @@ void game_loop() {
     game_keypress_aux->player = player;
     game_keypress_aux->key_down = 0;
     game_keypress_aux->window = GAME;
+
+    // health bar
+    body_t *health_bar_background = body_health_bar_background_init();
+    body_t *health_bar = body_health_bar_init();
+
+    scene_add_body(scene, health_bar_background);
+    scene_add_body(scene, health_bar);
 
     size_t frame = 0;
     double ast_time = 0;

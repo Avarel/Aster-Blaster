@@ -106,6 +106,10 @@ list_t *body_get_shape(body_t *body) {
     return list_clone(body->shape, (clone_func_t)vec_clone);
 }
 
+list_t *body_get_shape_ptr(body_t *body) {
+    return body->shape;
+}
+
 vector_t body_get_centroid(body_t *body) {
     return body->centroid;
 }

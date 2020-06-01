@@ -69,6 +69,16 @@ void body_add_decal(body_t *body, body_t *decal);
 list_t *body_get_shape(body_t *body);
 
 /**
+ * Gets the pointer to the current shape of a body.
+ * Don't free this one!!
+ * Assumes the caller knows what they are doing.
+ *
+ * @param body a pointer to a body returned from body_init()
+ * @return the actual pointer to the polygon
+ */
+list_t *body_get_shape_ptr(body_t *body);
+
+/**
  * Gets the current center of mass of a body.
  * While this could be calculated with polygon_centroid(), that becomes too slow
  * when this function is called thousands of times every tick.
