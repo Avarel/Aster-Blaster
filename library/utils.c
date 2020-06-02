@@ -12,8 +12,12 @@ vector_t *list_get_vector(list_t *list, size_t index) {
     return (vector_t *)list_get(list, index);
 }
 
-void print_vec(char label[], vector_t vec) {
-    printf("%s: (%+4.0f, %+4.0f)\n", label, vec.x, vec.y);
+const vector_t *list_borrow_vector(const list_t *list, size_t index) {
+    return (const vector_t *)list_borrow(list, index);
+}
+
+vector_t list_copy_vector(const list_t *list, size_t index) {
+    return *list_borrow_vector(list, index);
 }
 
 double modulo(double n, double m) {

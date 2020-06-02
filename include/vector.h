@@ -169,6 +169,6 @@ double vec_norm(vector_t vec);
  * @param vec the vector pointer
  * @return a pointer to an identical value to the supplied vector
  */
-vector_t *vec_clone(vector_t *vec);
+vector_t *vec_clone(const vector_t *vec);
 
 #endif // #ifndef __VECTOR_H__

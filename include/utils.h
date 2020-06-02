@@ -35,6 +35,10 @@
 
 vector_t *list_get_vector(list_t *list, size_t index);
 
+const vector_t *list_borrow_vector(const list_t *list, size_t index);
+
+vector_t list_copy_vector(const list_t *list, size_t index);
+
 /**
  * Prints vector info to the console for the demo.
  *

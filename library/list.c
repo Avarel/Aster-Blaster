@@ -38,15 +38,20 @@ void list_free(list_t *list) {
     free(list);
 }
 
-size_t list_size(list_t *list) {
+size_t list_size(const list_t *list) {
     return list->size;
 }
 
-size_t list_capacity(list_t *list) {
+size_t list_capacity(const list_t *list) {
     return list->capacity;
 }
 
 void *list_get(list_t *list, size_t index) {
+    assert(index < list->size);
+    return list->data[index];
+}
+
+const void *list_borrow(const list_t *list, size_t index) {
     assert(index < list->size);
     return list->data[index];
 }
@@ -84,10 +89,10 @@ void *list_remove(list_t *list, size_t index) {
     return removed;
 }
 
-void *list_remove_item(list_t *list, void *ptr) {
+void *list_remove_item(list_t *list, const void *ptr) {
     size_t len = list_size(list);
     for (size_t i = 0; i < len; i++) {
-        if (list_get(list, i) == ptr) {
+        if (list_borrow(list, i) == ptr) {
             return list_remove(list, i);
         }
     }
@@ -103,22 +108,22 @@ void list_clear(list_t *list) {
     }
 }
 
-list_t *list_clone(list_t *list, clone_func_t copyr) {
+list_t *list_clone(const list_t *list, clone_func_t copyr) {
     size_t len = list_size(list);
     list_t *new = list_init(len, list->freer);
 
     for (size_t i = 0; i < len; i++) {
-        list_add(new, copyr(list_get(list, i)));
+        list_add(new, copyr(list_borrow(list, i)));
     }
 
     return new;
 }
 
-bool list_contains(list_t *list, void *ptr) {
+bool list_contains(const list_t *list, const void *ptr) {
     size_t len = list_size(list);
     
     for (size_t i = 0; i < len; i++) {
-        if (list_get(list, i) == ptr) {
+        if (list_borrow(list, i) == ptr) {
             return true;
         }
     }

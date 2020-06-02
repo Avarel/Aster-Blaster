@@ -72,6 +72,6 @@ double vec_norm(vector_t vec) {
     return sqrt(vec.x*vec.x + vec.y*vec.y);
 }
 
-vector_t *vec_clone(vector_t *v) {
+vector_t *vec_clone(const vector_t *v) {
     return vec_alloc(*v);
 }

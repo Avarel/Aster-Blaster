@@ -14,7 +14,7 @@
  * each pair of consecutive vertices, plus one between the first and last.
  * @return the area of the polygon
  */
-double polygon_area(list_t *polygon);
+double polygon_area(const list_t *polygon);
 
 /**
  * Computes the center of mass of a polygon.
@@ -25,7 +25,7 @@ double polygon_area(list_t *polygon);
  * each pair of consecutive vertices, plus one between the first and last.
  * @return the centroid of the polygon
  */
-vector_t polygon_centroid(list_t *polygon);
+vector_t polygon_centroid(const list_t *polygon);
 
 /**
  * Translates all vertices in a polygon by a given vector.

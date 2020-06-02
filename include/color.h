@@ -17,7 +17,6 @@ typedef struct rgb_color {
  */
 extern const rgb_color_t COLOR_BLACK;
 
-
 /**
  * The white color, i.e. (1, 1, 1).
  */

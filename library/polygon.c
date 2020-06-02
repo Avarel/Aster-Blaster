@@ -15,14 +15,14 @@
  * each pair of consecutive vertices, plus one between the first and last.
  * @return the signed area of the polygon
  */
-double polygon_shoelace(list_t *polygon) {
+double polygon_shoelace(const list_t *polygon) {
     double shoelace = 0;
     int size = list_size(polygon);
 
     for (int i = 0; i < size; i++) {
-        vector_t v1 = *list_get_vector(polygon, i);
+        vector_t v1 = list_copy_vector(polygon, i);
         // Ensures last point can connect with first point.
-        vector_t v2 = *list_get_vector(polygon, (i + 1) % size);
+        vector_t v2 = list_copy_vector(polygon, (i + 1) % size);
 
         shoelace += vec_cross(v1, v2);
     }
@@ -31,19 +31,19 @@ double polygon_shoelace(list_t *polygon) {
     return shoelace;
 }
 
-double polygon_area(list_t *polygon) {
+double polygon_area(const list_t *polygon) {
     return fabs(polygon_shoelace(polygon));
 }
 
-vector_t polygon_centroid(list_t *polygon) {
+vector_t polygon_centroid(const list_t *polygon) {
     double c_x = 0;
     double c_y = 0;
 
     size_t size = list_size(polygon);
     for (size_t i = 0; i < size; i++) {
-        vector_t v1 = *list_get_vector(polygon, i);
+        vector_t v1 = list_copy_vector(polygon, i);
         // Ensures last edge can connect with first edge.
-        vector_t v2 = *list_get_vector(polygon, (i + 1) % size);
+        vector_t v2 = list_copy_vector(polygon, (i + 1) % size);
 
         double cross = vec_cross(v1, v2);
         c_x += (v1.x + v2.x) * cross;

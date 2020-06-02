@@ -48,11 +48,11 @@ void scene_free(scene_t *scene) {
     free(scene);
 }
 
-size_t scene_bodies(scene_t *scene) {
+size_t scene_bodies(const scene_t *scene) {
     return list_size(scene->bodies);
 }
 
-size_t scene_text_boxes(scene_t *scene) {
+size_t scene_text_boxes(const scene_t *scene) {
     return list_size(scene->text_boxes);
 }
 
@@ -60,8 +60,16 @@ body_t *scene_get_body(scene_t *scene, size_t index) {
     return list_get(scene->bodies, index);
 }
 
+const body_t *scene_borrow_body(const scene_t *scene, size_t index) {
+    return list_borrow(scene->bodies, index);
+}
+
 text_box_t *scene_get_text_box(scene_t *scene, size_t index) {
     return list_get(scene->text_boxes, index);
+}
+
+const text_box_t *scene_borrow_text_box(const scene_t *scene, size_t index) {
+    return list_borrow(scene->text_boxes, index);
 }
 
 void scene_add_body(scene_t *scene, body_t *body) {

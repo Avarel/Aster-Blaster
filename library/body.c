@@ -102,39 +102,43 @@ void body_add_decal(body_t *body, body_t *decal) {
     list_add(body->decals, decal);
 }
 
-list_t *body_get_shape(body_t *body) {
+list_t *body_get_shape_cloned(const body_t *body) {
     return list_clone(body->shape, (clone_func_t)vec_clone);
 }
 
-list_t *body_get_shape_ptr(body_t *body) {
+list_t *body_get_shape(body_t *body) {
     return body->shape;
 }
 
-vector_t body_get_centroid(body_t *body) {
+const list_t *body_borrow_shape(const body_t *body) {
+    return body->shape;
+}
+
+vector_t body_get_centroid(const body_t *body) {
     return body->centroid;
 }
 
-vector_t body_get_velocity(body_t *body) {
+vector_t body_get_velocity(const body_t *body) {
     return body->velocity;
 }
 
-vector_t body_get_acceleration(body_t *body) {
+vector_t body_get_acceleration(const body_t *body) {
     return body->acceleration;
 }
 
-bool body_get_manual_acceleration(body_t *body) {
+bool body_get_manual_acceleration(const body_t *body) {
     return body->manual_acceleration;
 }
 
-double body_get_omega(body_t *body) {
+double body_get_omega(const body_t *body) {
     return body->omega;
 }
 
-double body_get_mass(body_t *body) {
+double body_get_mass(const body_t *body) {
     return body->mass;
 }
 
-rgb_color_t body_get_color(body_t *body) {
+rgb_color_t body_get_color(const body_t *body) {
     return body->color;
 }
 
@@ -209,6 +213,6 @@ void body_remove(body_t *body) {
     }
 }
 
-bool body_is_removed(body_t *body) {
+bool body_is_removed(const body_t *body) {
     return body->destroy;
 }

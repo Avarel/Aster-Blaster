@@ -66,17 +66,27 @@ void body_add_decal(body_t *body, body_t *decal);
  * @param body a pointer to a body returned from body_init()
  * @return the polygon describing the body's current position
  */
-list_t *body_get_shape(body_t *body);
+list_t *body_get_shape_cloned(const body_t *body);
 
 /**
  * Gets the pointer to the current shape of a body.
- * Don't free this one!!
+ * Don't free this one!
+ * 
+ * @param body a pointer to a body returned from body_init()
+ * @return the polygon describing the body's current position
+ */
+list_t *body_get_shape(body_t *body);
+
+/**
+ * Gets the pointer to the current shape of a body, which should
+ * not be mtuated.
+ * Don't free this one!
  * Assumes the caller knows what they are doing.
  *
  * @param body a pointer to a body returned from body_init()
  * @return the actual pointer to the polygon
  */
-list_t *body_get_shape_ptr(body_t *body);
+const list_t *body_borrow_shape(const body_t *body);
 
 /**
  * Gets the current center of mass of a body.
@@ -87,7 +97,7 @@ list_t *body_get_shape_ptr(body_t *body);
  * @param body a pointer to a body returned from body_init()
  * @return the body's center of mass
  */
-vector_t body_get_centroid(body_t *body);
+vector_t body_get_centroid(const body_t *body);
 
 /**
  * Gets the current velocity of a body.
@@ -95,7 +105,7 @@ vector_t body_get_centroid(body_t *body);
  * @param body a pointer to a body returned from body_init()
  * @return the body's velocity vector
  */
-vector_t body_get_velocity(body_t *body);
+vector_t body_get_velocity(const body_t *body);
 
 /**
  * Gets the current acceleration of a body.
@@ -103,7 +113,7 @@ vector_t body_get_velocity(body_t *body);
  * @param body a pointer to a body returned from body_init()
  * @return the body's acceleration vector
  */
-vector_t body_get_acceleration(body_t *body);
+vector_t body_get_acceleration(const body_t *body);
 
 /**
  * Gets the current angular velocity of a body.
@@ -111,7 +121,7 @@ vector_t body_get_acceleration(body_t *body);
  * @param body a pointer to a body returned from body_init()
  * @return the body's angular velocity
  */
-double body_get_omega(body_t *body);
+double body_get_omega(const body_t *body);
 
 /**
  * Gets the mass of a body.
@@ -119,7 +129,7 @@ double body_get_omega(body_t *body);
  * @param body a pointer to a body returned from body_init()
  * @return the mass passed to body_init(), which must be greater than 0
  */
-double body_get_mass(body_t *body);
+double body_get_mass(const body_t *body);
 
 /**
  * Gets the display color of a body.
@@ -127,7 +137,7 @@ double body_get_mass(body_t *body);
  * @param body a pointer to a body returned from body_init()
  * @return the color passed to body_init(), as an (R, G, B) tuple
  */
-rgb_color_t body_get_color(body_t *body);
+rgb_color_t body_get_color(const body_t *body);
 
 /**
  * Gets the information associated with a body.
@@ -242,11 +252,9 @@ void body_remove(body_t *body);
  * @param body the body to check
  * @return whether body_remove() has been called on the body
  */
-bool body_is_removed(body_t *body);
+bool body_is_removed(const body_t *body);
 
-list_t *body_prev_tick_colliding(body_t *body);
-
-bool body_get_manual_acceleration(body_t *body);
+bool body_get_manual_acceleration(const body_t *body);
 
 void body_set_manual_acceleration(body_t *body, bool f);
 

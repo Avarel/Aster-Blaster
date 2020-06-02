@@ -101,7 +101,6 @@ typedef struct collision_aux {
     collision_handler_t handler;
     void *aux;
     free_func_t freer;
-    bool prev_tick_collided;
 } collision_aux_t;
 
 
@@ -113,22 +112,13 @@ void collision_aux_free(collision_aux_t *ptr) {
 }
 
 void collision_handle(collision_aux_t *aux) {
-    list_t *shape1 = body_get_shape(aux->body1);
-    list_t *shape2 = body_get_shape(aux->body2);
+    const list_t *shape1 = body_borrow_shape(aux->body1);
+    const list_t *shape2 = body_borrow_shape(aux->body2);
 
-    // printf("test\n");
     collision_info_t info = find_collision(shape1, shape2);
     if (info.collided) {
-        // if (!aux->prev_tick_collided) {
             aux->handler(aux->body1, aux->body2, info.axis, aux->aux);
-        // }
-        // aux->prev_tick_collided = true;
-    } else {
-        // aux->prev_tick_collided = false;
     }
-
-    list_free(shape1);
-    list_free(shape2);
 }
 
 void create_collision(

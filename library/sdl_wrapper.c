@@ -7,6 +7,7 @@
 #include <SDL2/SDL_ttf.h>
 #include "sdl_wrapper.h"
 #include "text_box.h"
+#include "utils.h"
 
 const char WINDOW_TITLE[] = "Aster Blaster";
 const int WINDOW_WIDTH = 1200;
@@ -164,11 +165,11 @@ void sdl_clear(void) {
 }
 
 void sdl_clear_black(void) {
-     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
-     SDL_RenderClear(renderer);
- }
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
+    SDL_RenderClear(renderer);
+}
 
-void sdl_draw_polygon(list_t *points, rgb_color_t color) {
+void sdl_draw_polygon(const list_t *points, rgb_color_t color) {
     // Check parameters
     size_t n = list_size(points);
     assert(n >= 3);
@@ -184,8 +185,8 @@ void sdl_draw_polygon(list_t *points, rgb_color_t color) {
     assert(x_points != NULL);
     assert(y_points != NULL);
     for (size_t i = 0; i < n; i++) {
-        vector_t *vertex = list_get(points, i);
-        vector_t pixel = get_window_position(*vertex, window_center);
+        vector_t vertex = list_copy_vector(points, i);
+        vector_t pixel = get_window_position(vertex, window_center);
         x_points[i] = pixel.x;
         y_points[i] = pixel.y;
     }
@@ -219,7 +220,7 @@ void sdl_show(void) {
     SDL_RenderPresent(renderer);
 }
 
-int sdl_render_text(text_box_t *text_box) {
+int sdl_render_text(const text_box_t *text_box) {
     TTF_Font *font = TTF_OpenFont(FONT_PATH, text_box_get_font_size(text_box));
     if (!font) {
         printf("Unable to load font: '%s'!\n"
@@ -232,7 +233,7 @@ int sdl_render_text(text_box_t *text_box) {
     SDL_Texture *text = NULL;
     SDL_Rect textRect;
 
-    SDL_Surface *textSurface = TTF_RenderText_Shaded(font, text_box_get_text(text_box), textColor, textBackgroundColor);
+    SDL_Surface *textSurface = TTF_RenderText_Shaded(font, text_box_borrow_text(text_box), textColor, textBackgroundColor);
     if (!textSurface) {
         printf("Unable to render text surface!\n"
                "SDL2_ttf Error: %s\n", TTF_GetError());
@@ -276,35 +277,33 @@ int sdl_render_text(text_box_t *text_box) {
     return 1;
 }
 
-void sdl_render_scene(scene_t *scene) {
+void sdl_render_scene(const scene_t *scene) {
     sdl_clear();
     size_t body_count = scene_bodies(scene);
     for (size_t i = 0; i < body_count; i++) {
-        body_t *body = scene_get_body(scene, i);
-        list_t *shape = body_get_shape(body);
+        const body_t *body = scene_borrow_body(scene, i);
+        const list_t *shape = body_borrow_shape(body);
         sdl_draw_polygon(shape, body_get_color(body));
-        list_free(shape);
     }
     size_t text_box_count = scene_text_boxes(scene);
     for (size_t i = 0; i < text_box_count; i++) {
-        sdl_render_text(scene_get_text_box(scene, i));
+        sdl_render_text(scene_borrow_text_box(scene, i));
     }
     sdl_show();
 }
 
 // TODO: more of a temporay solution, as it reuses a ton of code.
-void sdl_render_scene_black(scene_t *scene) {
+void sdl_render_scene_black(const scene_t *scene) {
     sdl_clear_black();
     size_t body_count = scene_bodies(scene);
     for (size_t i = 0; i < body_count; i++) {
-        body_t *body = scene_get_body(scene, i);
-        list_t *shape = body_get_shape(body);
+        const body_t *body = scene_borrow_body(scene, i);
+        const list_t *shape = body_borrow_shape(body);
         sdl_draw_polygon(shape, body_get_color(body));
-        list_free(shape);
     }
     size_t text_box_count = scene_text_boxes(scene);
     for (size_t i = 0; i < text_box_count; i++) {
-        sdl_render_text(scene_get_text_box(scene, i));
+        sdl_render_text(scene_borrow_text_box(scene, i));
     }
     sdl_show();
 }

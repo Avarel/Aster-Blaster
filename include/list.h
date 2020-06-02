@@ -21,7 +21,7 @@ typedef void (*free_func_t)(void *);
  * A function that is called on list elements to clone their contents.
  * Examples: vec_clone
  */
-typedef void *(*clone_func_t)(void *);
+typedef void *(*clone_func_t)(const void *);
 
 /**
  * Allocates memory for a new list with space for the given number of elements.
@@ -49,7 +49,7 @@ void list_free(list_t *list);
  * @param list a pointer to a list returned from list_init()
  * @return the number of elements in the list
  */
-size_t list_size(list_t *list);
+size_t list_size(const list_t *list);
 
 /**
  * Gets the capacity of a list (the number of elements the list
@@ -58,7 +58,7 @@ size_t list_size(list_t *list);
  * @param list a pointer to a list returned from list_init()
  * @return the capacity of the list
  */
-size_t list_capacity(list_t *list);
+size_t list_capacity(const list_t *list);
 
 /**
  * Gets the element at a given index in a list.
@@ -69,6 +69,17 @@ size_t list_capacity(list_t *list);
  * @return the element at the given index, as a void*
  */
 void *list_get(list_t *list, size_t index);
+
+/**
+ * Borrows the element at a given index in a list, 
+ * returning a pointer that should not be used for mutation.
+ * Asserts that the index is valid, given the list's current size.
+ *
+ * @param list a pointer to a list returned from list_init()
+ * @param index an index in the list (the first element is at 0)
+ * @return the element at the given index, as a void*
+ */
+const void *list_borrow(const list_t *list, size_t index);
 
 /**
  * Removes the element at a given index in a list and returns it,
@@ -86,7 +97,7 @@ void *list_remove(list_t *list, size_t index);
  *
  * @param list a pointer to a list returned from list_init()
  */
-void *list_remove_item(list_t *list, void *ptr);
+void *list_remove_item(list_t *list, const void *ptr);
 
 /**
  * Appends an element to the end of a list.
@@ -114,7 +125,7 @@ void list_clear(list_t *list);
  * @param list a pointer to a list returned from list_init()
  * @return a pointer to the newly allocated list
  */
-list_t *list_clone(list_t *list, clone_func_t copyr);
+list_t *list_clone(const list_t *list, clone_func_t copyr);
 
 /**
  * Returns true if the pointer is contained in the list.
@@ -122,6 +133,6 @@ list_t *list_clone(list_t *list, clone_func_t copyr);
  * @param list a pointer to a list returned from list_init()
  * @return true if the pointer is contained in the list
  */
-bool list_contains(list_t *list, void *ptr);
+bool list_contains(const list_t *list, const void *ptr);
 
 #endif // #ifndef __LIST_H__

@@ -81,7 +81,7 @@ void sdl_clear_black(void);
  * @param points the list of vertices of the polygon
  * @param color the color used to fill in the polygon
  */
-void sdl_draw_polygon(list_t *points, rgb_color_t color);
+void sdl_draw_polygon(const list_t *points, rgb_color_t color);
 
 /**
  * Displays the rendered frame on the SDL window.
@@ -96,7 +96,7 @@ void sdl_show(void);
  *
  * @param scene the scene to draw
  */
-void sdl_render_scene(scene_t *scene);
+void sdl_render_scene(const scene_t *scene);
 
 /**
  * Draws all bodies in a scene with a black background.
@@ -105,7 +105,7 @@ void sdl_render_scene(scene_t *scene);
  *
  * @param scene the scene to draw
  */
-void sdl_render_scene_black(scene_t *scene);
+void sdl_render_scene_black(const scene_t *scene);
 
 /**
  * Registers a function to be called every time a key is pressed.

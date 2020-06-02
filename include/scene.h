@@ -42,7 +42,7 @@ void scene_free(scene_t *scene);
  * @param scene a pointer to a scene returned from scene_init()
  * @return the number of bodies added with scene_add_body()
  */
-size_t scene_bodies(scene_t *scene);
+size_t scene_bodies(const scene_t *scene);
 
 /**
  * Gets the number of text_boxes in a given scene.
@@ -50,7 +50,7 @@ size_t scene_bodies(scene_t *scene);
  * @param scene a pointer to a scene returned from scene_init()
  * @return the number of text_bodies added with scene_add_text_box()
  */
-size_t scene_text_boxes(scene_t *scene);
+size_t scene_text_boxes(const scene_t *scene);
 
 /**
  * Gets the body at a given index in a scene.
@@ -63,6 +63,17 @@ size_t scene_text_boxes(scene_t *scene);
 body_t *scene_get_body(scene_t *scene, size_t index);
 
 /**
+ * Gets the body at a given index in a scene, returns a pointer
+ * that should not be used for mutation.
+ * Asserts that the index is valid.
+ *
+ * @param scene a pointer to a scene returned from scene_init()
+ * @param index the index of the body in the scene (starting at 0)
+ * @return a pointer to the body at the given index
+ */
+const body_t *scene_borrow_body(const scene_t *scene, size_t index);
+
+/**
  * Gets the text_box at a given index in a scene.
  * Asserts that the index is valid.
  *
@@ -71,6 +82,17 @@ body_t *scene_get_body(scene_t *scene, size_t index);
  * @return a pointer to the text_box at the given index
  */
 text_box_t *scene_get_text_box(scene_t *scene, size_t index);
+
+/**
+ * Gets the text_box at a given index in a scene, returns a pointer
+ * that should not be mutated.
+ * Asserts that the index is valid.
+ *
+ * @param scene a pointer to a scene returned from scene_init()
+ * @param index the index of the text_box in the scene (starting at 0)
+ * @return a pointer to the text_box at the given index
+ */
+const text_box_t *scene_borrow_text_box(const scene_t *scene, size_t index);
 
 /**
  * Adds a body to a scene.

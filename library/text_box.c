@@ -28,14 +28,18 @@ char *text_box_get_text(text_box_t *text_box) {
     return text_box->text;
 }
 
-size_t text_box_get_font_size(text_box_t *text_box) {
+const char *text_box_borrow_text(const text_box_t *text_box) {
+    return text_box->text;
+}
+
+size_t text_box_get_font_size(const text_box_t *text_box) {
     return text_box->font_size;
 }
 
-vector_t text_box_get_origin(text_box_t *text_box) {
+vector_t text_box_get_origin(const text_box_t *text_box) {
     return text_box->origin;
 }
 
-justification_e text_box_get_justification(text_box_t *text_box) {
+justification_e text_box_get_justification(const text_box_t *text_box) {
     return text_box->justification;
 }
