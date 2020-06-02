@@ -7,7 +7,7 @@ CC = clang
 # -fno-omit-frame-pointer allows stack traces to be generated
 #   (take CS 24 for a full explanation)
 # -fsanitize=address enables asan
-CFLAGS = -Iinclude -Wall -g -fno-omit-frame-pointer -fsanitize=address
+CFLAGS = -Iinclude -Wall -g -fno-omit-frame-pointer -fsanitize=address -O3
 # Compiler flag that links the program with the math library
 LIB_MATH = -lm
 # Compiler flags that link the program with the math and SDL libraries.
