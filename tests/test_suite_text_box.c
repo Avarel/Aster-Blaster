@@ -1,6 +1,6 @@
 #include <assert.h>
 #include <stdlib.h>
-#include "text_box.h"
+#include <stdbool.h>
 #include "test_util.h"
 
 int main(int argc, char *argv[]) {
