@@ -57,6 +57,12 @@ char MENU_GAME_START_TEXT[] = "Press space to begin!\0";
 #define PLAYER_ACCELERATION 3000
 #define PLAYER_SPACE_FRICTION 10.0
 
+// Player attack settings
+#define BULLET_VELOCITY ((vector_t){.x = 0, .y = 0.5 * SDL_MAX.y})
+#define BULLET_RADIUS 20
+#define BULLET_SIDES 30
+#define BULLET_COLOR ((rgb_color_t){1, 1, 0})
+
 // Asteroid settings
 #define ASTEROID_SIDES_MIN 5
 #define ASTEROID_SIDES_MAX 10
@@ -109,6 +115,10 @@ typedef enum body_type {
 typedef struct aster_aux {
     body_type_e body_type;
 } aster_aux_t;
+
+typedef struct bullet_aux {
+    body_type_e body_type;
+} bullet_aux_t;
 
 typedef struct menu_keypress_aux {
     scene_t *scene;
@@ -284,6 +294,24 @@ body_t *body_init_player() {
 }
 
 /********************
+ * BULLETS
+ ********************/
+
+body_t *body_init_bullet(body_t *player) {
+    bullet_aux_t *aux = malloc(sizeof(bullet_aux_t));
+    aux->body_type = BULLET;
+    list_t *bullet_shape = polygon_reg_ngon(vec_add(body_get_centroid(player), vec_y(PLAYER_RADIUS + BULLET_RADIUS)), BULLET_RADIUS, BULLET_SIDES);
+    body_t *bullet = body_init_with_info(bullet_shape, 0, BULLET_COLOR, aux, free);
+    return bullet;
+}
+
+void spawn_bullet(scene_t *scene, body_t *player, body_t *bound) {
+    body_t *bullet = body_init_bullet(player);
+    scene_add_body(scene, bullet);
+    create_destructive_collision_single(scene, bullet, bound);
+}
+
+/********************
  * BODY INITS
  ********************/
 body_t *body_health_bar_background_init() {
@@ -395,6 +423,12 @@ void velocity_handle(body_t *body, size_t key_down) {
     }
 }
 
+void shoot_handle(scene_t *scene, body_t *player, body_t *bound, size_t key_down) {
+    if (get_nth_bit(key_down, SPACE_BAR)) {
+        spawn_bullet(scene, player, bound);
+    }
+}
+
 void game_loop() {
     scene_t *scene = scene_init();
 
@@ -459,6 +493,7 @@ void game_loop() {
         }
 
         velocity_handle(player, game_keypress_aux->key_down);
+        shoot_handle(scene, player, top_bound, game_keypress_aux->key_down);
 
         scene_tick(scene, dt);
         sdl_render_scene_black(scene);
