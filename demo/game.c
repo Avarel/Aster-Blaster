@@ -58,11 +58,11 @@ char MENU_GAME_START_TEXT[] = "Press space to begin!\0";
 #define PLAYER_SPACE_FRICTION 10.0
 
 // Bullet settings
-#define BULLET_VELOCITY ((vector_t){.x = 0, .y = 0.5 * SDL_MAX.y})
+#define BULLET_VELOCITY ((vector_t){.x = 0, .y = SDL_MAX.y})
 #define BULLET_RADIUS 12
 #define BULLET_SIDES 30
 #define BULLET_COLOR ((rgb_color_t){1, 1, 0})
-#define BULLET_DELAY 0.1
+#define BULLET_DELAY 0.2
 
 // Asteroid settings
 #define ASTEROID_SIDES_MIN 5
