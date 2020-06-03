@@ -58,11 +58,11 @@ char MENU_GAME_START_TEXT[] = "Press space to begin!\0";
 #define PLAYER_SPACE_FRICTION 10.0
 
 // Bullet settings
-#define BULLET_VELOCITY ((vector_t){.x = 0, .y = SDL_MAX.y})
+#define BULLET_VELOCITY ((vector_t){.x = 0, .y = 2 * SDL_MAX.y})
 #define BULLET_RADIUS 12
 #define BULLET_SIDES 30
 #define BULLET_COLOR ((rgb_color_t){1, 1, 0})
-#define BULLET_DELAY 0.2
+#define BULLET_DELAY 0.15
 
 // Asteroid settings
 #define ASTEROID_SIDES_MIN 5
@@ -81,7 +81,8 @@ char MENU_GAME_START_TEXT[] = "Press space to begin!\0";
 #define STAR_POINTS_MIN 7
 #define STAR_POINTS_MAX 10
 #define STAR_VELOCITY_1 ((vector_t){.x = 0, .y = -0.1 * SDL_MAX.y})
-#define STAR_VELOCITY_2 ((vector_t){.x = 0, .y = -0.15 * SDL_MAX.y})
+#define STAR_VELOCITY_2 ((vector_t){.x = 0, .y = -0.2 * SDL_MAX.y})
+#define STAR_VELOCITY_3 ((vector_t){.x = 0, .y = -0.4 * SDL_MAX.y})
 #define STAR_COLOR ((rgb_color_t){1.0, 1.0, 1.0})
 
 // Health bar settings
@@ -198,15 +199,18 @@ void create_background_stars(scene_t *scene, body_t *bound) {
         list_t *shape = polygon_star(center, r, r / 2, degree);
         body_t *star = body_init(shape, 0, STAR_COLOR);
 
-        // Gives the star one of two velocities to create the illusion of
+        // Gives the star one of three velocities to create the illusion of
         // parallax.
-        int which_velocity = irand_range(1, 2);
+        int which_velocity = irand_range(1, 3);
         switch (which_velocity) {
         case 1:
             body_set_velocity(star, STAR_VELOCITY_1);
             break;
         case 2:
             body_set_velocity(star, STAR_VELOCITY_2);
+            break;
+        case 3:
+            body_set_velocity(star, STAR_VELOCITY_3);
             break;
         }
         create_star_collision(scene, star, bound);
@@ -301,7 +305,7 @@ body_t *body_init_player() {
 body_t *body_init_bullet(body_t *player) {
     bullet_aux_t *aux = malloc(sizeof(bullet_aux_t));
     aux->body_type = BULLET;
-    list_t *bullet_shape = polygon_reg_ngon(vec_add(body_get_centroid(player), vec_y(PLAYER_RADIUS + BULLET_RADIUS)), BULLET_RADIUS, BULLET_SIDES);
+    list_t *bullet_shape = polygon_reg_ngon(body_get_centroid(player), BULLET_RADIUS, BULLET_SIDES);
     body_t *bullet = body_init_with_info(bullet_shape, 0, BULLET_COLOR, aux, free);
     body_set_velocity(bullet, BULLET_VELOCITY);
     return bullet;
