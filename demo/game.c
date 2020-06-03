@@ -57,11 +57,12 @@ char MENU_GAME_START_TEXT[] = "Press space to begin!\0";
 #define PLAYER_ACCELERATION 3000
 #define PLAYER_SPACE_FRICTION 10.0
 
-// Player attack settings
+// Bullet settings
 #define BULLET_VELOCITY ((vector_t){.x = 0, .y = 0.5 * SDL_MAX.y})
-#define BULLET_RADIUS 20
+#define BULLET_RADIUS 12
 #define BULLET_SIDES 30
 #define BULLET_COLOR ((rgb_color_t){1, 1, 0})
+#define BULLET_DELAY 0.1
 
 // Asteroid settings
 #define ASTEROID_SIDES_MIN 5
@@ -302,6 +303,7 @@ body_t *body_init_bullet(body_t *player) {
     aux->body_type = BULLET;
     list_t *bullet_shape = polygon_reg_ngon(vec_add(body_get_centroid(player), vec_y(PLAYER_RADIUS + BULLET_RADIUS)), BULLET_RADIUS, BULLET_SIDES);
     body_t *bullet = body_init_with_info(bullet_shape, 0, BULLET_COLOR, aux, free);
+    body_set_velocity(bullet, BULLET_VELOCITY);
     return bullet;
 }
 
@@ -471,10 +473,12 @@ void game_loop() {
 
     size_t frame = 0;
     double ast_time = 0;
+    double bullet_time = 0; //time since last bulelt being fired
 
     while (!sdl_is_done(game_keypress_aux)) {
         double dt = time_since_last_tick();
         ast_time += dt;
+        bullet_time += dt;
 
         //ast_time completely resets when an asteroid spawns
         //and decreases by half when it's met without an asteroid spawning
@@ -493,7 +497,11 @@ void game_loop() {
         }
 
         velocity_handle(player, game_keypress_aux->key_down);
-        shoot_handle(scene, player, top_bound, game_keypress_aux->key_down);
+
+        if (bullet_time >= BULLET_DELAY) {
+            shoot_handle(scene, player, top_bound, game_keypress_aux->key_down);
+            bullet_time = 0;
+        }
 
         scene_tick(scene, dt);
         sdl_render_scene_black(scene);
