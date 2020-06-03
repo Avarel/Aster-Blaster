@@ -71,15 +71,15 @@ char MENU_GAME_START_TEXT[] = "Press space to begin!\0";
 #define ASTEROID_RADIUS_MIN 30.0
 #define ASTEROID_RADIUS_MAX 50.0
 #define ASTEROID_COLOR ((rgb_color_t){0.7, 0.7, 0.7})
-#define ASTEROID_SPAWN_CHANCE 3
+#define ASTEROID_SPAWN_CHANCE 0.33
 #define ASTEROID_SPAWN_RATE 0.5
 
 // Background settings
-#define NUM_STARS 150
-#define STAR_RADIUS_MIN 3
-#define STAR_RADIUS_MAX 8
-#define STAR_POINTS_MIN 7
-#define STAR_POINTS_MAX 10
+#define NUM_STARS 200
+#define STAR_RADIUS_MIN 1
+#define STAR_RADIUS_MAX 4
+#define STAR_POINTS_MIN 4
+#define STAR_POINTS_MAX 4
 #define STAR_VELOCITY_1 ((vector_t){.x = 0, .y = -0.1 * SDL_MAX.y})
 #define STAR_VELOCITY_2 ((vector_t){.x = 0, .y = -0.2 * SDL_MAX.y})
 #define STAR_VELOCITY_3 ((vector_t){.x = 0, .y = -0.4 * SDL_MAX.y})
@@ -118,10 +118,6 @@ typedef struct aster_aux {
     body_type_e body_type;
 } aster_aux_t;
 
-typedef struct bullet_aux {
-    body_type_e body_type;
-} bullet_aux_t;
-
 typedef struct menu_keypress_aux {
     scene_t *scene;
     size_t key_down;
@@ -142,9 +138,6 @@ void on_key_menu(char key, key_event_type_t type, double held_time, menu_keypres
         switch (key) {
         case SPACE_BAR:
             if (keypress_aux->window == MENU) {
-                // assumes specific text_box state
-                scene_remove_text_box(keypress_aux->scene, 1);
-                scene_remove_text_box(keypress_aux->scene, 0);
                 keypress_aux->window = GAME;
             }
             break;
@@ -196,7 +189,8 @@ void create_background_stars(scene_t *scene, body_t *bound) {
         double r = drand_range(STAR_RADIUS_MIN, STAR_RADIUS_MAX);
         size_t degree = (size_t)irand_range(STAR_POINTS_MIN, STAR_POINTS_MAX);
         vector_t center = rand_vec(SDL_MIN, SDL_MAX);
-        list_t *shape = polygon_star(center, r, r / 2, degree);
+        list_t *shape = polygon_reg_ngon(center, r, degree);
+        // list_t *shape = polygon_star(center, r, r / 2, degree);
         body_t *star = body_init(shape, 0, STAR_COLOR);
 
         // Gives the star one of three velocities to create the illusion of
@@ -223,6 +217,8 @@ void create_background_stars(scene_t *scene, body_t *bound) {
  * ASTEROID GENERATION
  ********************/
 void create_destructive_collision_force_single(body_t *body1, body_t *body_immortal, vector_t axis, void *aux) {
+    printf("OUCH!\n");
+    // healthbar stuff here
     body_remove(body1);
 }
 
@@ -232,11 +228,11 @@ void create_destructive_collision_single(scene_t *scene, body_t *body1, body_t *
 
 void create_special_collision_force(body_t *ast, body_t *player, vector_t axis, void *aux) {
     body_remove(ast);
-    // Bruno, do what you want to here
 }
 
-void create_special_collision(scene_t *scene, body_t *ast, body_t *player) {
+void create_aster_player_collision(scene_t *scene, body_t *ast, body_t *player) {
     create_collision(scene, ast, player, create_destructive_collision_force_single, NULL, NULL);
+    create_physics_collision(scene, 1.0, player, ast);
 }
 
 void spawn_asteroid(
@@ -255,20 +251,19 @@ void spawn_asteroid(
     //positive, so theta between 3*pi/2 and 2*pi
     //otherwise, theta between pi and 3*pi/2, so x velocity is negative
     double theta = 0;
-    double midpoint = (SDL_MAX.x - SDL_MIN.x)/2;
-    if(ast_x<midpoint){
-        theta = drand_range(3*M_PI/2, 2*M_PI);
+    double midpoint = (SDL_MAX.x - SDL_MIN.x) / 2;
+    if (ast_x < midpoint) {
+        theta = drand_range(3 * M_PI / 2, 2 * M_PI);
+    } else {
+        theta = drand_range(M_PI, 3 * M_PI / 2);
     }
-    else{
-        theta = drand_range(M_PI, 3*M_PI/2);
-    }
-    vector_t ast_velocity = vec(ASTEROID_SPEED*cos(theta), ASTEROID_SPEED*sin(theta));
+    vector_t ast_velocity = vec(ASTEROID_SPEED * cos(theta), ASTEROID_SPEED * sin(theta));
 
     aster_aux_t *asteroid_aux = malloc(sizeof(aster_aux_t));
     asteroid_aux->body_type = ASTEROID;
 
     list_t *aster_shape = polygon_reg_ngon(ast_center, ast_radius, num_sides);
-    body_t *asteroid = body_init_with_info(aster_shape, 0, ASTEROID_COLOR, asteroid_aux, free);
+    body_t *asteroid = body_init_with_info(aster_shape, 500, ASTEROID_COLOR, asteroid_aux, free);
     body_set_velocity(asteroid, ast_velocity);
 
     scene_add_body(scene, asteroid);
@@ -279,7 +274,7 @@ void spawn_asteroid(
             if (other_aux->body_type == BULLET) {
                 create_destructive_collision(scene, asteroid, other_body);
             } else if (other_aux->body_type == PLAYER) {
-                create_special_collision(scene, asteroid, other_body);
+                create_aster_player_collision(scene, asteroid, other_body);
             }
         }
     }
@@ -293,8 +288,11 @@ void spawn_asteroid(
  * PLAYER
  ********************/
 body_t *body_init_player() {
+    aster_aux_t *asteroid_aux = malloc(sizeof(aster_aux_t));
+    asteroid_aux->body_type = PLAYER;
+
     list_t *player_shape = polygon_ngon_sector(PLAYER_INIT_POS, PLAYER_RADIUS, PLAYER_SIDES, PLAYER_SECTOR_SIDES, PLAYER_ANGLE);
-    body_t *player = body_init(player_shape, PLAYER_MASS, PLAYER_COLOR);
+    body_t *player = body_init_with_info(player_shape, PLAYER_MASS, PLAYER_COLOR, asteroid_aux, free);
     return player;
 }
 
@@ -303,18 +301,30 @@ body_t *body_init_player() {
  ********************/
 
 body_t *body_init_bullet(body_t *player) {
-    bullet_aux_t *aux = malloc(sizeof(bullet_aux_t));
+    aster_aux_t *aux = malloc(sizeof(aster_aux_t));
     aux->body_type = BULLET;
-    list_t *bullet_shape = polygon_reg_ngon(body_get_centroid(player), BULLET_RADIUS, BULLET_SIDES);
-    body_t *bullet = body_init_with_info(bullet_shape, 0, BULLET_COLOR, aux, free);
+    list_t *bullet_shape = polygon_reg_ngon(body_get_centroid(player), BULLET_RADIUS, 3);
+    body_t *bullet = body_init_with_info(bullet_shape, 10, BULLET_COLOR, aux, free);
     body_set_velocity(bullet, BULLET_VELOCITY);
     return bullet;
 }
 
 void spawn_bullet(scene_t *scene, body_t *player, body_t *bound) {
     body_t *bullet = body_init_bullet(player);
-    scene_add_body(scene, bullet);
     create_destructive_collision_single(scene, bullet, bound);
+    scene_add_body(scene, bullet);
+
+    for (size_t i = 0; i < scene_bodies(scene) - 1; i++) {
+        body_t *other_body = scene_get_body(scene, i);
+        aster_aux_t *other_aux = body_get_info(other_body);
+        if (other_aux != NULL) {
+            if (other_aux->body_type == ASTEROID) {
+                // create_destructive_collision_single(scene, bullet, other_body);
+                // create_physics_collision(scene, 1.0, other_body, bullet);
+                create_destructive_collision(scene, other_body, bullet);
+            }
+        }
+    }
 }
 
 /********************
@@ -381,6 +391,9 @@ void menu_loop() {
         }
 
         if (menu_keypress_aux->window == GAME) {
+            // assumes specific text_box state
+            scene_remove_text_box(scene, 1);
+            scene_remove_text_box(scene, 0);
             to_game = true;
             break;
         }
@@ -401,7 +414,14 @@ void menu_loop() {
     }
 }
 
-void velocity_handle(body_t *body, size_t key_down) {
+void velocity_handle(
+    body_t *body,
+    size_t key_down,
+    body_t *left_bound,
+    body_t *right_bound,
+    body_t *top_bound,
+    body_t *bottom_bound) {
+    // handle movement
     vector_t dv = VEC_ZERO;
     if (get_nth_bit(key_down, LEFT_ARROW)) {
         dv.x -= 1;
@@ -417,7 +437,6 @@ void velocity_handle(body_t *body, size_t key_down) {
     }
 
     vector_t bvel = body_get_velocity(body);
-
     if (dv.x != 0.0 || dv.y != 0.0) {
         dv = vec_normalize(dv);
         body_set_acceleration(body, vec_multiply(PLAYER_ACCELERATION, dv));
@@ -427,11 +446,25 @@ void velocity_handle(body_t *body, size_t key_down) {
     if (vec_norm(bvel) > PLAYER_VELOCITY) {
         body_set_velocity(body, vec_multiply(PLAYER_VELOCITY, vec_normalize(bvel)));
     }
+
+    // enforce bounds
+    const list_t *shape = body_borrow_shape(body);
+    vector_t vel = body_get_velocity(body);
+    if ((find_collision(shape, body_borrow_shape(left_bound)).collided && vel.x < 0) ||
+        (find_collision(shape, body_borrow_shape(right_bound)).collided && vel.x > 0) ||
+        (find_collision(shape, body_borrow_shape(bottom_bound)).collided && vel.y < 0) ||
+        (find_collision(shape, body_borrow_shape(top_bound)).collided && vel.y > 0)) {
+        body_set_velocity(body, VEC_ZERO);
+        body_set_acceleration(body, VEC_ZERO);
+    }
 }
 
-void shoot_handle(scene_t *scene, body_t *player, body_t *bound, size_t key_down) {
+void shoot_handle(scene_t *scene, body_t *player, body_t *bound, double *bullet_time, size_t key_down) {
     if (get_nth_bit(key_down, SPACE_BAR)) {
-        spawn_bullet(scene, player, bound);
+        if (*bullet_time > BULLET_DELAY) {
+            spawn_bullet(scene, player, bound);
+            *bullet_time = 0;
+        }
     }
 }
 
@@ -441,7 +474,7 @@ void game_loop() {
     sdl_on_key((key_handler_t)on_key_game);
 
     // using ASTEROID_RADIUS for bounds because it's maximum size
-    body_t *top_bound = body_init(polygon_rect(vec(SDL_MIN.x, SDL_MAX.y + 2*ASTEROID_RADIUS_MAX), SDL_MAX.x, ASTEROID_RADIUS_MAX), INFINITY, COLOR_BLACK);
+    body_t *top_bound = body_init(polygon_rect(vec(SDL_MIN.x, SDL_MAX.y + 2 * ASTEROID_RADIUS_MAX), SDL_MAX.x, ASTEROID_RADIUS_MAX), INFINITY, COLOR_BLACK);
     body_t *bottom_bound = body_init(polygon_rect(vec(SDL_MIN.x, SDL_MIN.y - 3 * ASTEROID_RADIUS_MAX), SDL_MAX.x, ASTEROID_RADIUS_MAX), INFINITY, COLOR_BLACK);
     body_t *left_bound = body_init(polygon_rect(vec(SDL_MIN.x - 3 * ASTEROID_RADIUS_MAX, SDL_MIN.y), ASTEROID_RADIUS_MAX, SDL_MAX.y), INFINITY, COLOR_BLACK);
     body_t *right_bound = body_init(polygon_rect(vec(SDL_MAX.x + ASTEROID_RADIUS_MAX, SDL_MIN.y), ASTEROID_RADIUS_MAX, SDL_MAX.y), INFINITY, COLOR_BLACK);
@@ -486,26 +519,22 @@ void game_loop() {
 
         //ast_time completely resets when an asteroid spawns
         //and decreases by half when it's met without an asteroid spawning
-        if(ast_time >= ASTEROID_SPAWN_RATE){
-            ast_time = ASTEROID_SPAWN_RATE/2;
-            int spawnChance = irand_range(1, ASTEROID_SPAWN_CHANCE);
-            if(spawnChance == 1){
+        if (ast_time >= ASTEROID_SPAWN_RATE) {
+            ast_time = ASTEROID_SPAWN_RATE / 2;
+            double spawnChance = drand48();
+
+            if (spawnChance < ASTEROID_SPAWN_CHANCE) {
                 ast_time = 0;
                 spawn_asteroid(scene, left_bound, right_bound, top_bound, bottom_bound);
             }
         }
 
+        // if (frame % DEBUG_PRINT_RATE == 0) {
+        //     // print_bits(game_keypress_aux->key_down);
+        // }
 
-        if (frame % DEBUG_PRINT_RATE == 0) {
-            // print_bits(game_keypress_aux->key_down);
-        }
-
-        velocity_handle(player, game_keypress_aux->key_down);
-
-        if (bullet_time >= BULLET_DELAY) {
-            shoot_handle(scene, player, top_bound, game_keypress_aux->key_down);
-            bullet_time = 0;
-        }
+        velocity_handle(player, game_keypress_aux->key_down, left_bound, right_bound, top_bound, bottom_bound);
+        shoot_handle(scene, player, top_bound, &bullet_time, game_keypress_aux->key_down);
 
         scene_tick(scene, dt);
         sdl_render_scene_black(scene);
