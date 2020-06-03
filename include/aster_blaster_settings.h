@@ -22,6 +22,7 @@ char MENU_GAME_START_TEXT[] = "Press space to begin!\0";
 #define MENU_GAME_START_JUSTIFICATION CENTER
 
 // Player body settings
+#define PLAYER_MASS 100
 #define PLAYER_INIT_POS ((vector_t){.x = SDL_MAX.x / 2, .y = 0.1 * SDL_MAX.y})
 #define PLAYER_RADIUS 50
 #define PLAYER_SIDES 15
@@ -34,13 +35,15 @@ char MENU_GAME_START_TEXT[] = "Press space to begin!\0";
 #define PLAYER_SPACE_FRICTION 10.0
 
 // Bullet settings
+#define BULLET_MASS 10
 #define BULLET_VELOCITY ((vector_t){.x = 0, .y = 2 * SDL_MAX.y})
 #define BULLET_RADIUS 12
 #define BULLET_SIDES 30
 #define BULLET_COLOR ((rgb_color_t){1, 1, 0})
-#define BULLET_DELAY 0.15
+#define BULLET_COOLDOWN 0.15
 
 // Asteroid settings
+#define ASTEROID_MASS 100
 #define ASTEROID_SIDES_MIN 5
 #define ASTEROID_SIDES_MAX 10
 #define ASTEROID_SPEED 200
@@ -73,7 +76,7 @@ char MENU_GAME_START_TEXT[] = "Press space to begin!\0";
 #define HEALTH_BAR_COLOR ((rgb_color_t){1.0, 0.25, 0.25})
 
 // Health settings
-#define HEALTH_TOTAL 100
+#define HEALTH_TOTAL 1000
 #define DAMAGE_PER_MASS 1
 
 #define DEBUG_PRINT_RATE 200

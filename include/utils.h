@@ -84,25 +84,6 @@ int imax(int n1, int n2);
 int imin(int n1, int n2);
 
 /**
- * Returns the maximum of two doubles
- *
- * @param d1 the first double
- * @param d2 the second double
- * @return the maximum of d1 and d2
- */
-int dmax(int d1, int d2);
-
-/**
- * Returns the minimum of two doubles
- *
- * @param d1 the first double
- * @param d2 the second double
- * @return the minimum of d1 and d2
- */
-int dmin(int d1, int d2);
-
-
-/**
  * Returns the number of digits in an integer
  *
  * @param n the integer
