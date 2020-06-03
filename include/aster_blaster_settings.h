@@ -21,7 +21,7 @@ char MENU_GAME_START_TEXT[] = "Press space to begin!\0";
 #define MENU_GAME_START_ORIGIN ((vector_t){.x = 0.5 * SDL_MAX.x, .y = 0.6 * SDL_MAX.y})
 #define MENU_GAME_START_JUSTIFICATION CENTER
 
-// Player settings
+// Player body settings
 #define PLAYER_INIT_POS ((vector_t){.x = SDL_MAX.x / 2, .y = 0.1 * SDL_MAX.y})
 #define PLAYER_RADIUS 50
 #define PLAYER_SIDES 15
@@ -71,6 +71,10 @@ char MENU_GAME_START_TEXT[] = "Press space to begin!\0";
 #define HEALTH_BAR_W (HEALTH_BAR_BACKGROUND_W - 2 * HEALTH_BAR_PADDING)
 #define HEALTH_BAR_H (HEALTH_BAR_BACKGROUND_H - 2 * HEALTH_BAR_PADDING)
 #define HEALTH_BAR_COLOR ((rgb_color_t){1.0, 0.25, 0.25})
+
+// Health settings
+#define HEALTH_TOTAL 100
+#define DAMAGE_PER_MASS 1
 
 #define DEBUG_PRINT_RATE 200
 

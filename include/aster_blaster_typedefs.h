@@ -19,6 +19,8 @@ typedef enum body_type {
 
 typedef struct aster_aux {
     body_type_e body_type;
+    double health;
+    body_t *health_bar;
 } aster_aux_t;
 
 typedef struct menu_keypress_aux {

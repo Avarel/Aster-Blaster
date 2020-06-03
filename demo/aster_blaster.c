@@ -61,7 +61,7 @@ void on_key_game(char key, key_event_type_t type, double held_time, game_keypres
 }
 
 /********************
- * Background Stuff
+ * BACKGROUND STARS
  ********************/
 
 /**
@@ -113,10 +113,19 @@ void create_background_stars(scene_t *scene, body_t *bound) {
 /********************
  * ASTEROID GENERATION
  ********************/
-void create_destructive_collision_force_single(body_t *body1, body_t *body_immortal, vector_t axis, void *aux) {
-    printf("OUCH!\n");
-    // healthbar stuff here
-    body_remove(body1);
+void create_destructive_collision_force_single(body_t *body_to_remove, body_t *body_immortal, vector_t axis, void *aux) {
+    aster_aux_t *aster_aux = body_get_info(body_immortal);
+    if (aster_aux && aster_aux->body_type == PLAYER) {
+        aster_aux->health = dmax(0, aster_aux->health - body_get_mass(body_to_remove) * DAMAGE_PER_MASS);
+        // relies on two right points being idx 1 and 2
+        list_t *health_bar_shape = body_borrow_shape(aster_aux->health_bar);
+        vector_t *bottom_right_point = list_get(health_bar_shape, 1);
+        vector_t *top_right_point = list_get(health_bar_shape, 2);
+        *bottom_right_point = vec(HEALTH_BAR_POS.x + HEALTH_BAR_W * (aster_aux->health / HEALTH_TOTAL), HEALTH_BAR_POS.y);
+        *top_right_point = vec(HEALTH_BAR_POS.x + HEALTH_BAR_W * (aster_aux->health / HEALTH_TOTAL), HEALTH_BAR_POS.y + HEALTH_BAR_H);
+    }
+
+    body_remove(body_to_remove);
 }
 
 void create_destructive_collision_single(scene_t *scene, body_t *body1, body_t *body_immortal) {
@@ -184,12 +193,14 @@ void spawn_asteroid(
 /********************
  * PLAYER
  ********************/
-body_t *body_init_player() {
-    aster_aux_t *asteroid_aux = malloc(sizeof(aster_aux_t));
-    asteroid_aux->body_type = PLAYER;
+body_t *body_init_player(body_t *health_bar) {
+    aster_aux_t *aster_aux = malloc(sizeof(aster_aux_t));
+    aster_aux->body_type = PLAYER;
+    aster_aux->health = HEALTH_TOTAL;
+    aster_aux->health_bar = health_bar;
 
     list_t *player_shape = polygon_ngon_sector(PLAYER_INIT_POS, PLAYER_RADIUS, PLAYER_SIDES, PLAYER_SECTOR_SIDES, PLAYER_ANGLE);
-    body_t *player = body_init_with_info(player_shape, PLAYER_MASS, PLAYER_COLOR, asteroid_aux, free);
+    body_t *player = body_init_with_info(player_shape, PLAYER_MASS, PLAYER_COLOR, aster_aux, free);
     return player;
 }
 
@@ -200,7 +211,7 @@ body_t *body_init_player() {
 body_t *body_init_bullet(body_t *player) {
     aster_aux_t *aux = malloc(sizeof(aster_aux_t));
     aux->body_type = BULLET;
-    list_t *bullet_shape = polygon_reg_ngon(body_get_centroid(player), BULLET_RADIUS, 3);
+    list_t *bullet_shape = polygon_reg_ngon(vec_add(body_get_centroid(player), vec_y(PLAYER_RADIUS)), BULLET_RADIUS, 3);
     body_t *bullet = body_init_with_info(bullet_shape, 10, BULLET_COLOR, aux, free);
     body_set_velocity(bullet, BULLET_VELOCITY);
     return bullet;
@@ -345,6 +356,7 @@ void velocity_handle(
     }
 
     // enforce bounds
+    // TODO: stop the player from going off-screen
     const list_t *shape = body_borrow_shape(body);
     vector_t vel = body_get_velocity(body);
     if ((find_collision(shape, body_borrow_shape(left_bound)).collided && vel.x < 0) ||
@@ -356,6 +368,7 @@ void velocity_handle(
     }
 }
 
+// TODO: player can still shoot continuously
 void shoot_handle(scene_t *scene, body_t *player, body_t *bound, double *bullet_time, size_t key_down) {
     if (get_nth_bit(key_down, SPACE_BAR)) {
         if (*bullet_time > BULLET_DELAY) {
@@ -386,24 +399,25 @@ void game_loop() {
     body_t *star_bound = body_init(polygon_rect(vec(SDL_MIN.x, SDL_MIN.y - 6 * STAR_RADIUS_MAX), SDL_MAX.x, 2 * STAR_RADIUS_MAX), INFINITY, COLOR_BLACK);
     create_background_stars(scene, star_bound);
 
-    body_t *player = body_init_player();
+    spawn_asteroid(scene, left_bound, right_bound, top_bound, bottom_bound);
+
+    // health bar
+    body_t *health_bar_background = body_health_bar_background_init();
+    body_t *health_bar = body_health_bar_init();
+    scene_add_body(scene, health_bar_background);
+    scene_add_body(scene, health_bar);
+
+    // player
+    body_t *player = body_init_player(health_bar);
     body_set_manual_acceleration(player, true);
     scene_add_body(scene, player);
 
-    spawn_asteroid(scene, left_bound, right_bound, top_bound, bottom_bound);
-
+    // keypress aux
     game_keypress_aux_t *game_keypress_aux = malloc(sizeof(game_keypress_aux_t));
     game_keypress_aux->scene = scene;
     game_keypress_aux->player = player;
     game_keypress_aux->key_down = 0;
     game_keypress_aux->window = GAME;
-
-    // health bar
-    body_t *health_bar_background = body_health_bar_background_init();
-    body_t *health_bar = body_health_bar_init();
-
-    scene_add_body(scene, health_bar_background);
-    scene_add_body(scene, health_bar);
 
     size_t frame = 0;
     double ast_time = 0;
@@ -418,9 +432,9 @@ void game_loop() {
         //and decreases by half when it's met without an asteroid spawning
         if (ast_time >= ASTEROID_SPAWN_RATE) {
             ast_time = ASTEROID_SPAWN_RATE / 2;
-            double spawnChance = drand48();
+            double spawn_chance = drand48();
 
-            if (spawnChance < ASTEROID_SPAWN_CHANCE) {
+            if (spawn_chance < ASTEROID_SPAWN_CHANCE) {
                 ast_time = 0;
                 spawn_asteroid(scene, left_bound, right_bound, top_bound, bottom_bound);
             }
