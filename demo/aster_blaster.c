@@ -21,6 +21,8 @@
 #include "aster_blaster_settings.h"
 #include "aster_blaster_typedefs.h"
 
+
+// TODO: split into more demo modules (e.g. aster_blaster_body_inits)?
 /********************
  * KEYBOARD INPUT
  ********************/
@@ -63,7 +65,6 @@ void on_key_game(char key, key_event_type_t type, double held_time, game_keypres
 /********************
  * BACKGROUND STARS
  ********************/
-
 /**
   * Handles looping of the background sars. When the yhit the bound below the
   * bottom of the screen they teleport back to the top.
@@ -123,6 +124,10 @@ void create_health_collision(body_t *body_to_remove, body_t *body_immortal, vect
     vector_t *top_right_point = list_get(health_bar_shape, 2);
     *bottom_right_point = vec(HEALTH_BAR_POS.x + HEALTH_BAR_W * (aster_aux->health / HEALTH_TOTAL), HEALTH_BAR_POS.y);
     *top_right_point = vec(HEALTH_BAR_POS.x + HEALTH_BAR_W * (aster_aux->health / HEALTH_TOTAL), HEALTH_BAR_POS.y + HEALTH_BAR_H);
+
+    if (is_close(aster_aux->health, 0)) {
+        aster_aux->game_over = true;
+    }
     
     body_remove(body_to_remove);
 }
@@ -160,7 +165,7 @@ void spawn_asteroid(
     body_t *right_bound,
     body_t *top_bound,
     body_t *bottom_bound) {
-    //random later
+    // TODO: random later
     size_t num_sides = irand_range(ASTEROID_SIDES_MIN, ASTEROID_SIDES_MAX);
     double ast_radius = drand_range(ASTEROID_RADIUS_MIN, ASTEROID_RADIUS_MAX);
     double ast_x = drand_range(SDL_MIN.x, SDL_MAX.x);
@@ -211,6 +216,7 @@ body_t *body_init_player(body_t *health_bar) {
     aster_aux->body_type = PLAYER;
     aster_aux->health = HEALTH_TOTAL;
     aster_aux->health_bar = health_bar;
+    aster_aux->game_over = false;
 
     list_t *player_shape = polygon_ngon_sector(PLAYER_INIT_POS, PLAYER_RADIUS, PLAYER_SIDES, PLAYER_SECTOR_SIDES, PLAYER_ANGLE);
     body_t *player = body_init_with_info(player_shape, PLAYER_MASS, PLAYER_COLOR, aster_aux, free);
@@ -311,8 +317,8 @@ void menu_loop() {
 
         if (menu_keypress_aux->window == GAME) {
             // assumes specific text_box state
-            scene_remove_text_box(scene, 1);
-            scene_remove_text_box(scene, 0);
+            //scene_remove_text_box(scene, 1);
+            //scene_remove_text_box(scene, 0);
             to_game = true;
             break;
         }
@@ -322,7 +328,7 @@ void menu_loop() {
         frame++;
     }
 
-    printf("Frames rendered: %zu\n", frame);
+    //printf("Frames rendered: %zu\n", frame);
 
     // free mallocs
     free(menu_keypress_aux);
@@ -420,6 +426,7 @@ void game_loop() {
     body_t *player = body_init_player(health_bar);
     body_set_manual_acceleration(player, true);
     scene_add_body(scene, player);
+    aster_aux_t *player_aux = body_get_info(player);
 
     // keypress aux
     game_keypress_aux_t *game_keypress_aux = malloc(sizeof(game_keypress_aux_t));
@@ -430,7 +437,9 @@ void game_loop() {
 
     size_t frame = 0;
     double ast_time = 0;
-    double bullet_time = BULLET_COOLDOWN; //time since last bulelt being fired
+    double bullet_time = BULLET_COOLDOWN; // time since last bullet being fired
+
+    bool to_menu = false;
 
     while (!sdl_is_done(game_keypress_aux)) {
         double dt = time_since_last_tick();
@@ -449,9 +458,14 @@ void game_loop() {
             }
         }
 
-        // if (frame % DEBUG_PRINT_RATE == 0) {
-        //     // print_bits(game_keypress_aux->key_down);
-        // }
+        if (player_aux->game_over) {
+            to_menu = true;
+            break;
+        }
+
+        /* if (frame % DEBUG_PRINT_RATE == 0) {
+            print_bits(game_keypress_aux->key_down);
+        } */
 
         velocity_handle(player, game_keypress_aux->key_down, left_bound, right_bound, top_bound, bottom_bound);
         shoot_handle(scene, player, top_bound, &bullet_time, game_keypress_aux->key_down);
@@ -463,4 +477,8 @@ void game_loop() {
 
     free(game_keypress_aux);
     scene_free(scene);
+
+    if (to_menu) {
+        menu_loop();
+    }
 }

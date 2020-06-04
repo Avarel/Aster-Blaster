@@ -2,6 +2,7 @@
 #define __ASTER_BLASTER_TYPEDEFS__
 
 #include <stdlib.h>
+#include <stdbool.h>
 #include "scene.h"
 
 typedef enum window_type {
@@ -21,6 +22,7 @@ typedef struct aster_aux {
     body_type_e body_type;
     double health;
     body_t *health_bar;
+    bool game_over;
 } aster_aux_t;
 
 typedef struct menu_keypress_aux {
