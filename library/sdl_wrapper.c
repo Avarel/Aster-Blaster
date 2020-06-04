@@ -93,9 +93,13 @@ vector_t get_window_position(vector_t scene_pos, vector_t window_center) {
  */
 char get_keycode(SDL_Keycode key) {
     switch (key) {
+        case SDLK_a:
         case SDLK_LEFT:  return LEFT_ARROW;
+        case SDLK_w:
         case SDLK_UP:    return UP_ARROW;
+        case SDLK_d:
         case SDLK_RIGHT: return RIGHT_ARROW;
+        case SDLK_s:
         case SDLK_DOWN:  return DOWN_ARROW;
         case SDLK_SPACE: return SPACE_BAR;
         default:
@@ -131,6 +135,7 @@ void sdl_set_font(const char *font_path) {
 bool sdl_is_done(void *aux) {
     SDL_Event *event = malloc(sizeof(*event));
     assert(event != NULL);
+
     while (SDL_PollEvent(event)) {
         switch (event->type) {
             case SDL_QUIT: // TODO: do we need to call TTF_Quit() here? SDL_Quit() not called?
@@ -152,6 +157,12 @@ bool sdl_is_done(void *aux) {
                     event->type == SDL_KEYDOWN ? KEY_PRESSED : KEY_RELEASED;
                 double held_time = (timestamp - key_start_timestamp) / MS_PER_S;
                 key_handler(key, type, held_time, aux);
+                break;
+            case SDL_MOUSEBUTTONDOWN:
+                key_handler(SPACE_BAR, KEY_PRESSED, 0, aux);
+                break;
+            case SDL_MOUSEBUTTONUP:
+                key_handler(SPACE_BAR, KEY_RELEASED, 0, aux);
                 break;
         }
     }
