@@ -15,7 +15,8 @@ typedef enum window_type {
 typedef enum body_type {
     BULLET,
     PLAYER,
-    ASTEROID
+    ASTEROID,
+    ENEMY_SAW
 } body_type_e;
 
 typedef struct aster_aux {

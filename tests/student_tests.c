@@ -34,7 +34,7 @@ void test_gravity_stationary_center() {
     body_t *mass2 = body_init(make_default_shape(), M2, (rgb_color_t){0, 0, 0});
     body_set_centroid(mass2, (vector_t){5, -10});
     scene_add_body(scene, mass2);
-    create_newtonian_gravity(scene, G, mass1, mass2);
+    create_newtonian_gravity(scene, G, mass1, mass2, false);
     for (int i = 0; i < STEPS; i++) {
         assert(vec_isclose(vec_add(body_get_centroid(mass1), body_get_centroid(mass2)), VEC_ZERO));
         scene_tick(scene, DT);

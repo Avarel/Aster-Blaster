@@ -2,6 +2,7 @@
 #define __FORCES_H__
 
 #include "scene.h"
+#include <stdbool.h>
 
 /**
  * A function called when a collision occurs.
@@ -26,8 +27,11 @@ typedef void (*collision_handler_t)
  * @param G the gravitational proportionality constant
  * @param body1 the first body
  * @param body2 the second body
+ * @param one_way true means that only body1 is affected
  */
-void create_newtonian_gravity(scene_t *scene, double G, body_t *body1, body_t *body2);
+void create_newtonian_gravity(scene_t *scene, double G, body_t *body1, body_t *body2, bool one_way);
+
+void create_attraction(scene_t *scene, double A, body_t *body1, body_t *body2, bool one_way);
 
 /**
  * Adds a force creator to a scene that acts like a spring between two bodies.

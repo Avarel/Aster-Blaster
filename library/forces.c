@@ -5,6 +5,8 @@
 #include "utils.h"
 #include <math.h>
 #include <stdlib.h>
+#include <stdbool.h>
+#include <stdio.h>
 
 // NEWTONIAN GRAVITY
 
@@ -12,11 +14,11 @@ typedef struct newtonian_gravity_aux {
     double G;
     body_t *body1;
     body_t *body2;
+    bool one_way;
 } newtonian_gravity_aux_t;
 
 void newtonian_gravity_handler(newtonian_gravity_aux_t *aux) {
-    vector_t radius_vector =
-    vec_subtract(body_get_centroid(aux->body2), body_get_centroid(aux->body1));
+    vector_t radius_vector = vec_subtract(body_get_centroid(aux->body2), body_get_centroid(aux->body1));
     double radius = vec_norm(radius_vector);
 
     double mass1 = body_get_mass(aux->body1);
@@ -25,11 +27,13 @@ void newtonian_gravity_handler(newtonian_gravity_aux_t *aux) {
         radius >= 0.001 ? vec_multiply(-aux->G * mass1 * mass2 / (radius * radius), vec_normalize(radius_vector))
                    : VEC_ZERO;
 
-    body_add_force(aux->body2, force);
+    if (!aux->one_way) {
+        body_add_force(aux->body2, force);
+    }
     body_add_force(aux->body1, vec_negate(force));
 }
 
-void create_newtonian_gravity(scene_t *scene, double G, body_t *body1, body_t *body2) {
+void create_newtonian_gravity(scene_t *scene, double G, body_t *body1, body_t *body2, bool one_way) {
     newtonian_gravity_aux_t *aux = malloc(sizeof(newtonian_gravity_aux_t));
     aux->G = G;
     aux->body1 = body1;
@@ -37,9 +41,42 @@ void create_newtonian_gravity(scene_t *scene, double G, body_t *body1, body_t *b
     list_t *list = list_init(2, NULL);
     list_add(list, body1);
     list_add(list, body2);
+    aux->one_way = one_way;
     scene_add_bodies_force_creator(scene, (force_creator_t)newtonian_gravity_handler, aux, list, free);
 }
 
+typedef struct attraction_aux {
+    double A;
+    body_t *body1;
+    body_t *body2;
+    bool one_way;
+} attraction_aux_t;
+
+void attraction_handler(attraction_aux_t *aux) {
+    vector_t radius_vector = vec_subtract(body_get_centroid(aux->body2), body_get_centroid(aux->body1));
+    double radius = vec_norm(radius_vector);
+
+    vector_t force =
+        radius >= 0.001 ? vec_multiply(-aux->A * radius, vec_normalize(radius_vector))
+                   : VEC_ZERO;
+
+    if (!aux->one_way) {
+        body_set_velocity(aux->body2, force);
+    }
+    body_set_velocity(aux->body1, vec_negate(force));
+}
+
+void create_attraction(scene_t *scene, double A, body_t *body1, body_t *body2, bool one_way) {
+    attraction_aux_t *aux = malloc(sizeof(attraction_aux_t));
+    aux->A = A;
+    aux->body1 = body1;
+    aux->body2 = body2;
+    list_t *list = list_init(2, NULL);
+    list_add(list, body1);
+    list_add(list, body2);
+    aux->one_way = one_way;
+    scene_add_bodies_force_creator(scene, (force_creator_t)attraction_handler, aux, list, free);
+}
 
 
 // SPRING FORCE

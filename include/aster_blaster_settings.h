@@ -79,6 +79,16 @@ char MENU_GAME_START_TEXT[] = "Press space to begin!\0";
 #define HEALTH_TOTAL 1000
 #define DAMAGE_PER_MASS 1
 
+// Saw enemy settings
+#define ENEMY_SAW_OUT_RADIUS 25
+#define ENEMY_SAW_IN_RADIUS 10
+#define ENEMY_SAW_POINTS 8
+#define ENEMY_SAW_MASS 80
+#define ENEMY_SAW_COLOR ((rgb_color_t){0.4, 1.0, 0.0})
+#define ENEMY_SAW_ELASTICITY 2
+#define ENEMY_SAW_OMEGA (1.5 * M_PI)
+#define ENEMY_SAW_A 1
+
 #define DEBUG_PRINT_RATE 200
 
 #endif // #ifndef __ASTER_BLASTER_SETTINGS__

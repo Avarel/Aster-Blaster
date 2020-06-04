@@ -72,7 +72,7 @@ void test_energy_conservation() {
     body_t *mass2 = body_init(make_shape(), M2, (rgb_color_t) {0, 0, 0});
     body_set_centroid(mass2, (vector_t) {10, 20});
     scene_add_body(scene, mass2);
-    create_newtonian_gravity(scene, G, mass1, mass2);
+    create_newtonian_gravity(scene, G, mass1, mass2, false);
     double initial_energy = gravity_potential(G, mass1, mass2);
     for (int i = 0; i < STEPS; i++) {
         assert(body_get_centroid(mass1).x < body_get_centroid(mass2).x);
@@ -149,7 +149,7 @@ void test_forces_removed() {
         body_set_centroid(body, (vector_t) {i, i});
         scene_add_body(scene, body);
         for (int j = 0; j < i; j++) {
-            create_newtonian_gravity(scene, 1, body, scene_get_body(scene, j));
+            create_newtonian_gravity(scene, 1, body, scene_get_body(scene, j), false);
             create_spring(scene, 1, body, scene_get_body(scene, j));
         }
         create_drag(scene, 1, body);
