@@ -121,7 +121,7 @@ void sdl_init(vector_t min, vector_t max) {
         WINDOW_HEIGHT,
         SDL_WINDOW_RESIZABLE
     );
-    renderer = SDL_CreateRenderer(window, -1, 0);
+    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
 }
 
 void sdl_set_font(const char *font_path) {
