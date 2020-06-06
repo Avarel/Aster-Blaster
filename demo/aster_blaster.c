@@ -180,6 +180,7 @@ void spawn_asteroid(
         theta = drand_range(M_PI, 3 * M_PI / 2);
     }
     vector_t ast_velocity = vec(ASTEROID_SPEED * cos(theta), ASTEROID_SPEED * sin(theta));
+    double ast_omega = drand_range(-2.0 * M_PI, 2.0 * M_PI);
 
     aster_aux_t *asteroid_aux = malloc(sizeof(aster_aux_t));
     asteroid_aux->body_type = ASTEROID;
@@ -189,7 +190,7 @@ void spawn_asteroid(
     list_t *aster_shape = polygon_reg_ngon(ast_center, ast_radius, num_sides);
     body_t *asteroid = body_init_texture_with_info(aster_shape, ASTEROID_MASS, texture, asteroid_aux, free);
     body_set_velocity(asteroid, ast_velocity);
-    body_set_omega(asteroid, M_PI);
+    body_set_omega(asteroid, ast_omega);
 
     scene_add_body(scene, asteroid);
     for (size_t i = 0; i < scene_bodies(scene) - 1; i++) {
@@ -399,6 +400,7 @@ void print_bits(unsigned int num) {
 }
 
 void menu_loop() {
+    sdl_set_background_color(COLOR_WHITE);
     scene_t *scene = scene_init();
 
     sdl_on_key((key_handler_t)on_key_menu);
@@ -504,6 +506,8 @@ void shoot_handle(scene_t *scene, body_t *player, body_t *bound, double *bullet_
 }
 
 void game_loop() {
+    sdl_set_background_color(COLOR_BLACK);
+
     scene_t *scene = scene_init();
 
     sdl_on_key((key_handler_t)on_key_game);
@@ -598,7 +602,7 @@ void game_loop() {
         shoot_handle(scene, player, top_bound, &bullet_time, game_keypress_aux->key_down);
 
         scene_tick(scene, dt);
-        sdl_render_scene_black(scene);
+        sdl_render_scene(scene);
         frame++;
     }
 

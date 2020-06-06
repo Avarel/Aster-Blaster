@@ -48,6 +48,12 @@ uint32_t key_start_timestamp;
  */
 clock_t last_clock = 0;
 
+rgb_color_t background_color;
+
+void sdl_set_background_color(rgb_color_t color) {
+    background_color = color;
+}
+
 /** Computes the center of the window in pixel coordinates */
 vector_t get_window_center(void) {
     int *width = malloc(sizeof(*width)),
@@ -179,67 +185,61 @@ bool sdl_is_done(void *aux) {
 }
 
 void sdl_clear(void) {
-    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+    rgb_color_t color = background_color;
+    SDL_SetRenderDrawColor(renderer, color.r * 255, color.g * 255, color.b * 255, color.a * 255);
     SDL_RenderClear(renderer);
 }
 
-void sdl_clear_black(void) {
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
-    SDL_RenderClear(renderer);
-}
-
-void sdl_draw_polygon(const body_t *body) {
+void sdl_draw_polygon(const body_t *body, vector_t window_center) {
     const list_t *points = body_borrow_shape(body);
     // Check parameters
     size_t n = list_size(points);
     assert(n >= 3);
 
-    vector_t window_center = get_window_center();
-
-    // Convert each vertex to a point on screen
-    int16_t *x_points = malloc(sizeof(*x_points) * n),
-            *y_points = malloc(sizeof(*y_points) * n);
-    assert(x_points != NULL);
-    assert(y_points != NULL);
-    for (size_t i = 0; i < n; i++) {
-        vector_t vertex = list_copy_vector(points, i);
-        vector_t pixel = get_window_position(vertex, window_center);
-        x_points[i] = pixel.x;
-        y_points[i] = pixel.y;
-    }
-
-    render_info_t texture = body_get_texture(body);
+    render_info_t texture = body_get_render_data(body);
     // Draw polygon with the given color
     if (texture.type == COLOR) {
         rgb_color_t color = texture.data.color;
         assert(0 <= color.r && color.r <= 1);
         assert(0 <= color.g && color.g <= 1);
         assert(0 <= color.b && color.b <= 1);
+
+        // Convert each vertex to a point on screen
+        int16_t *x_points = malloc(sizeof(*x_points) * n),
+                *y_points = malloc(sizeof(*y_points) * n);
+        assert(x_points != NULL);
+        assert(y_points != NULL);
+        for (size_t i = 0; i < n; i++) {
+            vector_t vertex = list_copy_vector(points, i);
+            vector_t pixel = get_window_position(vertex, window_center);
+            x_points[i] = pixel.x;
+            y_points[i] = pixel.y;
+        }
+
         filledPolygonRGBA(
             renderer,
             x_points, y_points, n,
             color.r * 255, color.g * 255, color.b * 255, 255);
-    } else if (texture.type == TEX) {
-        SDL_Texture *tex = texture.data.texture.tex;
 
-        vector_t pos = get_window_position(body_get_centroid(body), get_window_center());
-        int w = texture.data.texture.w;
-        int h = texture.data.texture.h;
-        int x = pos.x - w / 2;
-        int y = pos.y - h / 2;
+        free(x_points);
+        free(y_points);
+    } else if (texture.type == TEX) {
+        render_data_texture_t data = texture.data.texture;
+        SDL_Texture *tex = data.tex;
+
+        vector_t pos = get_window_position(body_get_centroid(body), window_center);
+        int w = data.w;
+        int h = data.h;
+        int x = pos.x - data.dx;
+        int y = pos.y - data.dy;
         double angle = body_get_angle(body);
 
         SDL_RenderCopyEx(renderer, tex, NULL, &(SDL_Rect){x, y, w, h}, -angle * 180 / M_PI, NULL, 0);
-        // texturedPolygon(renderer, x_points, y_points, n, surface, pos.x, pos.y);
     }
-
-    free(x_points);
-    free(y_points);
 }
 
-void sdl_show(void) {
+void sdl_show(vector_t window_center) {
     // Draw boundary lines
-    vector_t window_center = get_window_center();
     vector_t max = vec_add(center, max_diff),
              min = vec_subtract(center, max_diff);
     vector_t max_pixel = get_window_position(max, window_center),
@@ -319,30 +319,16 @@ int sdl_render_text(const text_box_t *text_box) {
 void sdl_render_scene(const scene_t *scene) {
     sdl_clear();
     size_t body_count = scene_bodies(scene);
+    vector_t window_center = get_window_center();
     for (size_t i = 0; i < body_count; i++) {
         const body_t *body = scene_borrow_body(scene, i);
-        sdl_draw_polygon(body);
+        sdl_draw_polygon(body, window_center);
     }
     size_t text_box_count = scene_text_boxes(scene);
     for (size_t i = 0; i < text_box_count; i++) {
         sdl_render_text(scene_borrow_text_box(scene, i));
     }
-    sdl_show();
-}
-
-// TODO: more of a temporay solution, as it reuses a ton of code.
-void sdl_render_scene_black(const scene_t *scene) {
-    sdl_clear_black();
-    size_t body_count = scene_bodies(scene);
-    for (size_t i = 0; i < body_count; i++) {
-        const body_t *body = scene_borrow_body(scene, i);
-        sdl_draw_polygon(body);
-    }
-    size_t text_box_count = scene_text_boxes(scene);
-    for (size_t i = 0; i < text_box_count; i++) {
-        sdl_render_text(scene_borrow_text_box(scene, i));
-    }
-    sdl_show();
+    sdl_show(window_center);
 }
 
 void sdl_on_key(key_handler_t handler) {

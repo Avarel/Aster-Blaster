@@ -23,9 +23,9 @@ void test_body_init() {
     list_free(shape2);
     assert(vec_isclose(body_get_centroid(body), (vector_t) {1.5, 1.5}));
     assert(vec_equal(body_get_velocity(body), VEC_ZERO));
-    assert(body_get_texture(body).data.color.r == color.r);
-    assert(body_get_texture(body).data.color.g == color.g);
-    assert(body_get_texture(body).data.color.b == color.b);
+    assert(body_get_render_data(body).data.color.r == color.r);
+    assert(body_get_render_data(body).data.color.g == color.g);
+    assert(body_get_render_data(body).data.color.b == color.b);
     assert(body_get_mass(body) == 3);
     body_free(body);
 }

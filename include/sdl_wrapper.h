@@ -49,6 +49,8 @@ typedef void (*key_handler_t)(char key, key_event_type_t type, double held_time,
  */
 void sdl_init(vector_t min, vector_t max);
 
+void sdl_set_background_color(rgb_color_t color);
+
 /**
  * Sets the font that SDL will use.
  * Must be set before rendering any text.
@@ -71,24 +73,18 @@ bool sdl_is_done(void *data);
 void sdl_clear(void);
 
 /**
- * Clears the screen with a black background. Should be called before drawing
- * polygons in each frame.
- */
-void sdl_clear_black(void);
-
-/**
  * Draws a polygon from the given list of vertices and a color.
  *
  * @param points the list of vertices of the polygon
  * @param color the color used to fill in the polygon
  */
-void sdl_draw_polygon(const body_t *body);
+void sdl_draw_polygon(const body_t *body, vector_t window_center);
 
 /**
  * Displays the rendered frame on the SDL window.
  * Must be called after drawing the polygons in order to show them.
  */
-void sdl_show(void);
+void sdl_show(vector_t window_center);
 
 /**
  * Draws all bodies in a scene.
@@ -98,15 +94,6 @@ void sdl_show(void);
  * @param scene the scene to draw
  */
 void sdl_render_scene(const scene_t *scene);
-
-/**
- * Draws all bodies in a scene with a black background.
- * This internally calls sdl_clear_black(), sdl_draw_polygon(), and sdl_show(),
- * so those functions should not be called directly.
- *
- * @param scene the scene to draw
- */
-void sdl_render_scene_black(const scene_t *scene);
 
 /**
  * Registers a function to be called every time a key is pressed.

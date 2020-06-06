@@ -12,6 +12,7 @@ typedef struct rgb_color {
     float r;
     float g;
     float b;
+    float a;
 } rgb_color_t;
 
 typedef enum render_type {
@@ -19,18 +20,22 @@ typedef enum render_type {
     TEX
 } render_type_e;
 
+typedef struct render_data_texture {
+    SDL_Texture *tex;
+    int dx;
+    int dy;
+    int w;
+    int h;
+} render_data_texture_t;
+
 typedef union render_data {
-    struct {
-        SDL_Texture *tex;
-        int w;
-        int h;
-    } texture;
+    render_data_texture_t texture;
     rgb_color_t color;
-} texture_data_t;
+} render_data_t;
 
 typedef struct render_info {
     render_type_e type;
-    texture_data_t data;
+    render_data_t data;
 } render_info_t;
 
 /**
@@ -43,8 +48,10 @@ extern const rgb_color_t COLOR_BLACK;
  */
 extern const rgb_color_t COLOR_WHITE;
 
+// Create render information using a color
 render_info_t render_color(rgb_color_t color);
 
+// Create render information from SDL_Texture
 render_info_t render_texture(SDL_Texture *tex, int w, int h);
 
 /**

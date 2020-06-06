@@ -149,7 +149,7 @@ double body_get_mass(const body_t *body);
  * @param body a pointer to a body returned from body_init()
  * @return the color passed to body_init(), as an (R, G, B) tuple
  */
-render_info_t body_get_texture(const body_t *body);
+render_info_t body_get_render_data(const body_t *body);
 
 /**
  * Gets the information associated with a body.

@@ -144,7 +144,7 @@ double body_get_mass(const body_t *body) {
     return body->mass;
 }
 
-render_info_t body_get_texture(const body_t *body) {
+render_info_t body_get_render_data(const body_t *body) {
     return body->texture;
 }
 
