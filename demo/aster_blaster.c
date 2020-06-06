@@ -202,6 +202,10 @@ void spawn_asteroid(
             } else if (other_aux->body_type == PLAYER) {
                 create_aster_player_collision(scene, asteroid, other_body);
             }
+            else if (other_aux->body_type == BLACK_HOLE) {
+                create_super_gravity(scene, G, asteroid, other_body, true);
+                create_destructive_collision_single(scene, asteroid, other_body);
+            }
         }
     }
     create_destructive_collision_single(scene, asteroid, top_bound);
@@ -250,6 +254,10 @@ void spawn_bullet(scene_t *scene, body_t *player, body_t *bound) {
             if (other_aux->body_type == ASTEROID || other_aux->body_type == ENEMY_SAW || other_aux->body_type == ENEMY_SHOOTER) {
                 create_aster_bullet_collision(scene, other_body, bullet);
             }
+            else if (other_aux->body_type == BLACK_HOLE) {
+                create_super_gravity(scene, G, bullet, other_body, true);
+                create_destructive_collision_single(scene, bullet, other_body);
+            }
         }
     }
 }
@@ -295,12 +303,10 @@ body_t *body_init_black_hole_decal(body_t *black_hole) {
         aster_aux_t *other_aux = body_get_info(other_body);
         if (other_aux != NULL) {
             if (other_aux->body_type != BLACK_HOLE && other_aux->body_type != PLAYER) {
-                // create_newtonian_gravity(scene, G, other_body, black_hole, true);
-                create_inverse_attraction(scene, BLACK_HOLE_A, other_body, black_hole, true);
+                create_super_gravity(scene, G, other_body, black_hole, true);
                 create_destructive_collision_single(scene, other_body, black_hole);
             } else if (other_aux->body_type == PLAYER) {
-                // create_newtonian_gravity(scene, G, other_body, black_hole, true);
-                create_inverse_attraction(scene, BLACK_HOLE_A, other_body, black_hole, true);
+                create_super_gravity(scene, G, other_body, black_hole, true);
                 create_collision(scene, black_hole, other_body, create_health_collision, NULL, NULL);
             }
         }
@@ -367,6 +373,10 @@ body_t *body_init_enemy_saw(vector_t pos, scene_t *scene, body_t *player) {
             if (other_aux->body_type == BULLET) {
                 create_aster_bullet_collision(scene, saw_enemy, other_body);
             }
+            else if (other_aux->body_type == BLACK_HOLE) {
+                create_super_gravity(scene, G, saw_enemy, other_body, true);
+                create_destructive_collision_single(scene, saw_enemy, other_body);
+            }
         }
     }
 
@@ -396,6 +406,10 @@ body_t *body_init_enemy_shooter(vector_t pos, scene_t *scene, body_t *player) {
         if (other_aux != NULL) {
             if (other_aux->body_type == BULLET) {
                 create_aster_bullet_collision(scene, shooter_enemy, other_body);
+            }
+            else if (other_aux->body_type == BLACK_HOLE) {
+                create_super_gravity(scene, G, shooter_enemy, other_body, true);
+                create_destructive_collision_single(scene, shooter_enemy, other_body);
             }
         }
     }

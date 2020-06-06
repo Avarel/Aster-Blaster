@@ -31,11 +31,11 @@ typedef void (*collision_handler_t)
  */
 void create_newtonian_gravity(scene_t *scene, double G, body_t *body1, body_t *body2, bool one_way);
 
+void create_super_gravity(scene_t *scene, double G, body_t *body1, body_t *body2, bool one_way);
+
 void create_attraction(scene_t *scene, double A, body_t *body1, body_t *body2, bool one_way);
 
 void create_attraction_mirrored(scene_t *scene, double A, body_t *body_to_move, body_t *body_unaffected, vector_t sdl_max);
-
-void create_inverse_attraction(scene_t *scene, double A, body_t *body1, body_t *body2, bool one_way);
 
 void create_pointing_force(scene_t *scene, body_t *body_to_point, body_t *body_point_to);
 
