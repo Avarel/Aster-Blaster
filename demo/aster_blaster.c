@@ -247,7 +247,7 @@ void spawn_bullet(scene_t *scene, body_t *player, body_t *bound) {
         body_t *other_body = scene_get_body(scene, i);
         aster_aux_t *other_aux = body_get_info(other_body);
         if (other_aux != NULL) {
-            if (other_aux->body_type == ASTEROID || other_aux->body_type == ENEMY_SAW) {
+            if (other_aux->body_type == ASTEROID || other_aux->body_type == ENEMY_SAW || other_aux->body_type == ENEMY_SHOOTER) {
                 create_aster_bullet_collision(scene, other_body, bullet);
             }
         }
@@ -328,6 +328,7 @@ void spawn_black_hole(scene_t *scene,
     body_add_decal(black_hole, decal);
     scene_add_body(scene, decal);
 }
+
 /********************
  * BODY INITS
  ********************/
@@ -371,9 +372,39 @@ body_t *body_init_enemy_saw(vector_t pos, scene_t *scene, body_t *player) {
     return saw_enemy;
 }
 
-void spawn_saw_enemy(scene_t *scene, body_t *player) {
+void spawn_enemy_saw(scene_t *scene, body_t *player) {
     body_t *saw_enemy = body_init_enemy_saw(vec(SDL_MAX.x / 2, 0.8 * SDL_MAX.y), scene, player);
     scene_add_body(scene, saw_enemy);
+}
+
+body_t *body_init_enemy_shooter(vector_t pos, scene_t *scene, body_t *player) {
+    list_t *shape = polygon_ngon_sector(pos, ENEMY_SHOOTER_RADIUS, ENEMY_SHOOTER_POINTS, ENEMY_SHOOTER_SECTOR_POINTS, ENEMY_SHOOTER_INIT_ANGLE);
+
+    aster_aux_t *aster_aux = malloc(sizeof(aster_aux_t));
+    aster_aux->body_type = ENEMY_SHOOTER;
+
+    body_t *shooter_enemy = body_init_with_info(shape, ENEMY_SHOOTER_MASS, ENEMY_SHOOTER_COLOR, aster_aux, free);
+
+    create_attraction_mirrored(scene, ENEMY_SHOOTER_A, shooter_enemy, player, SDL_MAX);
+    create_pointing_force(scene, shooter_enemy, player);
+
+    // TODO: similar code in spawn_asteroid, can factor out
+    for (size_t i = 0; i < scene_bodies(scene) - 1; i++) {
+        body_t *other_body = scene_get_body(scene, i);
+        aster_aux_t *other_aux = body_get_info(other_body);
+        if (other_aux != NULL) {
+            if (other_aux->body_type == BULLET) {
+                create_aster_bullet_collision(scene, shooter_enemy, other_body);
+            }
+        }
+    }
+
+    return shooter_enemy;
+}
+
+void spawn_enemy_shooter(scene_t *scene, body_t *player) {
+    body_t *shooter_enemy = body_init_enemy_shooter(vec(SDL_MAX.x / 4, 0.8 * SDL_MAX.y), scene, player);
+    scene_add_body(scene, shooter_enemy);
 }
 
 /********************
@@ -552,7 +583,10 @@ void game_loop() {
     double bh_time = 0;
     double bullet_time = BULLET_COOLDOWN; // time since last bullet being fired
 
-    spawn_saw_enemy(scene, player);
+    // TODO: enemy spawning mechanics
+    spawn_enemy_saw(scene, player);
+    spawn_enemy_shooter(scene, player);
+
     spawn_black_hole(scene, left_bound, right_bound, top_bound, bottom_bound);
 
     bool to_menu = false;

@@ -8,6 +8,8 @@
 #include <stdbool.h>
 #include <stdio.h>
 
+#define MIN_RADIUS_FOR_EFFECT 0.001
+
 // NEWTONIAN GRAVITY
 
 typedef struct newtonian_gravity_aux {
@@ -24,7 +26,7 @@ void newtonian_gravity_handler(newtonian_gravity_aux_t *aux) {
     double mass1 = body_get_mass(aux->body1);
     double mass2 = body_get_mass(aux->body2);
     vector_t force =
-        radius >= 0.001 ? vec_multiply(-aux->G * mass1 * mass2 / (radius * radius), vec_normalize(radius_vector))
+        radius >= MIN_RADIUS_FOR_EFFECT ? vec_multiply(-aux->G * mass1 * mass2 / (radius * radius), vec_normalize(radius_vector))
                    : VEC_ZERO;
 
     if (!aux->one_way) {
@@ -45,6 +47,8 @@ void create_newtonian_gravity(scene_t *scene, double G, body_t *body1, body_t *b
     scene_add_bodies_force_creator(scene, (force_creator_t)newtonian_gravity_handler, aux, list, free);
 }
 
+// Attraction force
+
 typedef struct attraction_aux {
     double A;
     body_t *body1;
@@ -57,7 +61,7 @@ void attraction_handler(attraction_aux_t *aux) {
     double radius = vec_norm(radius_vector);
 
     vector_t force =
-        radius >= 0.001 ? vec_multiply(-aux->A * radius, vec_normalize(radius_vector))
+        radius >= MIN_RADIUS_FOR_EFFECT ? vec_multiply(-aux->A * radius, vec_normalize(radius_vector))
                    : VEC_ZERO;
 
     if (!aux->one_way) {
@@ -78,6 +82,75 @@ void create_attraction(scene_t *scene, double A, body_t *body1, body_t *body2, b
     scene_add_bodies_force_creator(scene, (force_creator_t)attraction_handler, aux, list, free);
 }
 
+// Mirrored Attraction force
+
+typedef struct attraction_mirrored_aux {
+    double A;
+    body_t *body_to_move;
+    body_t *body_unaffected;
+    vector_t sdl_max;
+} attraction_mirrored_aux_t;
+
+void attraction_mirrored_handler(attraction_mirrored_aux_t *aux) {
+    vector_t anti_center = vec_subtract(aux->sdl_max, body_get_centroid(aux->body_unaffected));
+    vector_t radius_vector = vec_subtract(anti_center, body_get_centroid(aux->body_to_move));
+    double radius = vec_norm(radius_vector);
+
+    vector_t force =
+        radius >= MIN_RADIUS_FOR_EFFECT ? vec_multiply(-aux->A * radius, vec_normalize(radius_vector))
+                   : VEC_ZERO;
+
+    body_set_velocity(aux->body_to_move, vec_negate(force));
+}
+
+void create_attraction_mirrored(scene_t *scene, double A, body_t *body_to_move, body_t *body_unaffected, vector_t sdl_max) {
+    attraction_mirrored_aux_t *aux = malloc(sizeof(attraction_mirrored_aux_t));
+    aux->A = A;
+    aux->body_to_move = body_to_move;
+    aux->body_unaffected = body_unaffected;
+    list_t *list = list_init(2, NULL);
+    list_add(list, body_to_move);
+    list_add(list, body_unaffected);
+    aux->sdl_max = sdl_max;
+    scene_add_bodies_force_creator(scene, (force_creator_t)attraction_mirrored_handler, aux, list, free);
+}
+
+// Pointing force
+
+typedef struct pointing_force_aux {
+    body_t *body_to_point;
+    body_t *body_point_to;
+} pointing_force_aux_t;
+
+void pointing_force_handler(pointing_force_aux_t *aux) {
+    vector_t to_point_pos = body_get_centroid(aux->body_to_point);
+    vector_t point_to_pos = body_get_centroid(aux->body_point_to);
+
+    bool right = to_point_pos.x > point_to_pos.x;
+
+    if (to_point_pos.y == point_to_pos.y) { // prevent DBZ
+        if (right) {
+            body_set_rotation(aux->body_to_point, M_PI);
+        } else {
+            body_set_rotation(aux->body_to_point, 0);
+        }
+    } else {
+        bool below = to_point_pos.y < point_to_pos.y;
+        double theta = atan((to_point_pos.x - point_to_pos.x) / (point_to_pos.y - to_point_pos.y));
+        theta += below ? 0.5 * M_PI : 1.5 * M_PI;
+        body_set_rotation(aux->body_to_point, theta);
+    }
+}
+
+void create_pointing_force(scene_t *scene, body_t *body_to_point, body_t *body_point_to) {
+    pointing_force_aux_t *aux = malloc(sizeof(pointing_force_aux_t));
+    aux->body_to_point = body_to_point;
+    aux->body_point_to = body_point_to;
+    list_t *list = list_init(2, NULL);
+    list_add(list, body_to_point);
+    list_add(list, body_point_to);
+    scene_add_bodies_force_creator(scene, (force_creator_t)pointing_force_handler, aux, list, free);
+}
 
 // SPRING FORCE
 

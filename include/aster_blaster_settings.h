@@ -91,6 +91,15 @@ char MENU_GAME_START_TEXT[] = "Press space to begin!\0";
 #define ENEMY_SAW_OMEGA (1.5 * M_PI)
 #define ENEMY_SAW_A 1
 
+// Shooter enemy settings
+#define ENEMY_SHOOTER_RADIUS 40
+#define ENEMY_SHOOTER_POINTS 15
+#define ENEMY_SHOOTER_SECTOR_POINTS 2
+#define ENEMY_SHOOTER_INIT_ANGLE 0
+#define ENEMY_SHOOTER_MASS 150
+#define ENEMY_SHOOTER_COLOR ((rgb_color_t){0.8, 0.8, 0.3})
+#define ENEMY_SHOOTER_A 0.65
+
 // Black Hole settings
 const double BLACK_HOLE_OUT_RADIUS = 50;
 const double BLACK_HOLE_IN_RADIUS = 45;

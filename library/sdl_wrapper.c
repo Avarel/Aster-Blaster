@@ -294,18 +294,18 @@ int sdl_render_text(const text_box_t *text_box) {
     SDL_FreeSurface(textSurface);
 
     switch (text_box_get_justification(text_box)) {
-    case LEFT: {
-        textRect.x = WINDOW_WIDTH - text_box_get_origin(text_box).x;
-        break;
-    }
-    case RIGHT: {
-        textRect.x = WINDOW_WIDTH - text_box_get_origin(text_box).x - textRect.w;
-        break;
-    }
-    case CENTER: {
-        textRect.x = WINDOW_WIDTH - text_box_get_origin(text_box).x - (textRect.w / 2.0);
-        break;
-    }
+        case LEFT: {
+            textRect.x = WINDOW_WIDTH - text_box_get_origin(text_box).x;
+            break;
+        }
+        case RIGHT: {
+            textRect.x = WINDOW_WIDTH - text_box_get_origin(text_box).x - textRect.w;
+            break;
+        }
+        case CENTER: {
+            textRect.x = WINDOW_WIDTH - text_box_get_origin(text_box).x - (textRect.w / 2.0);
+            break;
+        }
     }
     textRect.y = WINDOW_HEIGHT - text_box_get_origin(text_box).y;
 
