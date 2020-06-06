@@ -103,7 +103,7 @@ char MENU_GAME_START_TEXT[] = "Press space to begin!\0";
 // Black Hole settings
 const double BLACK_HOLE_RADIUS = 50;
 const double BLACK_HOLE_POINTS = 30;
-const double BLACK_HOLE_MASS = 5e5;
+const double BLACK_HOLE_MASS = 500;
 const double BLACK_HOLE_SPEED = 100;
 const rgb_color_t BLACK_HOLE_COLOR = ((rgb_color_t){0.2, 0, 0.4});
 const double BLACK_HOLE_SPAWN_CHANCE = 0.33;
