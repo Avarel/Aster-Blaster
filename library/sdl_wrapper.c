@@ -4,6 +4,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL2_gfxPrimitives.h>
 #include <SDL2/SDL_ttf.h>
+#include <SDL2/SDL_image.h>
 #include <assert.h>
 #include <math.h>
 #include <stdlib.h>
@@ -186,13 +187,10 @@ void sdl_clear_black(void) {
     SDL_RenderClear(renderer);
 }
 
-void sdl_draw_polygon(const list_t *points, rgb_color_t color) {
+void sdl_draw_polygon(const list_t *points, texture_t texture) {
     // Check parameters
     size_t n = list_size(points);
     assert(n >= 3);
-    assert(0 <= color.r && color.r <= 1);
-    assert(0 <= color.g && color.g <= 1);
-    assert(0 <= color.b && color.b <= 1);
 
     vector_t window_center = get_window_center();
 
@@ -209,10 +207,20 @@ void sdl_draw_polygon(const list_t *points, rgb_color_t color) {
     }
 
     // Draw polygon with the given color
-    filledPolygonRGBA(
-        renderer,
-        x_points, y_points, n,
-        color.r * 255, color.g * 255, color.b * 255, 255);
+    if (texture.type == COLOR) {
+        rgb_color_t color = texture.data.color;
+        assert(0 <= color.r && color.r <= 1);
+        assert(0 <= color.g && color.g <= 1);
+        assert(0 <= color.b && color.b <= 1);
+        filledPolygonRGBA(
+            renderer,
+            x_points, y_points, n,
+            color.r * 255, color.g * 255, color.b * 255, 255);
+    } else if (texture.type == SURFACE) {
+        SDL_Surface *surface = texture.data.surface;
+        texturedPolygon(renderer, x_points, y_points, n, surface, 0, 0);
+    }
+
     free(x_points);
     free(y_points);
 }
@@ -302,7 +310,7 @@ void sdl_render_scene(const scene_t *scene) {
     for (size_t i = 0; i < body_count; i++) {
         const body_t *body = scene_borrow_body(scene, i);
         const list_t *shape = body_borrow_shape(body);
-        sdl_draw_polygon(shape, body_get_color(body));
+        sdl_draw_polygon(shape, body_get_texture(body));
     }
     size_t text_box_count = scene_text_boxes(scene);
     for (size_t i = 0; i < text_box_count; i++) {
@@ -318,7 +326,7 @@ void sdl_render_scene_black(const scene_t *scene) {
     for (size_t i = 0; i < body_count; i++) {
         const body_t *body = scene_borrow_body(scene, i);
         const list_t *shape = body_borrow_shape(body);
-        sdl_draw_polygon(shape, body_get_color(body));
+        sdl_draw_polygon(shape, body_get_texture(body));
     }
     size_t text_box_count = scene_text_boxes(scene);
     for (size_t i = 0; i < text_box_count; i++) {

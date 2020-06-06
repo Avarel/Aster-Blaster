@@ -161,7 +161,8 @@ void spawn_asteroid(
     body_t *left_bound,
     body_t *right_bound,
     body_t *top_bound,
-    body_t *bottom_bound) {
+    body_t *bottom_bound,
+    texture_t texture) {
     // TODO: random later
     size_t num_sides = irand_range(ASTEROID_SIDES_MIN, ASTEROID_SIDES_MAX);
     double ast_radius = drand_range(ASTEROID_RADIUS_MIN, ASTEROID_RADIUS_MAX);
@@ -184,7 +185,7 @@ void spawn_asteroid(
     asteroid_aux->body_type = ASTEROID;
 
     list_t *aster_shape = polygon_reg_ngon(ast_center, ast_radius, num_sides);
-    body_t *asteroid = body_init_with_info(aster_shape, ASTEROID_MASS, ASTEROID_COLOR, asteroid_aux, free);
+    body_t *asteroid = body_init_texture_with_info(aster_shape, ASTEROID_MASS, texture, asteroid_aux, free);
     body_set_velocity(asteroid, ast_velocity);
 
     scene_add_body(scene, asteroid);
@@ -549,6 +550,8 @@ void game_loop() {
 
     bool to_menu = false;
 
+    texture_t asteroid_texture = texture_color(ASTEROID_COLOR); //texture_image("./asteroid.png");
+
     while (!sdl_is_done(game_keypress_aux)) {
         double dt = time_since_last_tick();
         ast_time += dt;
@@ -563,7 +566,7 @@ void game_loop() {
 
             if (spawn_chance < ASTEROID_SPAWN_CHANCE) {
                 ast_time = 0;
-                spawn_asteroid(scene, left_bound, right_bound, top_bound, bottom_bound);
+                spawn_asteroid(scene, left_bound, right_bound, top_bound, bottom_bound, asteroid_texture);
             }
         }
 

@@ -20,6 +20,8 @@ typedef struct body body_t;
  */
 body_t *body_init(list_t *shape, double mass, rgb_color_t color);
 
+body_t *body_init_texture(list_t *shape, double mass, texture_t texture);
+
 /**
  * Allocates memory for a body with the given parameters.
  * The body is initially at rest.
@@ -37,6 +39,14 @@ body_t *body_init_with_info(
     list_t *shape,
     double mass,
     rgb_color_t color,
+    void *info,
+    free_func_t info_freer
+);
+
+body_t *body_init_texture_with_info(
+    list_t *shape,
+    double mass,
+    texture_t texture,
     void *info,
     free_func_t info_freer
 );
@@ -137,7 +147,7 @@ double body_get_mass(const body_t *body);
  * @param body a pointer to a body returned from body_init()
  * @return the color passed to body_init(), as an (R, G, B) tuple
  */
-rgb_color_t body_get_color(const body_t *body);
+texture_t body_get_texture(const body_t *body);
 
 /**
  * Gets the information associated with a body.

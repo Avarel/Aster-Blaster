@@ -24,7 +24,7 @@ typedef struct body {
 
     bool manual_acceleration;
 
-    rgb_color_t color;
+    texture_t texture;
 
     bool destroy;
 
@@ -34,7 +34,7 @@ typedef struct body {
     free_func_t freer;
 } body_t;
 
-body_t *body_init(list_t *shape, double mass, rgb_color_t color) {
+body_t *body_init_texture(list_t *shape, double mass, texture_t texture) {
     body_t *body = malloc(sizeof(body_t));
     assert(body != NULL);
 
@@ -50,7 +50,7 @@ body_t *body_init(list_t *shape, double mass, rgb_color_t color) {
 
     body->manual_acceleration = false;
 
-    body->color = color;
+    body->texture = texture;
 
     body->decals = list_init(0, NULL); // NULL b/c scene is charged with freeing the actual bodies
 
@@ -61,19 +61,26 @@ body_t *body_init(list_t *shape, double mass, rgb_color_t color) {
     return body;
 }
 
-/**
- * Allocates memory for a body with the given parameters.
- * The body is initially at rest.
- * Asserts that the mass is positive and that the required memory is allocated.
- *
- * @param shape a list of vectors describing the initial shape of the body
- * @param mass the mass of the body (if INFINITY, stops the body from moving)
- * @param color the color of the body, used to draw it on the screen
- * @param info additional information to associate with the body,
- *   e.g. its type if the scene has multiple types of bodies
- * @param info_freer if non-NULL, a function call on the info to free it
- * @return a pointer to the newly allocated body
- */
+body_t *body_init(list_t *shape, double mass, rgb_color_t color) {
+    return body_init_texture(shape, mass, texture_color(color));
+}
+
+body_t *body_init_texture_with_info(
+    list_t *shape,
+    double mass,
+    texture_t texture,
+    void *info,
+    free_func_t info_freer
+) {
+    body_t *body = body_init_texture(shape, mass, texture);
+
+    body->aux = info;
+    body->freer = info_freer;
+
+    return body;
+}
+
+
 body_t *body_init_with_info(
     list_t *shape,
     double mass,
@@ -81,12 +88,7 @@ body_t *body_init_with_info(
     void *info,
     free_func_t info_freer
 ) {
-    body_t *body = body_init(shape, mass, color);
-
-    body->aux = info;
-    body->freer = info_freer;
-
-    return body;
+    return body_init_texture_with_info(shape, mass, texture_color(color), info, info_freer);
 }
 
 void body_free(body_t *body) {
@@ -138,8 +140,8 @@ double body_get_mass(const body_t *body) {
     return body->mass;
 }
 
-rgb_color_t body_get_color(const body_t *body) {
-    return body->color;
+texture_t body_get_texture(const body_t *body) {
+    return body->texture;
 }
 
 void *body_get_info(body_t *body) {
