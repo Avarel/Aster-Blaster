@@ -296,7 +296,7 @@ body_t *body_init_black_hole(
         body_t *other_body = scene_get_body(scene, i);
         aster_aux_t *other_aux = body_get_info(other_body);
         if (other_aux != NULL) {
-            if (other_aux->body_type != BULLET) {
+            if (other_aux->body_type == BULLET) {
                 create_super_gravity(scene, 10 * G, other_body, black_hole, true);
                 create_destructive_collision_single(scene, other_body, black_hole);
             }
