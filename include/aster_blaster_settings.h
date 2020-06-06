@@ -22,7 +22,7 @@ char MENU_GAME_START_TEXT[] = "Press space to begin!\0";
 #define MENU_GAME_START_JUSTIFICATION CENTER
 
 //Global Settings
-#define G 10
+#define G 50
 
 // Player body settings
 #define PLAYER_MASS 100
@@ -96,7 +96,7 @@ char MENU_GAME_START_TEXT[] = "Press space to begin!\0";
 #define BLACK_HOLE_OUT_RADIUS 50
 #define BLACK_HOLE_IN_RADIUS 45
 #define BLACK_HOLE_POINTS 30
-#define BLACK_HOLE_MASS 300
+#define BLACK_HOLE_MASS 500
 #define BLACK_HOLE_SPEED 100
 #define BLACK_HOLE_IN_COLOR ((rgb_color_t){0, 0, 0})
 #define BLACK_HOLE_OUT_COLOR ((rgb_color_t){0.8, 0.4, 0})
