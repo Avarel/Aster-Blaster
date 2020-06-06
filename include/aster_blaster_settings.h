@@ -22,7 +22,7 @@ char MENU_GAME_START_TEXT[] = "Press space to begin!\0";
 #define MENU_GAME_START_JUSTIFICATION CENTER
 
 //Global Settings
-#define G 50
+#define G 10
 
 // Player body settings
 #define PLAYER_MASS 100
@@ -31,7 +31,6 @@ char MENU_GAME_START_TEXT[] = "Press space to begin!\0";
 #define PLAYER_SIDES 15
 #define PLAYER_SECTOR_SIDES 12
 #define PLAYER_ANGLE (M_PI / 2)
-#define PLAYER_MASS 100
 #define PLAYER_COLOR ((rgb_color_t){0.8, 0.3, 0.5})
 #define PLAYER_VELOCITY 1000
 #define PLAYER_ACCELERATION 3000
