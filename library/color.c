@@ -1,12 +1,8 @@
 #include "color.h"
 
-#include "sdl_wrapper.h"
+
 #include "text_box.h"
 #include "utils.h"
-#include <SDL2/SDL.h>
-#include <SDL2/SDL2_gfxPrimitives.h>
-#include <SDL2/SDL_ttf.h>
-#include <SDL2/SDL_image.h>
 #include <assert.h>
 #include <math.h>
 #include <stdlib.h>
@@ -14,6 +10,9 @@
 
 #include <assert.h>
 #include <math.h>
+#include "sdl_wrapper.h"
+#include <SDL2/SDL_surface.h>
+#include <SDL2/SDL_image.h>
 
 const rgb_color_t COLOR_BLACK = {.r = 0, .g = 0, .b = 0};
 const rgb_color_t COLOR_WHITE = {.r = 1, .g = 1, .b = 1};
@@ -22,11 +21,10 @@ texture_t texture_color(rgb_color_t color) {
     return (texture_t){.type = COLOR, .data = (texture_data_t){.color = color}};
 }
 
-texture_t texture_image(char *file) {
-    return texture_color(COLOR_BLACK);
-    // SDL_Surface *surface = IMG_Load(file);
-    // assert(surface != NULL);
-    // return (texture_t){.type = SURFACE, .data = (texture_data_t){.surface = surface}};
+texture_t texture_image(SDL_Surface *surface) {
+    // return texture_color(COLOR_BLACK);
+    assert(surface != NULL);
+    return (texture_t){.type = SURFACE, .data = (texture_data_t){.surface = surface}};
 }
 
 rgb_color_t rgb(float r, float g, float b) {

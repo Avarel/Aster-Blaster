@@ -20,7 +20,7 @@
 // demo modules
 #include "aster_blaster_settings.h"
 #include "aster_blaster_typedefs.h"
-
+#include <SDL2/SDL_image.h>
 
 // TODO: split into more demo modules (e.g. aster_blaster_body_inits)?
 /********************
@@ -550,7 +550,9 @@ void game_loop() {
 
     bool to_menu = false;
 
-    texture_t asteroid_texture = texture_color(ASTEROID_COLOR); //texture_image("./asteroid.png");
+    SDL_Surface *surface = IMG_Load("./asteroid.png");
+
+    texture_t asteroid_texture = texture_image(surface); //texture_image("./asteroid.png");
 
     while (!sdl_is_done(game_keypress_aux)) {
         double dt = time_since_last_tick();
@@ -601,6 +603,8 @@ void game_loop() {
 
     free(game_keypress_aux);
     scene_free(scene);
+
+    SDL_FreeSurface(surface);
 
     if (to_menu) {
         menu_loop();

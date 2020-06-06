@@ -1,6 +1,6 @@
 #ifndef __COLOR_H__
 #define __COLOR_H__
-#include <SDL2/SDL.h>
+
 #include <SDL2/SDL_surface.h>
 
 /**
@@ -41,7 +41,7 @@ extern const rgb_color_t COLOR_WHITE;
 
 texture_t texture_color(rgb_color_t color);
 
-texture_t texture_image(char *file);
+texture_t texture_image(SDL_Surface *surface);
 
 /**
  * Returns a rgb_color_t value made from the given arguments.
