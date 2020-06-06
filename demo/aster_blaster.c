@@ -293,8 +293,6 @@ body_t *body_init_black_hole_decal(body_t *black_hole) {
                 other_aux->body_type == ENEMY_SAW) {
                 create_newtonian_gravity(scene, G, other_body, black_hole, true);
                 create_destructive_collision_single(scene, other_body, black_hole);
-            } else if (other_aux->body_type == BLACK_HOLE) {
-                create_newtonian_gravity(scene, G, other_body, black_hole, false);
             } else if (other_aux->body_type == PLAYER) {
                 create_newtonian_gravity(scene, G, other_body, black_hole, true);
                 create_collision(scene, black_hole, other_body, create_health_collision, NULL, NULL);
