@@ -266,13 +266,7 @@ void spawn_bullet(scene_t *scene, body_t *player, body_t *bound) {
 /********************
  * BLACK HOLES
  ********************/
-body_t *body_init_black_hole_decal(body_t *black_hole) {
-    list_t* decal_shape = polygon_reg_ngon(body_get_centroid(black_hole), BLACK_HOLE_IN_RADIUS, BLACK_HOLE_POINTS);
-    body_t *decal = body_init(decal_shape, 0, BLACK_HOLE_IN_COLOR);
-    return decal;
-}
-
- body_t *body_init_black_hole(
+body_t *body_init_black_hole(
     vector_t pos,
     scene_t *scene,
     body_t *left_bound,
@@ -280,10 +274,10 @@ body_t *body_init_black_hole_decal(body_t *black_hole) {
     body_t *top_bound,
     body_t *bottom_bound) {
 
-    list_t *shape = polygon_reg_ngon(pos, BLACK_HOLE_OUT_RADIUS, BLACK_HOLE_POINTS);
+    list_t *shape = polygon_reg_ngon(pos, BLACK_HOLE_RADIUS, BLACK_HOLE_POINTS);
     aster_aux_t *aster_aux = malloc(sizeof(aster_aux_t));
     aster_aux->body_type = BLACK_HOLE;
-    body_t *black_hole = body_init_with_info(shape, BLACK_HOLE_MASS, BLACK_HOLE_OUT_COLOR, aster_aux, free);
+    body_t *black_hole = body_init_with_info(shape, BLACK_HOLE_MASS, BLACK_HOLE_COLOR, aster_aux, free);
 
     //if the black hole spawns at the left of the screen, x velocity should be
     //positive, so theta between 3*pi/2 and 2*pi
@@ -327,13 +321,9 @@ void spawn_black_hole(scene_t *scene,
     body_t *bottom_bound) {
 
     double bh_x = drand_range(SDL_MIN.x, SDL_MAX.x);
-    vector_t bh_center = vec(bh_x, SDL_MAX.y + BLACK_HOLE_OUT_RADIUS);
+    vector_t bh_center = vec(bh_x, SDL_MAX.y + BLACK_HOLE_RADIUS);
     body_t *black_hole = body_init_black_hole(bh_center, scene, left_bound, right_bound, top_bound, bottom_bound);
     scene_add_body(scene, black_hole);
-
-    // body_t *decal = body_init_black_hole_decal(black_hole);
-    // body_add_decal(black_hole, decal);
-    // scene_add_body(scene, decal);
 }
 
 /********************

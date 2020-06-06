@@ -22,7 +22,7 @@ char MENU_GAME_START_TEXT[] = "Press space to begin!\0";
 #define MENU_GAME_START_JUSTIFICATION CENTER
 
 //Global Settings
-#define G 100
+#define G 10
 
 // Player body settings
 #define PLAYER_MASS 100
@@ -101,14 +101,11 @@ char MENU_GAME_START_TEXT[] = "Press space to begin!\0";
 #define ENEMY_SHOOTER_A 0.65
 
 // Black Hole settings
-const double BLACK_HOLE_OUT_RADIUS = 50;
-const double BLACK_HOLE_IN_RADIUS = 45;
+const double BLACK_HOLE_RADIUS = 50;
 const double BLACK_HOLE_POINTS = 30;
 const double BLACK_HOLE_MASS = 5e5;
 const double BLACK_HOLE_SPEED = 100;
-const rgb_color_t BLACK_HOLE_IN_COLOR = ((rgb_color_t){0, 0, 0});
-// const rgb_color_t BLACK_HOLE_OUT_COLOR = ((rgb_color_t){0.8, 0.4, 0});
-const rgb_color_t BLACK_HOLE_OUT_COLOR = ((rgb_color_t){0.2, 0, 0.4});
+const rgb_color_t BLACK_HOLE_COLOR = ((rgb_color_t){0.2, 0, 0.4});
 const double BLACK_HOLE_SPAWN_CHANCE = 0.33;
 const double BLACK_HOLE_SPAWN_RATE = 10;
 const double BLACK_HOLE_A = 1;
