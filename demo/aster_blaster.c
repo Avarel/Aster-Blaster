@@ -264,7 +264,7 @@ body_t *body_init_black_hole_decal(body_t *black_hole) {
      list_t *shape = polygon_reg_ngon(pos, BLACK_HOLE_OUT_RADIUS, BLACK_HOLE_POINTS);
      aster_aux_t *aster_aux = malloc(sizeof(aster_aux_t));
      aster_aux->body_type = BLACK_HOLE;
-     body_t *black_hole = body_init_with_info(shape, 0, BLACK_HOLE_OUT_COLOR, aster_aux, free);
+     body_t *black_hole = body_init_with_info(shape, BLACK_HOLE_MASS, BLACK_HOLE_OUT_COLOR, aster_aux, free);
 
      create_newtonian_gravity(scene, G, player, black_hole, true);
      create_collision(scene, black_hole, player, create_health_collision, NULL, NULL);
@@ -276,10 +276,11 @@ body_t *body_init_black_hole_decal(body_t *black_hole) {
 void spawn_black_hole(scene_t *scene, body_t *player) {
     vector_t pos = vec(0.8 * SDL_MAX.x, SDL_MAX.y / 2);
     body_t *black_hole = body_init_black_hole(pos, scene, player);
+    scene_add_body(scene, black_hole);
+
     body_t *decal = body_init_black_hole_decal(black_hole);
     body_add_decal(black_hole, decal);
     scene_add_body(scene, decal);
-    scene_add_body(scene, black_hole);
 }
 /********************
  * BODY INITS
