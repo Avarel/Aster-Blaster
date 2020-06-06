@@ -259,21 +259,66 @@ body_t *body_init_black_hole_decal(body_t *black_hole) {
     return decal;
 }
 
- body_t *body_init_black_hole(vector_t pos, scene_t *scene, body_t *player) {
-     list_t *shape = polygon_reg_ngon(pos, BLACK_HOLE_OUT_RADIUS, BLACK_HOLE_POINTS);
-     aster_aux_t *aster_aux = malloc(sizeof(aster_aux_t));
-     aster_aux->body_type = BLACK_HOLE;
-     body_t *black_hole = body_init_with_info(shape, BLACK_HOLE_MASS, BLACK_HOLE_OUT_COLOR, aster_aux, free);
+ body_t *body_init_black_hole(
+    vector_t pos,
+    scene_t *scene,
+    body_t *left_bound,
+    body_t *right_bound,
+    body_t *top_bound,
+    body_t *bottom_bound) {
 
-     create_newtonian_gravity(scene, G, player, black_hole, true);
-     create_collision(scene, black_hole, player, create_health_collision, NULL, NULL);
+    list_t *shape = polygon_reg_ngon(pos, BLACK_HOLE_OUT_RADIUS, BLACK_HOLE_POINTS);
+    aster_aux_t *aster_aux = malloc(sizeof(aster_aux_t));
+    aster_aux->body_type = BLACK_HOLE;
+    body_t *black_hole = body_init_with_info(shape, BLACK_HOLE_MASS, BLACK_HOLE_OUT_COLOR, aster_aux, free);
 
-     return black_hole;
+    //if the black hole spawns at the left of the screen, x velocity should be
+    //positive, so theta between 3*pi/2 and 2*pi
+    //otherwise, theta between pi and 3*pi/2, so x velocity is negative
+    double theta = 0;
+    double midpoint = (SDL_MAX.x - SDL_MIN.x) / 2;
+    if (body_get_centroid(black_hole).x < midpoint) {
+        theta = drand_range(3 * M_PI / 2, 2 * M_PI);
+    } else {
+        theta = drand_range(M_PI, 3 * M_PI / 2);
+    }
+    vector_t bh_velocity = vec(BLACK_HOLE_SPEED * cos(theta), BLACK_HOLE_SPEED * sin(theta));
+    body_set_velocity(black_hole, bh_velocity);
+
+    for (size_t i = 0; i < scene_bodies(scene) - 1; i++) {
+        body_t *other_body = scene_get_body(scene, i);
+        aster_aux_t *other_aux = body_get_info(other_body);
+        if (other_aux != NULL) {
+            if (other_aux->body_type == BULLET || other_aux->body_type == ASTEROID ||
+                other_aux->body_type == ENEMY_SAW) {
+                create_newtonian_gravity(scene, G, other_body, black_hole, true);
+                create_destructive_collision_single(scene, other_body, black_hole);
+            } else if (other_aux->body_type == BLACK_HOLE) {
+                create_newtonian_gravity(scene, G, other_body, black_hole, false);
+            } else if (other_aux->body_type == PLAYER) {
+                create_newtonian_gravity(scene, G, other_body, black_hole, true);
+                create_collision(scene, black_hole, other_body, create_health_collision, NULL, NULL);
+            }
+        }
+    }
+
+    create_destructive_collision_single(scene, black_hole, top_bound);
+    create_destructive_collision_single(scene, black_hole, bottom_bound);
+    create_destructive_collision_single(scene, black_hole, right_bound);
+    create_destructive_collision_single(scene, black_hole, left_bound);
+
+    return black_hole;
  }
 
-void spawn_black_hole(scene_t *scene, body_t *player) {
-    vector_t pos = vec(0.8 * SDL_MAX.x, SDL_MAX.y / 2);
-    body_t *black_hole = body_init_black_hole(pos, scene, player);
+void spawn_black_hole(scene_t *scene,
+    body_t *left_bound,
+    body_t *right_bound,
+    body_t *top_bound,
+    body_t *bottom_bound) {
+
+    double bh_x = drand_range(SDL_MIN.x, SDL_MAX.x);
+    vector_t bh_center = vec(bh_x, SDL_MAX.y + BLACK_HOLE_OUT_RADIUS);
+    body_t *black_hole = body_init_black_hole(bh_center, scene, left_bound, right_bound, top_bound, bottom_bound);
     scene_add_body(scene, black_hole);
 
     body_t *decal = body_init_black_hole_decal(black_hole);
@@ -498,16 +543,18 @@ void game_loop() {
 
     size_t frame = 0;
     double ast_time = 0;
+    double bh_time = 0;
     double bullet_time = BULLET_COOLDOWN; // time since last bullet being fired
 
     spawn_saw_enemy(scene, player);
-    spawn_black_hole(scene, player);
+    spawn_black_hole(scene, left_bound, right_bound, top_bound, bottom_bound);
 
     bool to_menu = false;
 
     while (!sdl_is_done(game_keypress_aux)) {
         double dt = time_since_last_tick();
         ast_time += dt;
+        bh_time += dt;
         bullet_time += dt;
 
         //ast_time completely resets when an asteroid spawns
@@ -519,6 +566,18 @@ void game_loop() {
             if (spawn_chance < ASTEROID_SPAWN_CHANCE) {
                 ast_time = 0;
                 spawn_asteroid(scene, left_bound, right_bound, top_bound, bottom_bound);
+            }
+        }
+
+        // bh_time completely resets when an black hole spawns
+        // and decreases by half when it's met without an black hole spawning
+        if (bh_time >= BLACK_HOLE_SPAWN_RATE) {
+            bh_time = BLACK_HOLE_SPAWN_RATE / 2;
+            double spawn_chance = drand48();
+
+            if (spawn_chance < BLACK_HOLE_SPAWN_CHANCE) {
+                bh_time = 0;
+                spawn_black_hole(scene, left_bound, right_bound, top_bound, bottom_bound);
             }
         }
 
