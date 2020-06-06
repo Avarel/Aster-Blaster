@@ -265,7 +265,7 @@ body_t *body_init_black_hole_decal(body_t *black_hole) {
      aster_aux->body_type = BLACK_HOLE;
      body_t *black_hole = body_init_with_info(shape, BLACK_HOLE_MASS, BLACK_HOLE_OUT_COLOR, aster_aux, free);
 
-     create_newtonian_gravity(scene, G, player, black_hole, false);
+     create_newtonian_gravity(scene, G, player, black_hole, true);
      create_collision(scene, black_hole, player, create_health_collision, NULL, NULL);
 
      return black_hole;

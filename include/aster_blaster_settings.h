@@ -22,7 +22,7 @@ char MENU_GAME_START_TEXT[] = "Press space to begin!\0";
 #define MENU_GAME_START_JUSTIFICATION CENTER
 
 //Global Settings
-#define G 10
+#define G 100
 
 // Player body settings
 #define PLAYER_MASS 100
