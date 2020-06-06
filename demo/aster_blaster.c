@@ -162,9 +162,9 @@ void spawn_asteroid(
     body_t *right_bound,
     body_t *top_bound,
     body_t *bottom_bound,
-    texture_t texture) {
+    SDL_Texture *tex) {
     // TODO: random later
-    size_t num_sides = irand_range(ASTEROID_SIDES_MIN, ASTEROID_SIDES_MAX);
+    size_t num_sides = 10; //irand_range(ASTEROID_SIDES_MIN, ASTEROID_SIDES_MAX);
     double ast_radius = drand_range(ASTEROID_RADIUS_MIN, ASTEROID_RADIUS_MAX);
     double ast_x = drand_range(SDL_MIN.x, SDL_MAX.x);
     vector_t ast_center = vec(ast_x, SDL_MAX.y + ast_radius);
@@ -184,9 +184,12 @@ void spawn_asteroid(
     aster_aux_t *asteroid_aux = malloc(sizeof(aster_aux_t));
     asteroid_aux->body_type = ASTEROID;
 
+    render_info_t texture = render_texture(tex, ast_radius * 2, ast_radius * 2);
+
     list_t *aster_shape = polygon_reg_ngon(ast_center, ast_radius, num_sides);
     body_t *asteroid = body_init_texture_with_info(aster_shape, ASTEROID_MASS, texture, asteroid_aux, free);
     body_set_velocity(asteroid, ast_velocity);
+    body_set_omega(asteroid, M_PI);
 
     scene_add_body(scene, asteroid);
     for (size_t i = 0; i < scene_bodies(scene) - 1; i++) {
@@ -550,9 +553,7 @@ void game_loop() {
 
     bool to_menu = false;
 
-    SDL_Surface *surface = IMG_Load("./asteroid.png");
-
-    texture_t asteroid_texture = texture_image(surface); //texture_image("./asteroid.png");
+    SDL_Texture *tex = sdl_load_texture("./asteroid.png");
 
     while (!sdl_is_done(game_keypress_aux)) {
         double dt = time_since_last_tick();
@@ -568,7 +569,7 @@ void game_loop() {
 
             if (spawn_chance < ASTEROID_SPAWN_CHANCE) {
                 ast_time = 0;
-                spawn_asteroid(scene, left_bound, right_bound, top_bound, bottom_bound, asteroid_texture);
+                spawn_asteroid(scene, left_bound, right_bound, top_bound, bottom_bound, tex);
             }
         }
 
@@ -603,8 +604,7 @@ void game_loop() {
 
     free(game_keypress_aux);
     scene_free(scene);
-
-    SDL_FreeSurface(surface);
+    SDL_DestroyTexture(tex);
 
     if (to_menu) {
         menu_loop();

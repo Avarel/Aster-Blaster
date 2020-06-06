@@ -20,7 +20,7 @@ typedef struct body body_t;
  */
 body_t *body_init(list_t *shape, double mass, rgb_color_t color);
 
-body_t *body_init_texture(list_t *shape, double mass, texture_t texture);
+body_t *body_init_texture(list_t *shape, double mass, render_info_t texture);
 
 /**
  * Allocates memory for a body with the given parameters.
@@ -46,7 +46,7 @@ body_t *body_init_with_info(
 body_t *body_init_texture_with_info(
     list_t *shape,
     double mass,
-    texture_t texture,
+    render_info_t texture,
     void *info,
     free_func_t info_freer
 );
@@ -125,6 +125,8 @@ vector_t body_get_velocity(const body_t *body);
  */
 vector_t body_get_acceleration(const body_t *body);
 
+double body_get_angle(const body_t *body);
+
 /**
  * Gets the current angular velocity of a body.
  *
@@ -147,7 +149,7 @@ double body_get_mass(const body_t *body);
  * @param body a pointer to a body returned from body_init()
  * @return the color passed to body_init(), as an (R, G, B) tuple
  */
-texture_t body_get_texture(const body_t *body);
+render_info_t body_get_texture(const body_t *body);
 
 /**
  * Gets the information associated with a body.

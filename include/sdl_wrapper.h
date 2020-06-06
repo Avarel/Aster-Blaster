@@ -7,6 +7,7 @@
 #include "scene.h"
 #include "vector.h"
 #include "text_box.h"
+#include <SDL2/SDL_render.h>
 
 // Values passed to a key handler when the given arrow key is pressed
 #define LEFT_ARROW 1
@@ -81,7 +82,7 @@ void sdl_clear_black(void);
  * @param points the list of vertices of the polygon
  * @param color the color used to fill in the polygon
  */
-void sdl_draw_polygon(const list_t *points, texture_t color);
+void sdl_draw_polygon(const body_t *body);
 
 /**
  * Displays the rendered frame on the SDL window.
@@ -134,6 +135,8 @@ void sdl_render_scene_black(const scene_t *scene);
  * @param handler the function to call with each key press
  */
 void sdl_on_key(key_handler_t handler);
+
+SDL_Texture *sdl_load_texture(char *file);
 
 /**
  * Gets the amount of time that has passed since the last time

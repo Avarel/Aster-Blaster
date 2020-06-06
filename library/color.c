@@ -11,20 +11,18 @@
 #include <assert.h>
 #include <math.h>
 #include "sdl_wrapper.h"
-#include <SDL2/SDL_surface.h>
 #include <SDL2/SDL_image.h>
 
 const rgb_color_t COLOR_BLACK = {.r = 0, .g = 0, .b = 0};
 const rgb_color_t COLOR_WHITE = {.r = 1, .g = 1, .b = 1};
 
-texture_t texture_color(rgb_color_t color) {
-    return (texture_t){.type = COLOR, .data = (texture_data_t){.color = color}};
+render_info_t render_color(rgb_color_t color) {
+    return (render_info_t){.type = COLOR, .data = (texture_data_t){.color = color}};
 }
 
-texture_t texture_image(SDL_Surface *surface) {
-    // return texture_color(COLOR_BLACK);
-    assert(surface != NULL);
-    return (texture_t){.type = SURFACE, .data = (texture_data_t){.surface = surface}};
+render_info_t render_texture(SDL_Texture *tex, int w, int h) {
+    assert(tex != NULL);
+    return (render_info_t){.type = TEX, .data = (texture_data_t){.texture = { tex, w, h}}};
 }
 
 rgb_color_t rgb(float r, float g, float b) {

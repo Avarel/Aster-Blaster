@@ -1,7 +1,7 @@
 #ifndef __COLOR_H__
 #define __COLOR_H__
 
-#include <SDL2/SDL_surface.h>
+#include <SDL2/SDL_render.h>
 
 /**
  * A color to display on the screen.
@@ -14,20 +14,24 @@ typedef struct rgb_color {
     float b;
 } rgb_color_t;
 
-typedef enum texture_type {
+typedef enum render_type {
     COLOR,
-    SURFACE
-} texture_type_e;
+    TEX
+} render_type_e;
 
-typedef union texture_data {
-    SDL_Surface *surface;
+typedef union render_data {
+    struct {
+        SDL_Texture *tex;
+        int w;
+        int h;
+    } texture;
     rgb_color_t color;
 } texture_data_t;
 
-typedef struct texture {
-    texture_type_e type;
+typedef struct render_info {
+    render_type_e type;
     texture_data_t data;
-} texture_t;
+} render_info_t;
 
 /**
  * The black color, i.e. (0, 0, 0).
@@ -39,9 +43,9 @@ extern const rgb_color_t COLOR_BLACK;
  */
 extern const rgb_color_t COLOR_WHITE;
 
-texture_t texture_color(rgb_color_t color);
+render_info_t render_color(rgb_color_t color);
 
-texture_t texture_image(SDL_Surface *surface);
+render_info_t render_texture(SDL_Texture *tex, int w, int h);
 
 /**
  * Returns a rgb_color_t value made from the given arguments.

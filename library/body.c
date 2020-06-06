@@ -24,7 +24,7 @@ typedef struct body {
 
     bool manual_acceleration;
 
-    texture_t texture;
+    render_info_t texture;
 
     bool destroy;
 
@@ -34,7 +34,7 @@ typedef struct body {
     free_func_t freer;
 } body_t;
 
-body_t *body_init_texture(list_t *shape, double mass, texture_t texture) {
+body_t *body_init_texture(list_t *shape, double mass, render_info_t texture) {
     body_t *body = malloc(sizeof(body_t));
     assert(body != NULL);
 
@@ -62,13 +62,13 @@ body_t *body_init_texture(list_t *shape, double mass, texture_t texture) {
 }
 
 body_t *body_init(list_t *shape, double mass, rgb_color_t color) {
-    return body_init_texture(shape, mass, texture_color(color));
+    return body_init_texture(shape, mass, render_color(color));
 }
 
 body_t *body_init_texture_with_info(
     list_t *shape,
     double mass,
-    texture_t texture,
+    render_info_t texture,
     void *info,
     free_func_t info_freer
 ) {
@@ -88,7 +88,7 @@ body_t *body_init_with_info(
     void *info,
     free_func_t info_freer
 ) {
-    return body_init_texture_with_info(shape, mass, texture_color(color), info, info_freer);
+    return body_init_texture_with_info(shape, mass, render_color(color), info, info_freer);
 }
 
 void body_free(body_t *body) {
@@ -132,6 +132,10 @@ bool body_get_manual_acceleration(const body_t *body) {
     return body->manual_acceleration;
 }
 
+double body_get_angle(const body_t *body) {
+    return body->theta;
+}
+
 double body_get_omega(const body_t *body) {
     return body->omega;
 }
@@ -140,7 +144,7 @@ double body_get_mass(const body_t *body) {
     return body->mass;
 }
 
-texture_t body_get_texture(const body_t *body) {
+render_info_t body_get_texture(const body_t *body) {
     return body->texture;
 }
 

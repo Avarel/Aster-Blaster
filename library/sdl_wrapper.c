@@ -3,8 +3,9 @@
 #include "utils.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL2_gfxPrimitives.h>
-#include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL_image.h>
+#include <SDL2/SDL_render.h>
+#include <SDL2/SDL_ttf.h>
 #include <assert.h>
 #include <math.h>
 #include <stdlib.h>
@@ -187,7 +188,8 @@ void sdl_clear_black(void) {
     SDL_RenderClear(renderer);
 }
 
-void sdl_draw_polygon(const list_t *points, texture_t texture) {
+void sdl_draw_polygon(const body_t *body) {
+    const list_t *points = body_borrow_shape(body);
     // Check parameters
     size_t n = list_size(points);
     assert(n >= 3);
@@ -206,6 +208,7 @@ void sdl_draw_polygon(const list_t *points, texture_t texture) {
         y_points[i] = pixel.y;
     }
 
+    render_info_t texture = body_get_texture(body);
     // Draw polygon with the given color
     if (texture.type == COLOR) {
         rgb_color_t color = texture.data.color;
@@ -216,9 +219,18 @@ void sdl_draw_polygon(const list_t *points, texture_t texture) {
             renderer,
             x_points, y_points, n,
             color.r * 255, color.g * 255, color.b * 255, 255);
-    } else if (texture.type == SURFACE) {
-        SDL_Surface *surface = texture.data.surface;
-        texturedPolygon(renderer, x_points, y_points, n, surface, 0, 0);
+    } else if (texture.type == TEX) {
+        SDL_Texture *tex = texture.data.texture.tex;
+
+        vector_t pos = get_window_position(body_get_centroid(body), get_window_center());
+        int w = texture.data.texture.w;
+        int h = texture.data.texture.h;
+        int x = pos.x - w / 2;
+        int y = pos.y - h / 2;
+        double angle = body_get_angle(body);
+
+        SDL_RenderCopyEx(renderer, tex, NULL, &(SDL_Rect){x, y, w, h}, -angle * 180 / M_PI, NULL, 0);
+        // texturedPolygon(renderer, x_points, y_points, n, surface, pos.x, pos.y);
     }
 
     free(x_points);
@@ -309,8 +321,7 @@ void sdl_render_scene(const scene_t *scene) {
     size_t body_count = scene_bodies(scene);
     for (size_t i = 0; i < body_count; i++) {
         const body_t *body = scene_borrow_body(scene, i);
-        const list_t *shape = body_borrow_shape(body);
-        sdl_draw_polygon(shape, body_get_texture(body));
+        sdl_draw_polygon(body);
     }
     size_t text_box_count = scene_text_boxes(scene);
     for (size_t i = 0; i < text_box_count; i++) {
@@ -325,8 +336,7 @@ void sdl_render_scene_black(const scene_t *scene) {
     size_t body_count = scene_bodies(scene);
     for (size_t i = 0; i < body_count; i++) {
         const body_t *body = scene_borrow_body(scene, i);
-        const list_t *shape = body_borrow_shape(body);
-        sdl_draw_polygon(shape, body_get_texture(body));
+        sdl_draw_polygon(body);
     }
     size_t text_box_count = scene_text_boxes(scene);
     for (size_t i = 0; i < text_box_count; i++) {
@@ -337,6 +347,10 @@ void sdl_render_scene_black(const scene_t *scene) {
 
 void sdl_on_key(key_handler_t handler) {
     key_handler = handler;
+}
+
+SDL_Texture *sdl_load_texture(char *file) {
+    return IMG_LoadTexture(renderer, file);
 }
 
 double time_since_last_tick(void) {
