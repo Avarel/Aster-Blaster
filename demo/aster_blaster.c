@@ -255,7 +255,7 @@ void spawn_bullet(scene_t *scene, body_t *player, body_t *bound) {
                 create_aster_bullet_collision(scene, other_body, bullet);
             }
             else if (other_aux->body_type == BLACK_HOLE) {
-                create_super_gravity(scene, G, bullet, other_body, true);
+                create_super_gravity(scene, 10 * G, bullet, other_body, true);
                 create_destructive_collision_single(scene, bullet, other_body);
             }
         }
@@ -296,7 +296,11 @@ body_t *body_init_black_hole(
         body_t *other_body = scene_get_body(scene, i);
         aster_aux_t *other_aux = body_get_info(other_body);
         if (other_aux != NULL) {
-            if (other_aux->body_type != BLACK_HOLE && other_aux->body_type != PLAYER) {
+            if (other_aux->body_type != BULLET) {
+                create_super_gravity(scene, 10 * G, other_body, black_hole, true);
+                create_destructive_collision_single(scene, other_body, black_hole);
+            }
+            else if (other_aux->body_type != BLACK_HOLE && other_aux->body_type != PLAYER) {
                 create_super_gravity(scene, G, other_body, black_hole, true);
                 create_destructive_collision_single(scene, other_body, black_hole);
             } else if (other_aux->body_type == PLAYER) {
