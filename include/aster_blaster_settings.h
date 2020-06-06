@@ -21,6 +21,9 @@ char MENU_GAME_START_TEXT[] = "Press space to begin!\0";
 #define MENU_GAME_START_ORIGIN ((vector_t){.x = 0.5 * SDL_MAX.x, .y = 0.6 * SDL_MAX.y})
 #define MENU_GAME_START_JUSTIFICATION CENTER
 
+//Global Settings
+#define G 9.8
+
 // Player body settings
 #define PLAYER_MASS 100
 #define PLAYER_INIT_POS ((vector_t){.x = SDL_MAX.x / 2, .y = 0.1 * SDL_MAX.y})
@@ -88,6 +91,18 @@ char MENU_GAME_START_TEXT[] = "Press space to begin!\0";
 #define ENEMY_SAW_ELASTICITY 2
 #define ENEMY_SAW_OMEGA (1.5 * M_PI)
 #define ENEMY_SAW_A 1
+
+// Black Hole settings
+#define BLACK_HOLE_OUT_RADIUS 50
+#define BLACK_HOLE_IN_RADIUS 45
+#define BLACK_HOLE_POINTS 30
+#define BLACK_HOLE_MASS 300
+#define BLACK_HOLE_SPEED 100
+#define BLACK_HOLE_IN_COLOR ((rgb_color_t){0, 0, 0})
+#define BLACK_HOLE_OUT_COLOR ((rgb_color_t){0.8, 0.4, 0})
+#define BLACK_HOLE_SPAWN_CHANCE 0.33
+#define BLACK_HOLE_SPAWN_RATE 0.05
+
 
 #define DEBUG_PRINT_RATE 200
 
