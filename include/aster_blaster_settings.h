@@ -107,9 +107,11 @@ const double BLACK_HOLE_POINTS = 30;
 const double BLACK_HOLE_MASS = 5e5;
 const double BLACK_HOLE_SPEED = 100;
 const rgb_color_t BLACK_HOLE_IN_COLOR = ((rgb_color_t){0, 0, 0});
-const rgb_color_t BLACK_HOLE_OUT_COLOR = ((rgb_color_t){0.8, 0.4, 0});
+// const rgb_color_t BLACK_HOLE_OUT_COLOR = ((rgb_color_t){0.8, 0.4, 0});
+const rgb_color_t BLACK_HOLE_OUT_COLOR = ((rgb_color_t){0.2, 0, 0.4});
 const double BLACK_HOLE_SPAWN_CHANCE = 0.33;
 const double BLACK_HOLE_SPAWN_RATE = 10;
+const double BLACK_HOLE_A = 1;
 
 #define DEBUG_PRINT_RATE 200
 

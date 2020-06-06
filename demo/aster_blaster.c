@@ -294,12 +294,13 @@ body_t *body_init_black_hole_decal(body_t *black_hole) {
         body_t *other_body = scene_get_body(scene, i);
         aster_aux_t *other_aux = body_get_info(other_body);
         if (other_aux != NULL) {
-            if (other_aux->body_type == BULLET || other_aux->body_type == ASTEROID ||
-                other_aux->body_type == ENEMY_SAW) {
-                create_newtonian_gravity(scene, G, other_body, black_hole, true);
+            if (other_aux->body_type != BLACK_HOLE && other_aux->body_type != PLAYER) {
+                // create_newtonian_gravity(scene, G, other_body, black_hole, true);
+                create_inverse_attraction(scene, BLACK_HOLE_A, other_body, black_hole, true);
                 create_destructive_collision_single(scene, other_body, black_hole);
             } else if (other_aux->body_type == PLAYER) {
-                create_newtonian_gravity(scene, G, other_body, black_hole, true);
+                // create_newtonian_gravity(scene, G, other_body, black_hole, true);
+                create_inverse_attraction(scene, BLACK_HOLE_A, other_body, black_hole, true);
                 create_collision(scene, black_hole, other_body, create_health_collision, NULL, NULL);
             }
         }
@@ -324,9 +325,9 @@ void spawn_black_hole(scene_t *scene,
     body_t *black_hole = body_init_black_hole(bh_center, scene, left_bound, right_bound, top_bound, bottom_bound);
     scene_add_body(scene, black_hole);
 
-    body_t *decal = body_init_black_hole_decal(black_hole);
-    body_add_decal(black_hole, decal);
-    scene_add_body(scene, decal);
+    // body_t *decal = body_init_black_hole_decal(black_hole);
+    // body_add_decal(black_hole, decal);
+    // scene_add_body(scene, decal);
 }
 
 /********************

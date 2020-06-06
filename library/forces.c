@@ -152,6 +152,42 @@ void create_pointing_force(scene_t *scene, body_t *body_to_point, body_t *body_p
     scene_add_bodies_force_creator(scene, (force_creator_t)pointing_force_handler, aux, list, free);
 }
 
+// Inverse Attraction force (it scales with the inverse of radius)
+
+typedef struct inverse_attraction_aux {
+    double A;
+    body_t *body1;
+    body_t *body2;
+    bool one_way;
+} inverse_attraction_aux_t;
+
+void inverse_attraction_handler(inverse_attraction_aux_t *aux) {
+    vector_t radius_vector = vec_subtract(body_get_centroid(aux->body2), body_get_centroid(aux->body1));
+    double radius = vec_norm(radius_vector);
+
+    vector_t force =
+        radius >= MIN_RADIUS_FOR_EFFECT ? vec_multiply(-aux->A / radius, vec_normalize(radius_vector))
+                   : VEC_ZERO;
+
+    if (!aux->one_way) {
+        body_set_velocity(aux->body2, force);
+    }
+    body_set_velocity(aux->body1, vec_negate(force));
+}
+
+void create_inverse_attraction(scene_t *scene, double A, body_t *body1, body_t *body2, bool one_way) {
+    inverse_attraction_aux_t *aux = malloc(sizeof(inverse_attraction_aux_t));
+    aux->A = A;
+    aux->body1 = body1;
+    aux->body2 = body2;
+    list_t *list = list_init(2, NULL);
+    list_add(list, body1);
+    list_add(list, body2);
+    aux->one_way = one_way;
+    scene_add_bodies_force_creator(scene, (force_creator_t)inverse_attraction_handler, aux, list, free);
+}
+
+
 // SPRING FORCE
 
 typedef struct spring_aux {
