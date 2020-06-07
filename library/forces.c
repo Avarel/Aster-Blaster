@@ -152,44 +152,6 @@ void create_pointing_force(scene_t *scene, body_t *body_to_point, body_t *body_p
     scene_add_bodies_force_creator(scene, (force_creator_t)pointing_force_handler, aux, list, free);
 }
 
-// SUPER GRAVITY (it scales with 1/r instead of 1/r^2)
-
-typedef struct super_gravity_aux {
-    double G;
-    body_t *body1;
-    body_t *body2;
-    bool one_way;
-} super_gravity_aux_t;
-
-void super_gravity_handler(super_gravity_aux_t *aux) {
-    vector_t radius_vector = vec_subtract(body_get_centroid(aux->body2), body_get_centroid(aux->body1));
-    double radius = vec_norm(radius_vector);
-
-    double mass1 = body_get_mass(aux->body1);
-    double mass2 = body_get_mass(aux->body2);
-    vector_t force =
-        radius >= MIN_RADIUS_FOR_EFFECT ? vec_multiply(-aux->G * mass1 * mass2 / radius, vec_normalize(radius_vector))
-                   : VEC_ZERO;
-
-    if (!aux->one_way) {
-        body_add_force(aux->body2, force);
-    }
-    body_add_force(aux->body1, vec_negate(force));
-}
-
-void create_super_gravity(scene_t *scene, double G, body_t *body1, body_t *body2, bool one_way) {
-    super_gravity_aux_t *aux = malloc(sizeof(super_gravity_aux_t));
-    aux->G = G;
-    aux->body1 = body1;
-    aux->body2 = body2;
-    list_t *list = list_init(2, NULL);
-    list_add(list, body1);
-    list_add(list, body2);
-    aux->one_way = one_way;
-    scene_add_bodies_force_creator(scene, (force_creator_t)super_gravity_handler, aux, list, free);
-}
-
-
 // SPRING FORCE
 
 typedef struct spring_aux {

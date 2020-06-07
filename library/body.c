@@ -28,8 +28,6 @@ typedef struct body {
 
     bool destroy;
 
-    list_t *decals;
-
     void *aux;
     free_func_t freer;
 } body_t;
@@ -51,8 +49,6 @@ body_t *body_init_texture(list_t *shape, double mass, render_info_t texture) {
     body->manual_acceleration = false;
 
     body->texture = texture;
-
-    body->decals = list_init(0, NULL); // NULL b/c scene is charged with freeing the actual bodies
 
     body->destroy = false;
     body->aux = NULL;
@@ -93,16 +89,16 @@ body_t *body_init_with_info(
 
 void body_free(body_t *body) {
     list_free(body->shape);
-    list_free(body->decals);
+    // list_free(body->decals);
     if (body->aux != NULL && body->freer != NULL) {
         body->freer(body->aux);
     }
     free(body);
 }
 
-void body_add_decal(body_t *body, body_t *decal) {
-    list_add(body->decals, decal);
-}
+// void body_add_decal(body_t *body, body_t *decal) {
+//     list_add(body->decals, decal);
+// }
 
 list_t *body_get_shape_cloned(const body_t *body) {
     return list_clone(body->shape, (clone_func_t)vec_clone);
@@ -203,20 +199,10 @@ void body_tick(body_t *body, double dt) {
     body_translate(body, translate);
     double angle = fmod(body->theta + dt * body->omega, 2 * M_PI);
     body_set_rotation(body, angle);
-    for (size_t i = 0; i < list_size(body->decals); i++) {
-        body_t *decal = list_get(body->decals, i);
-        decal->velocity = vel;
-        body_translate(decal, translate);
-        body_set_rotation(decal, angle);
-    } 
 }
 
 void body_remove(body_t *body) {
     body->destroy = true;
-    for (size_t i = 0; i < list_size(body->decals); i++) {
-        body_t *decal = list_get(body->decals, i);
-        decal->destroy = true;
-    }
 }
 
 bool body_is_removed(const body_t *body) {

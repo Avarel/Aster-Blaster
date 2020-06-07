@@ -67,7 +67,7 @@ void body_free(body_t *body);
  * @param body a body to add the decal to
  * @param decal a decal body
  */
-void body_add_decal(body_t *body, body_t *decal);
+// void body_add_decal(body_t *body, body_t *decal);
 
 /**
  * Gets the current shape of a body.

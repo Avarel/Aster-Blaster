@@ -34,4 +34,11 @@ typedef struct menu_keypress_aux {
     window_type_e window;
 } menu_keypress_aux_t;
 
+typedef struct game_bounds {
+    body_t *left;
+    body_t *right;
+    body_t *top;
+    body_t *bottom;
+} game_bounds_t;
+
 #endif // #ifndef __ASTER_BLASTER_TYPEDEFS__

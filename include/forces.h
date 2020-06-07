@@ -31,7 +31,7 @@ typedef void (*collision_handler_t)
  */
 void create_newtonian_gravity(scene_t *scene, double G, body_t *body1, body_t *body2, bool one_way);
 
-void create_super_gravity(scene_t *scene, double G, body_t *body1, body_t *body2, bool one_way);
+// void create_super_gravity(scene_t *scene, double G, body_t *body1, body_t *body2, bool one_way);
 
 void create_attraction(scene_t *scene, double A, body_t *body1, body_t *body2, bool one_way);
 

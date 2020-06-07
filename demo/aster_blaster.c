@@ -138,6 +138,13 @@ void create_destructive_collision_single(scene_t *scene, body_t *body1, body_t *
     create_collision(scene, body1, body_immortal, create_destructive_collision_force_single, NULL, NULL);
 }
 
+void destroy_at_bounds(scene_t *scene, body_t *body, game_bounds_t bounds) {
+    create_destructive_collision_single(scene, body, bounds.left);
+    create_destructive_collision_single(scene, body, bounds.right);
+    create_destructive_collision_single(scene, body, bounds.top);
+    create_destructive_collision_single(scene, body, bounds.bottom);
+}
+
 void create_special_collision_force(body_t *ast, body_t *player, vector_t axis, void *aux) {
     body_remove(ast);
 }
@@ -158,10 +165,7 @@ void create_aster_bullet_collision(scene_t *scene, body_t *ast, body_t *bullet) 
 
 void spawn_asteroid(
     scene_t *scene,
-    body_t *left_bound,
-    body_t *right_bound,
-    body_t *top_bound,
-    body_t *bottom_bound,
+    game_bounds_t bounds,
     SDL_Texture *tex) {
     // TODO: random later
     size_t num_sides = 10; //irand_range(ASTEROID_SIDES_MIN, ASTEROID_SIDES_MAX);
@@ -201,17 +205,13 @@ void spawn_asteroid(
                 create_aster_bullet_collision(scene, asteroid, other_body);
             } else if (other_aux->body_type == PLAYER) {
                 create_aster_player_collision(scene, asteroid, other_body);
-            }
-            else if (other_aux->body_type == BLACK_HOLE) {
-                create_super_gravity(scene, G, asteroid, other_body, true);
+            } else if (other_aux->body_type == BLACK_HOLE) {
+                create_newtonian_gravity(scene, G, asteroid, other_body, true);
                 create_destructive_collision_single(scene, asteroid, other_body);
             }
         }
     }
-    create_destructive_collision_single(scene, asteroid, top_bound);
-    create_destructive_collision_single(scene, asteroid, bottom_bound);
-    create_destructive_collision_single(scene, asteroid, right_bound);
-    create_destructive_collision_single(scene, asteroid, left_bound);
+    destroy_at_bounds(scene, asteroid, bounds);
 }
 
 /********************
@@ -242,9 +242,15 @@ body_t *body_init_bullet(body_t *player) {
     return bullet;
 }
 
-void spawn_bullet(scene_t *scene, body_t *player, body_t *bound) {
+void spawn_bullet(
+    scene_t *scene,
+    body_t *player,
+    game_bounds_t bounds) {
+
     body_t *bullet = body_init_bullet(player);
-    create_destructive_collision_single(scene, bullet, bound);
+
+    destroy_at_bounds(scene, bullet, bounds);
+
     scene_add_body(scene, bullet);
 
     for (size_t i = 0; i < scene_bodies(scene) - 1; i++) {
@@ -253,15 +259,13 @@ void spawn_bullet(scene_t *scene, body_t *player, body_t *bound) {
         if (other_aux != NULL) {
             if (other_aux->body_type == ASTEROID || other_aux->body_type == ENEMY_SAW || other_aux->body_type == ENEMY_SHOOTER) {
                 create_aster_bullet_collision(scene, other_body, bullet);
-            }
-            else if (other_aux->body_type == BLACK_HOLE) {
-                create_super_gravity(scene, 10 * G, bullet, other_body, true);
+            } else if (other_aux->body_type == BLACK_HOLE) {
+                create_newtonian_gravity(scene, G, bullet, other_body, true);
                 create_destructive_collision_single(scene, bullet, other_body);
             }
         }
     }
 }
-
 
 /********************
  * BLACK HOLES
@@ -269,10 +273,7 @@ void spawn_bullet(scene_t *scene, body_t *player, body_t *bound) {
 body_t *body_init_black_hole(
     vector_t pos,
     scene_t *scene,
-    body_t *left_bound,
-    body_t *right_bound,
-    body_t *top_bound,
-    body_t *bottom_bound) {
+    game_bounds_t bounds) {
 
     list_t *shape = polygon_reg_ngon(pos, BLACK_HOLE_RADIUS, BLACK_HOLE_POINTS);
     aster_aux_t *aster_aux = malloc(sizeof(aster_aux_t));
@@ -297,36 +298,27 @@ body_t *body_init_black_hole(
         aster_aux_t *other_aux = body_get_info(other_body);
         if (other_aux != NULL) {
             if (other_aux->body_type == BULLET) {
-                create_super_gravity(scene, 10 * G, other_body, black_hole, true);
+                create_newtonian_gravity(scene, G, other_body, black_hole, true);
                 create_destructive_collision_single(scene, other_body, black_hole);
-            }
-            else if (other_aux->body_type != BLACK_HOLE && other_aux->body_type != PLAYER) {
-                create_super_gravity(scene, G, other_body, black_hole, true);
+            } else if (other_aux->body_type != BLACK_HOLE && other_aux->body_type != PLAYER) {
+                create_newtonian_gravity(scene, G, other_body, black_hole, true);
                 create_destructive_collision_single(scene, other_body, black_hole);
             } else if (other_aux->body_type == PLAYER) {
-                create_super_gravity(scene, G, other_body, black_hole, true);
+                create_newtonian_gravity(scene, G, other_body, black_hole, true);
                 create_collision(scene, black_hole, other_body, create_health_collision, NULL, NULL);
             }
         }
     }
 
-    create_destructive_collision_single(scene, black_hole, top_bound);
-    create_destructive_collision_single(scene, black_hole, bottom_bound);
-    create_destructive_collision_single(scene, black_hole, right_bound);
-    create_destructive_collision_single(scene, black_hole, left_bound);
+    destroy_at_bounds(scene, black_hole, bounds);
 
     return black_hole;
- }
+}
 
-void spawn_black_hole(scene_t *scene,
-    body_t *left_bound,
-    body_t *right_bound,
-    body_t *top_bound,
-    body_t *bottom_bound) {
-
+void spawn_black_hole(scene_t *scene, game_bounds_t bounds) {
     double bh_x = drand_range(SDL_MIN.x, SDL_MAX.x);
     vector_t bh_center = vec(bh_x, SDL_MAX.y + BLACK_HOLE_RADIUS);
-    body_t *black_hole = body_init_black_hole(bh_center, scene, left_bound, right_bound, top_bound, bottom_bound);
+    body_t *black_hole = body_init_black_hole(bh_center, scene, bounds);
     scene_add_body(scene, black_hole);
 }
 
@@ -366,9 +358,8 @@ body_t *body_init_enemy_saw(vector_t pos, scene_t *scene, body_t *player) {
         if (other_aux != NULL) {
             if (other_aux->body_type == BULLET) {
                 create_aster_bullet_collision(scene, saw_enemy, other_body);
-            }
-            else if (other_aux->body_type == BLACK_HOLE) {
-                create_super_gravity(scene, G, saw_enemy, other_body, true);
+            } else if (other_aux->body_type == BLACK_HOLE) {
+                create_newtonian_gravity(scene, G, saw_enemy, other_body, true);
                 create_destructive_collision_single(scene, saw_enemy, other_body);
             }
         }
@@ -400,9 +391,8 @@ body_t *body_init_enemy_shooter(vector_t pos, scene_t *scene, body_t *player) {
         if (other_aux != NULL) {
             if (other_aux->body_type == BULLET) {
                 create_aster_bullet_collision(scene, shooter_enemy, other_body);
-            }
-            else if (other_aux->body_type == BLACK_HOLE) {
-                create_super_gravity(scene, G, shooter_enemy, other_body, true);
+            } else if (other_aux->body_type == BLACK_HOLE) {
+                create_newtonian_gravity(scene, G, shooter_enemy, other_body, true);
                 create_destructive_collision_single(scene, shooter_enemy, other_body);
             }
         }
@@ -492,10 +482,7 @@ void menu_loop() {
 void velocity_handle(
     body_t *body,
     size_t key_down,
-    body_t *left_bound,
-    body_t *right_bound,
-    body_t *top_bound,
-    body_t *bottom_bound) {
+    game_bounds_t bounds) {
     // handle movement
     vector_t dv = VEC_ZERO;
     if (get_nth_bit(key_down, LEFT_ARROW)) {
@@ -526,20 +513,24 @@ void velocity_handle(
     // TODO: stop the player from going off-screen
     const list_t *shape = body_borrow_shape(body);
     vector_t vel = body_get_velocity(body);
-    if ((find_collision(shape, body_borrow_shape(left_bound)).collided && vel.x < 0) ||
-        (find_collision(shape, body_borrow_shape(right_bound)).collided && vel.x > 0) ||
-        (find_collision(shape, body_borrow_shape(bottom_bound)).collided && vel.y < 0) ||
-        (find_collision(shape, body_borrow_shape(top_bound)).collided && vel.y > 0)) {
+    if ((find_collision(shape, body_borrow_shape(bounds.left)).collided && vel.x < 0) ||
+        (find_collision(shape, body_borrow_shape(bounds.right)).collided && vel.x > 0) ||
+        (find_collision(shape, body_borrow_shape(bounds.bottom)).collided && vel.y < 0) ||
+        (find_collision(shape, body_borrow_shape(bounds.top)).collided && vel.y > 0)) {
         body_set_velocity(body, VEC_ZERO);
         body_set_acceleration(body, VEC_ZERO);
     }
 }
 
 // TODO: player can still shoot continuously
-void shoot_handle(scene_t *scene, body_t *player, body_t *bound, double *bullet_time, size_t key_down) {
+void shoot_handle(scene_t *scene,
+                  body_t *player,
+                  double *bullet_time,
+                  size_t key_down,
+                  game_bounds_t bounds) {
     if (get_nth_bit(key_down, SPACE_BAR)) {
         if (*bullet_time > BULLET_COOLDOWN) {
-            spawn_bullet(scene, player, bound);
+            spawn_bullet(scene, player, bounds);
             *bullet_time = 0;
         }
     }
@@ -553,15 +544,16 @@ void game_loop() {
     sdl_on_key((key_handler_t)on_key_game);
 
     // using ASTEROID_RADIUS for bounds because it's maximum size
-    body_t *top_bound = body_init(polygon_rect(vec(SDL_MIN.x, SDL_MAX.y + 2 * ASTEROID_RADIUS_MAX), SDL_MAX.x, ASTEROID_RADIUS_MAX), INFINITY, COLOR_BLACK);
-    body_t *bottom_bound = body_init(polygon_rect(vec(SDL_MIN.x, SDL_MIN.y - 3 * ASTEROID_RADIUS_MAX), SDL_MAX.x, ASTEROID_RADIUS_MAX), INFINITY, COLOR_BLACK);
-    body_t *left_bound = body_init(polygon_rect(vec(SDL_MIN.x - 3 * ASTEROID_RADIUS_MAX, SDL_MIN.y), ASTEROID_RADIUS_MAX, SDL_MAX.y), INFINITY, COLOR_BLACK);
-    body_t *right_bound = body_init(polygon_rect(vec(SDL_MAX.x + ASTEROID_RADIUS_MAX, SDL_MIN.y), ASTEROID_RADIUS_MAX, SDL_MAX.y), INFINITY, COLOR_BLACK);
+    game_bounds_t bounds = (game_bounds_t){
+        .top = body_init(polygon_rect(vec(SDL_MIN.x, SDL_MAX.y + 2 * ASTEROID_RADIUS_MAX), SDL_MAX.x, ASTEROID_RADIUS_MAX), INFINITY, COLOR_BLACK),
+        .bottom = body_init(polygon_rect(vec(SDL_MIN.x, SDL_MIN.y - 3 * ASTEROID_RADIUS_MAX), SDL_MAX.x, ASTEROID_RADIUS_MAX), INFINITY, COLOR_BLACK),
+        .left = body_init(polygon_rect(vec(SDL_MIN.x - 3 * ASTEROID_RADIUS_MAX, SDL_MIN.y), ASTEROID_RADIUS_MAX, SDL_MAX.y), INFINITY, COLOR_BLACK),
+        .right = body_init(polygon_rect(vec(SDL_MAX.x + ASTEROID_RADIUS_MAX, SDL_MIN.y), ASTEROID_RADIUS_MAX, SDL_MAX.y), INFINITY, COLOR_BLACK)};
 
-    scene_add_body(scene, left_bound);
-    scene_add_body(scene, right_bound);
-    scene_add_body(scene, top_bound);
-    scene_add_body(scene, bottom_bound);
+    scene_add_body(scene, bounds.left);
+    scene_add_body(scene, bounds.right);
+    scene_add_body(scene, bounds.top);
+    scene_add_body(scene, bounds.bottom);
 
     // when stars collide with this offscreen they'll teleport to just off the
     // top of the scene so it loops.
@@ -596,7 +588,7 @@ void game_loop() {
     spawn_enemy_saw(scene, player);
     spawn_enemy_shooter(scene, player);
 
-    spawn_black_hole(scene, left_bound, right_bound, top_bound, bottom_bound);
+    spawn_black_hole(scene, bounds);
 
     bool to_menu = false;
 
@@ -616,7 +608,7 @@ void game_loop() {
 
             if (spawn_chance < ASTEROID_SPAWN_CHANCE) {
                 ast_time = 0;
-                spawn_asteroid(scene, left_bound, right_bound, top_bound, bottom_bound, tex);
+                spawn_asteroid(scene, bounds, tex);
             }
         }
 
@@ -628,7 +620,7 @@ void game_loop() {
 
             if (spawn_chance < BLACK_HOLE_SPAWN_CHANCE) {
                 bh_time = 0;
-                spawn_black_hole(scene, left_bound, right_bound, top_bound, bottom_bound);
+                spawn_black_hole(scene, bounds);
             }
         }
 
@@ -641,8 +633,8 @@ void game_loop() {
             print_bits(game_keypress_aux->key_down);
         } */
 
-        velocity_handle(player, game_keypress_aux->key_down, left_bound, right_bound, top_bound, bottom_bound);
-        shoot_handle(scene, player, top_bound, &bullet_time, game_keypress_aux->key_down);
+        velocity_handle(player, game_keypress_aux->key_down, bounds);
+        shoot_handle(scene, player, &bullet_time, game_keypress_aux->key_down, bounds);
 
         scene_tick(scene, dt);
         sdl_render_scene(scene);
