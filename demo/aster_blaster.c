@@ -368,8 +368,36 @@ body_t *body_init_enemy_saw(vector_t pos, scene_t *scene, body_t *player) {
     return saw_enemy;
 }
 
+vector_t get_pos_radius_off_screen(double radius) {
+    size_t direction = irand_range(1, 4);
+    double x, y;
+    switch (direction) {
+        case 1: { // left
+            x = SDL_MIN.x - radius;
+            y = drand_range(SDL_MIN.y, SDL_MAX.y);
+            break;
+        }
+        case 2: { // right
+            x = SDL_MAX.x + radius;
+            y = drand_range(SDL_MIN.y, SDL_MAX.y);
+            break;
+        }
+        case 3: { // up
+            x = drand_range(SDL_MIN.x, SDL_MAX.x);
+            y = SDL_MAX.y + radius;
+            break;
+        }
+        case 4: { // down
+            x = drand_range(SDL_MIN.x, SDL_MAX.x);
+            y = SDL_MIN.y - radius;
+            break;
+        }
+    }
+    return vec(x, y);
+}
+
 void spawn_enemy_saw(scene_t *scene, body_t *player) {
-    body_t *saw_enemy = body_init_enemy_saw(vec(SDL_MAX.x / 2, 0.8 * SDL_MAX.y), scene, player);
+    body_t *saw_enemy = body_init_enemy_saw(get_pos_radius_off_screen(ENEMY_SAW_OUT_RADIUS), scene, player);
     scene_add_body(scene, saw_enemy);
 }
 
@@ -381,7 +409,7 @@ body_t *body_init_enemy_shooter(vector_t pos, scene_t *scene, body_t *player) {
 
     body_t *shooter_enemy = body_init_with_info(shape, ENEMY_SHOOTER_MASS, ENEMY_SHOOTER_COLOR, aster_aux, free);
 
-    create_attraction_mirrored(scene, ENEMY_SHOOTER_A, shooter_enemy, player, SDL_MAX);
+    create_attraction_mirrored(scene, ENEMY_SHOOTER_A, shooter_enemy, player, SDL_MAX, rand_vec(vec(-3 * ENEMY_SHOOTER_RADIUS, -3 * ENEMY_SHOOTER_RADIUS), vec(3 * ENEMY_SHOOTER_RADIUS, 3 * ENEMY_SHOOTER_RADIUS)));
     create_pointing_force(scene, shooter_enemy, player);
 
     // TODO: similar code in spawn_asteroid, can factor out
@@ -402,7 +430,7 @@ body_t *body_init_enemy_shooter(vector_t pos, scene_t *scene, body_t *player) {
 }
 
 void spawn_enemy_shooter(scene_t *scene, body_t *player) {
-    body_t *shooter_enemy = body_init_enemy_shooter(vec(SDL_MAX.x / 4, 0.8 * SDL_MAX.y), scene, player);
+    body_t *shooter_enemy = body_init_enemy_shooter(get_pos_radius_off_screen(ENEMY_SHOOTER_RADIUS), scene, player);
     scene_add_body(scene, shooter_enemy);
 }
 
@@ -536,6 +564,10 @@ void shoot_handle(scene_t *scene,
     }
 }
 
+double rate_variant(double rate) {
+    return rate * drand_range(RATE_VARIANT_LOWER, RATE_VARIANT_UPPER);
+}
+
 void game_loop() {
     sdl_set_background_color(COLOR_BLACK);
 
@@ -583,10 +615,8 @@ void game_loop() {
     double ast_time = 0;
     double bh_time = 0;
     double bullet_time = BULLET_COOLDOWN; // time since last bullet being fired
-
-    // TODO: enemy spawning mechanics
-    spawn_enemy_saw(scene, player);
-    spawn_enemy_shooter(scene, player);
+    double saw_time = 0;
+    double shooter_time = 0;
 
     spawn_black_hole(scene, bounds);
 
@@ -594,11 +624,16 @@ void game_loop() {
 
     SDL_Texture *tex = sdl_load_texture("./asteroid.png");
 
+    double saw_spawn_rate = rate_variant(ENEMY_SAW_SPAWN_RATE);
+    double shooter_spawn_rate = rate_variant(ENEMY_SHOOTER_SPAWN_RATE);
+
     while (!sdl_is_done(game_keypress_aux)) {
         double dt = time_since_last_tick();
         ast_time += dt;
         bh_time += dt;
         bullet_time += dt;
+        saw_time += dt;
+        shooter_time += dt;
 
         //ast_time completely resets when an asteroid spawns
         //and decreases by half when it's met without an asteroid spawning
@@ -622,6 +657,23 @@ void game_loop() {
                 bh_time = 0;
                 spawn_black_hole(scene, bounds);
             }
+        }
+
+        if (saw_time >= saw_spawn_rate) {
+            size_t to_spawn = irand_range(ENEMY_SAW_SWARM_SIZE_MIN, ENEMY_SAW_SWARM_SIZE_MAX);
+            for (size_t i = 0; i < to_spawn; i++) {
+                spawn_enemy_saw(scene, player);
+            }
+            saw_time = 0;
+            saw_spawn_rate = rate_variant(ENEMY_SAW_SPAWN_RATE);
+        }
+
+
+        // TODO: give random offset from target so they aren't all on top of each other
+        if (shooter_time >= shooter_spawn_rate) {     
+            spawn_enemy_shooter(scene, player);
+            shooter_time = 0;
+            shooter_spawn_rate = rate_variant(ENEMY_SHOOTER_SPAWN_RATE);
         }
 
         if (player_aux->game_over) {

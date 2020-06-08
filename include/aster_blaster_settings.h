@@ -42,7 +42,7 @@ const double BULLET_MASS = 10;
 const double BULLET_RADIUS = 12;
 const double BULLET_SIDES = 30;
 const rgb_color_t BULLET_COLOR = ((rgb_color_t){1, 1, 0});
-const double BULLET_COOLDOWN = 0.15;
+const double BULLET_COOLDOWN = 0.4;
 
 // Asteroid settings
 const double ASTEROID_MASS = 100;
@@ -90,6 +90,9 @@ const rgb_color_t ENEMY_SAW_COLOR = ((rgb_color_t){0.4, 1.0, 0.0});
 const double ENEMY_SAW_ELASTICITY = 2;
 const double ENEMY_SAW_OMEGA = (1.5 * M_PI);
 const double ENEMY_SAW_A = 1;
+const double ENEMY_SAW_SPAWN_RATE = 7;
+const size_t ENEMY_SAW_SWARM_SIZE_MIN = 2;
+const size_t ENEMY_SAW_SWARM_SIZE_MAX = 5;
 
 // Shooter enemy settings
 const double ENEMY_SHOOTER_RADIUS = 40;
@@ -99,6 +102,7 @@ const double ENEMY_SHOOTER_INIT_ANGLE = 0;
 const double ENEMY_SHOOTER_MASS = 150;
 const rgb_color_t ENEMY_SHOOTER_COLOR = ((rgb_color_t){0.8, 0.8, 0.3});
 const double ENEMY_SHOOTER_A = 0.65;
+const double ENEMY_SHOOTER_SPAWN_RATE = 7;
 
 // Black Hole settings
 const double BLACK_HOLE_RADIUS = 50;
@@ -109,6 +113,8 @@ const rgb_color_t BLACK_HOLE_COLOR = ((rgb_color_t){0.2, 0.2, 0.2});
 const double BLACK_HOLE_SPAWN_CHANCE = 0.5;
 const double BLACK_HOLE_SPAWN_RATE = 10;
 
+const double RATE_VARIANT_LOWER = 0.8;
+const double RATE_VARIANT_UPPER = 1.2;
 const int DEBUG_PRINT_RATE = 200;
 
 #endif // #ifndef __ASTER_BLASTER_SETTINGS__

@@ -89,10 +89,12 @@ typedef struct attraction_mirrored_aux {
     body_t *body_to_move;
     body_t *body_unaffected;
     vector_t sdl_max;
+    vector_t offset;
 } attraction_mirrored_aux_t;
 
 void attraction_mirrored_handler(attraction_mirrored_aux_t *aux) {
     vector_t anti_center = vec_subtract(aux->sdl_max, body_get_centroid(aux->body_unaffected));
+    anti_center = vec_add(anti_center, aux->offset);
     vector_t radius_vector = vec_subtract(anti_center, body_get_centroid(aux->body_to_move));
     double radius = vec_norm(radius_vector);
 
@@ -103,7 +105,7 @@ void attraction_mirrored_handler(attraction_mirrored_aux_t *aux) {
     body_set_velocity(aux->body_to_move, vec_negate(force));
 }
 
-void create_attraction_mirrored(scene_t *scene, double A, body_t *body_to_move, body_t *body_unaffected, vector_t sdl_max) {
+void create_attraction_mirrored(scene_t *scene, double A, body_t *body_to_move, body_t *body_unaffected, vector_t sdl_max, vector_t offset) {
     attraction_mirrored_aux_t *aux = malloc(sizeof(attraction_mirrored_aux_t));
     aux->A = A;
     aux->body_to_move = body_to_move;
@@ -112,6 +114,7 @@ void create_attraction_mirrored(scene_t *scene, double A, body_t *body_to_move, 
     list_add(list, body_to_move);
     list_add(list, body_unaffected);
     aux->sdl_max = sdl_max;
+    aux->offset = offset;
     scene_add_bodies_force_creator(scene, (force_creator_t)attraction_mirrored_handler, aux, list, free);
 }
 

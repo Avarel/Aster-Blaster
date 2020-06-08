@@ -35,7 +35,7 @@ void create_newtonian_gravity(scene_t *scene, double G, body_t *body1, body_t *b
 
 void create_attraction(scene_t *scene, double A, body_t *body1, body_t *body2, bool one_way);
 
-void create_attraction_mirrored(scene_t *scene, double A, body_t *body_to_move, body_t *body_unaffected, vector_t sdl_max);
+void create_attraction_mirrored(scene_t *scene, double A, body_t *body_to_move, body_t *body_unaffected, vector_t sdl_max, vector_t offset);
 
 void create_pointing_force(scene_t *scene, body_t *body_to_point, body_t *body_point_to);
 
