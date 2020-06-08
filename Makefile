@@ -23,8 +23,13 @@ STAFF_LIBS = test_util sdl_wrapper
 STUDENT_LIBS = vector list \
 	color body scene \
 	polygon forces \
-	collision \
-	utils text_box
+	collision utils text_box \
+	aster_blaster_settings \
+	aster_blaster_enemies \
+	aster_blaster_collisions \
+	aster_blaster_environment \
+	aster_blaster_player \
+	aster_blaster_utils
 
 STUDENT_TESTS = $(subst .c,, $(subst tests/student/,,$(wildcard tests/student/*.c)))
 

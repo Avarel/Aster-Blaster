@@ -1,9 +1,7 @@
 #ifndef __ASTER_BLASTER_TYPEDEFS__
 #define __ASTER_BLASTER_TYPEDEFS__
 
-#include <stdlib.h>
-#include <stdbool.h>
-#include "scene.h"
+#include "aster_blaster_imports.h"
 
 typedef enum window_type {
     NONE = 0, // essentially NULL
@@ -40,5 +38,12 @@ typedef struct game_bounds {
     body_t *top;
     body_t *bottom;
 } game_bounds_t;
+
+typedef struct game_keypress_aux {
+    scene_t *scene;
+    body_t *player;
+    size_t key_down;
+    window_type_e window;
+} game_keypress_aux_t;
 
 #endif // #ifndef __ASTER_BLASTER_TYPEDEFS__

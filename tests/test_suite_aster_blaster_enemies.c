@@ -3,7 +3,7 @@
 #include "test_util.h"
 
 int main(int argc, char *argv[]) {
-    puts("text_box_test START");
+    puts("aster_blaster_enemies START");
 
     // Run all tests if there are no command-line arguments
     bool all_tests = argc == 1;
@@ -13,5 +13,5 @@ int main(int argc, char *argv[]) {
         read_testname(argv[1], testname, sizeof(testname));
     }
 
-    puts("text_box_test PASS");
+    puts("aster_blaster_enemies PASS");
 }
