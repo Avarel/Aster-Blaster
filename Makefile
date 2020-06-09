@@ -29,7 +29,8 @@ STUDENT_LIBS = vector list \
 	aster_blaster_collisions \
 	aster_blaster_environment \
 	aster_blaster_player \
-	aster_blaster_utils
+	aster_blaster_utils \
+	aster_blaster_on_key
 
 STUDENT_TESTS = $(subst .c,, $(subst tests/student/,,$(wildcard tests/student/*.c)))
 

@@ -28,6 +28,7 @@
 #include "aster_blaster_environment.h"
 #include "aster_blaster_player.h"
 #include "aster_blaster_utils.h"
+#include "aster_blaster_on_key.h"
 
 // TODO: this should be factored out to sdl_wrapper
 #include <SDL2/SDL_image.h>
