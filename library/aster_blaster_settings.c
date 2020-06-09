@@ -78,7 +78,7 @@ const size_t HEALTH_BAR_PADDING = 5;
 const rgb_color_t HEALTH_BAR_COLOR = ((rgb_color_t){1.0, 0.25, 0.25});
 
 // Health settings
-const double HEALTH_TOTAL = 1000;
+const double HEALTH_TOTAL = 10000;
 const double DAMAGE_PER_MASS = 1;
 
 // Saw enemy settings
@@ -105,7 +105,7 @@ const double ENEMY_SHOOTER_A = 0.65;
 const double ENEMY_SHOOTER_SPAWN_RATE = 7;
 
 // Shooter enemy bullet settings
-const double ENEMY_SHOOTER_SHOT_RATE = 2;
+const double ENEMY_SHOOTER_SHOT_RATE = 1;
 const double ENEMY_SHOOTER_BULLET_OUT_RADIUS = 10;
 const double ENEMY_SHOOTER_BULLET_IN_RADIUS = 5;
 const size_t ENEMY_SHOOTER_BULLET_POINTS = 4;

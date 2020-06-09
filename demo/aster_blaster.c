@@ -166,9 +166,9 @@ void game_loop() {
         }
 
         if (shooter_shot_time >= shooter_shot_rate) {
-            shooter_enemy_all_shoot(scene, player);
+            shooter_enemy_all_shoot(scene, player, bounds, ast_sprites_list);
             shooter_shot_time = 0;
-            shooter_shot_rate = rate_variant(ENEMY_SHOOTER_SPAWN_RATE);
+            shooter_shot_rate = rate_variant(ENEMY_SHOOTER_SHOT_RATE);
         }
 
         if (player_aux->game_over) {

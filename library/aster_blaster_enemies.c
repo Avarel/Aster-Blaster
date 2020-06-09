@@ -70,17 +70,17 @@ void spawn_enemy_shooter(scene_t *scene, body_t *player) {
     scene_add_body(scene, shooter_enemy);
 }
 
-void shooter_enemy_all_shoot(scene_t *scene, body_t *player) {
+void shooter_enemy_all_shoot(scene_t *scene, body_t *player, game_bounds_t bounds, ast_sprites_list_t ast_sprites_list) {
     for (size_t i = 0; i < scene_bodies(scene); i++) {
         body_t *body = scene_get_body(scene, i);
         aster_aux_t *aux = body_get_info(body);
         if (aux && aux->body_type == ENEMY_SHOOTER) {
-            spawn_enemy_shooter_bullet(scene, player, body);
+            spawn_enemy_shooter_bullet(scene, player, body, bounds, ast_sprites_list);
         }
     }
 }
 
-body_t *body_init_enemy_shooter_bullet(scene_t *scene, body_t *player, body_t *shooter) {
+body_t *body_init_enemy_shooter_bullet(scene_t *scene, body_t *player, body_t *shooter, game_bounds_t bounds, ast_sprites_list_t ast_sprites_list) {
     vector_t bullet_center = body_get_centroid(shooter); // calculate pos
     vector_t direction = vec_x(1);
     direction = vec_rotate(direction, angle_to(bullet_center, body_get_centroid(player)));
@@ -96,10 +96,26 @@ body_t *body_init_enemy_shooter_bullet(scene_t *scene, body_t *player, body_t *s
     create_collision(scene, bullet, player, create_health_collision, NULL, NULL);
     create_destructive_collision_single(scene, bullet, player);
 
+    // TODO: partial code duplication from palyer bullet
+    for (size_t i = 0; i < scene_bodies(scene); i++) {
+        body_t *other_body = scene_get_body(scene, i);
+        aster_aux_t *other_aux = body_get_info(other_body);
+        if (other_aux != NULL) {
+            if (other_aux->body_type == ASTEROID) {
+                create_aster_bullet_collision(scene, other_body, bullet, bounds, ast_sprites_list);
+            } else if (other_aux->body_type == BLACK_HOLE) {
+                create_newtonian_gravity(scene, G, bullet, other_body, true);
+                create_destructive_collision_single(scene, bullet, other_body);
+            }
+        }
+    }
+
+    destroy_at_bounds(scene, bullet, bounds);
+
     return bullet;
 }
 
-void spawn_enemy_shooter_bullet(scene_t *scene, body_t *player, body_t *shooter) {
-    body_t *bullet = body_init_enemy_shooter_bullet(scene, player, shooter);
+void spawn_enemy_shooter_bullet(scene_t *scene, body_t *player, body_t *shooter, game_bounds_t bounds, ast_sprites_list_t ast_sprites_list) {
+    body_t *bullet = body_init_enemy_shooter_bullet(scene, player, shooter, bounds, ast_sprites_list);
     scene_add_body(scene, bullet);
 }

@@ -137,7 +137,7 @@ body_t *body_init_black_hole(vector_t pos, scene_t *scene, game_bounds_t bounds)
         body_t *other_body = scene_get_body(scene, i);
         aster_aux_t *other_aux = body_get_info(other_body);
         if (other_aux != NULL) {
-            if (other_aux->body_type == BULLET) {
+            if (other_aux->body_type == BULLET || other_aux->body_type == ENEMY_SHOOTER_BULLET) {
                 create_newtonian_gravity(scene, G, other_body, black_hole, true);
                 create_destructive_collision_single(scene, other_body, black_hole);
             } else if (other_aux->body_type != BLACK_HOLE && other_aux->body_type != PLAYER) {
