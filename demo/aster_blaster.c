@@ -70,11 +70,11 @@ void game_loop() {
     scene_add_body(scene, bounds.bottom);
 
     // Boss movement triggers (made before stars so they aren't seen)
-    list_t *boss_movement_trigger_shape = polygon_rect(vec(SDL_MIN.x, 0.5 * SDL_MAX.y), SDL_MAX.x, BOSS_OUT_RADIUS * 2);
+    list_t *boss_movement_trigger_shape = polygon_rect(vec(SDL_MIN.x, 0.5 * SDL_MAX.y), SDL_MAX.x, BOSS_OUT_RADIUS);
     body_t *boss_movement_trigger = body_init(boss_movement_trigger_shape, INFINITY, COLOR_BLACK);
-    list_t *boss_right_trigger_shape = polygon_rect(vec(0.125 * SDL_MAX.x - BOSS_OUT_RADIUS, SDL_MIN.y), BOSS_OUT_RADIUS * 2, SDL_MAX.y);
+    list_t *boss_right_trigger_shape = polygon_rect(vec(SDL_MIN.x, SDL_MIN.y), 0.125 * SDL_MAX.x, SDL_MAX.y);
     body_t *boss_right_trigger = body_init(boss_right_trigger_shape, INFINITY, COLOR_BLACK);
-    list_t *boss_left_trigger_shape = polygon_rect(vec(0.875 * SDL_MAX.x - BOSS_OUT_RADIUS, SDL_MIN.y), BOSS_OUT_RADIUS * 2, SDL_MAX.y);
+    list_t *boss_left_trigger_shape = polygon_rect(vec(0.875 * SDL_MAX.x, SDL_MIN.y), 0.125 * SDL_MAX.x, SDL_MAX.y);
     body_t *boss_left_trigger = body_init(boss_left_trigger_shape, INFINITY, COLOR_BLACK);
     scene_add_body(scene, boss_movement_trigger);
     scene_add_body(scene, boss_left_trigger);
@@ -99,16 +99,15 @@ void game_loop() {
     scene_add_body(scene, player);
     aster_aux_t *player_aux = body_get_info(player);
 
-    // Spawn Boss
-    bool boss_tangible = false;
-    spawn_boss(scene, boss_movement_trigger, boss_left_trigger, boss_right_trigger, &boss_tangible);
-
     // keypress aux
     game_keypress_aux_t *game_keypress_aux = malloc(sizeof(game_keypress_aux_t));
     game_keypress_aux->scene = scene;
     game_keypress_aux->player = player;
     game_keypress_aux->key_down = 0;
     game_keypress_aux->window = GAME;
+
+
+    bool boss_tangible = false;
 
     size_t frame = 0;
     double ast_time = 0;
@@ -117,6 +116,7 @@ void game_loop() {
     double saw_time = 0;
     double shooter_spawn_time = 0;
     double shooter_shot_time = 0;
+    double boss_time = 0;
 
     bool to_menu = false;
 
@@ -140,12 +140,22 @@ void game_loop() {
         saw_time += dt;
         shooter_spawn_time += dt;
         shooter_shot_time += dt;
+        boss_time += dt;
+
+        if (boss_time >= BOSS_SPAWN_TIME) {
+            spawn_boss(scene, boss_movement_trigger, boss_left_trigger, boss_right_trigger, &boss_tangible);
+        }
 
         //ast_time completely resets when an asteroid spawns
         //and decreases by half when it's met without an asteroid spawning
         if (ast_time >= ASTEROID_SPAWN_RATE) {
             ast_time = ASTEROID_SPAWN_RATE / 2;
             double spawn_chance = drand48();
+
+            // If boss is present the chance of spawning is halved
+            if (boss_tangible) {
+                spawn_chance *= 2;
+            }
 
             if (spawn_chance < ASTEROID_SPAWN_CHANCE) {
                 ast_time = 0;
@@ -155,10 +165,10 @@ void game_loop() {
 
         // bh_time completely resets when an black hole spawns
         // and decreases by half when it's met without an black hole spawning
-        if (bh_time >= BLACK_HOLE_SPAWN_RATE) {
+        // Black holes don't spawn when the boss is present.
+        if (!boss_tangible && bh_time >= BLACK_HOLE_SPAWN_RATE) {
             bh_time = BLACK_HOLE_SPAWN_RATE / 2;
             double spawn_chance = drand48();
-
             if (spawn_chance < BLACK_HOLE_SPAWN_CHANCE) {
                 bh_time = 0;
                 spawn_black_hole(scene, bounds);
