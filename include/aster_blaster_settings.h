@@ -126,7 +126,7 @@ const double BOSS_IN_RADIUS;
 const double BOSS_POINTS;
 const double BOSS_MASS;
 #define BOSS_INIT_POS ((vector_t){.x = SDL_MAX.x / 2, .y = 0.1 * SDL_MAX.y})
-const doubel BOSS_HEALTH;
+const double BOSS_HEALTH;
 const rgb_color_t BOSS_COLOR;
 const double BOSS_OMEGA;
 const double BOSS_SPEED;
@@ -142,12 +142,12 @@ const rgb_color_t BOSS_BOMB_COLOR_2;
 const rgb_color_t BOSS_BOMB_COLOR_3;
 const rgb_color_t BOSS_BOMB_COLOR_4;
 const size_t BOSS_BULLETS_PER_BOMB;
-const double BOSS_BULLET_OUT_RADIUS = 10;
-const double BOSS_BULLET_IN_RADIUS = 5;
-const size_t BOSS_BULLET_POINTS = 4;
-const double BOSS_BULLET_MASS = 200;
+const double BOSS_BULLET_OUT_RADIUS;
+const double BOSS_BULLET_IN_RADIUS;
+const size_t BOSS_BULLET_POINTS;
+const double BOSS_BULLET_MASS;
 const rgb_color_t BOSS_BULLET_COLOR;
-const double BOSS_BULLET_SPEED = 300;
+const double BOSS_BULLET_SPEED;
 
 // Boss Health bar settings
 #define BOSS_HEALTH_BAR_BACKGROUND_POS ((vector_t){.x = 0.0125 * SDL_MAX.y, .y = 0.0125 * SDL_MAX.y})

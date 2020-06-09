@@ -125,7 +125,7 @@ const double BOSS_IN_RADIUS = 40;
 const double BOSS_POINTS = 16;
 const double BOSS_MASS = 100;
 #define BOSS_INIT_POS ((vector_t){.x = SDL_MAX.x / 2, .y = SDL_MAX.y + 50})
-const doubel BOSS_HEALTH = 10000;
+const double BOSS_HEALTH = 10000;
 const rgb_color_t BOSS_COLOR = (rgb_color_t){0.8, 0, 0};
 const double BOSS_OMEGA = 1.5 * M_PI;
 const double BOSS_SPEED = 100;

@@ -2,6 +2,7 @@
 #define __ASTER_BLASTER_COLLISIONS__
 
 #include "aster_blaster_imports.h"
+#include "aster_blaster_enemies.h"
 
 void create_health_collision(body_t *attacker, body_t *player, vector_t axis, void *aux);
 
@@ -21,10 +22,10 @@ void create_star_collision_force(body_t *star, body_t *bound, vector_t axis, voi
 
 void create_star_collision(scene_t *scene, body_t *star, body_t *bound);
 
-void create_boss_movement_init_collision(scene_t *scene, body_t *boss, body_t* trigger);
+void create_boss_movement_init_collision(body_t *boss, body_t* trigger, vector_t axis, void *aux);
 
-void create_boss_movement_left_collision(scene_t *scene, body_t *boss, body_t* trigger);
+void create_boss_movement_left_collision(body_t *boss, body_t* trigger, vector_t axis, void *aux);
 
-void create_boss_movement_right_collision(scene_t *scene, body_t *boss, body_t* trigger);
+void create_boss_movement_right_collision(body_t *boss, body_t* trigger, vector_t axis, void *aux);
 
 #endif // #ifndef __ASTER_BLASTER_COLLISIONS__
