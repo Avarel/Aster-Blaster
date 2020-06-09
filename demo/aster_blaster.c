@@ -2,13 +2,15 @@
 
 void menu_loop();
 void game_loop();
+void victory_loop();
 void control_loop(); // TODO: later
 
 int main() {
     sdl_init(SDL_MIN, SDL_MAX);
     sdl_set_font(&FONT_PATH_ASTER_BLASTER[0]);
     init_random();
-    menu_loop();
+    // menu_loop();
+    victory_loop();
 }
 
 void menu_loop() {
