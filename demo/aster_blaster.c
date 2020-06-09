@@ -89,14 +89,15 @@ void game_loop() {
     aster_aux_t *player_aux = body_get_info(player);
 
     // Boss movement triggers
-    list_t *boss_movement_trigger_shape = polygon_rect(vec(0.5 * SDL_MAX.x - BOSS_OUT_RADIUS, 0.8 * SDL_MIN.y), BOSS_OUT_RADIUS * 2, BOSS_OUT_RADIUS * 2);
+    list_t *boss_movement_trigger_shape = polygon_rect(vec(SDL_MIN.x, 0.5 * SDL_MAX.y), SDL_MAX.x, BOSS_OUT_RADIUS * 2);
     body_t *boss_movement_trigger = body_init(boss_movement_trigger_shape, INFINITY, COLOR_BLACK);
-    list_t *boss_left_trigger_shape = polygon_rect(vec(0.125 * SDL_MAX.x - BOSS_OUT_RADIUS, 0.8 * SDL_MIN.y), BOSS_OUT_RADIUS * 2, BOSS_OUT_RADIUS * 2);
+    list_t *boss_left_trigger_shape = polygon_rect(vec(0.125 * SDL_MAX.x - BOSS_OUT_RADIUS, SDL_MIN.y), BOSS_OUT_RADIUS * 2, SDL_MAX.y);
     body_t *boss_left_trigger = body_init(boss_left_trigger_shape, INFINITY, COLOR_BLACK);
-    list_t *boss_right_trigger_shape = polygon_rect(vec(0.875 * SDL_MAX.x - BOSS_OUT_RADIUS, 0.8 * SDL_MIN.y), BOSS_OUT_RADIUS * 2, BOSS_OUT_RADIUS * 2);
+    list_t *boss_right_trigger_shape = polygon_rect(vec(0.875 * SDL_MAX.x - BOSS_OUT_RADIUS, SDL_MIN.y), BOSS_OUT_RADIUS * 2, SDL_MAX.y);
     body_t *boss_right_trigger = body_init(boss_right_trigger_shape, INFINITY, COLOR_BLACK);
+    bool boss_tangible = false;
 
-    spawn_boss(scene, boss_movement_trigger, boss_left_trigger, boss_right_trigger);
+    spawn_boss(scene, boss_movement_trigger, boss_left_trigger, boss_right_trigger, &boss_tangible);
 
     // keypress aux
     game_keypress_aux_t *game_keypress_aux = malloc(sizeof(game_keypress_aux_t));
@@ -191,7 +192,7 @@ void game_loop() {
         } */
 
         velocity_handle(player, game_keypress_aux->key_down, bounds);
-        shoot_handle(scene, player, &bullet_time, game_keypress_aux->key_down, bounds, ast_sprites_list);
+        shoot_handle(scene, player, &bullet_time, game_keypress_aux->key_down, bounds, ast_sprites_list, boss_tangible);
 
         scene_tick(scene, dt);
         sdl_render_scene(scene);

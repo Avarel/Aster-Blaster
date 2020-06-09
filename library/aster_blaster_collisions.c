@@ -16,6 +16,23 @@ void create_health_collision(body_t *attacker, body_t *player, vector_t axis, vo
     }
 }
 
+void create_boss_health_collision(body_t *attacker, body_t *boss, vector_t axis, void *aux) {
+    aster_aux_t *aster_aux = body_get_info(boss);
+
+    aster_aux->health = fmax(0, aster_aux->health - body_get_mass(attacker) * DAMAGE_PER_MASS);
+    // relies on two right points being idx 1 and 2
+    list_t *health_bar_shape = body_get_shape(aster_aux->health_bar);
+    vector_t *bottom_right_point = list_get(health_bar_shape, 1);
+    vector_t *top_right_point = list_get(health_bar_shape, 2);
+    *bottom_right_point = vec(BOSS_HEALTH_BAR_POS.x + BOSS_HEALTH_BAR_W * (aster_aux->health / BOSS_HEALTH), BOSS_HEALTH_BAR_POS.y);
+    *top_right_point = vec(BOSS_HEALTH_BAR_POS.x + BOSS_HEALTH_BAR_W * (aster_aux->health / BOSS_HEALTH), BOSS_HEALTH_BAR_POS.y + BOSS_HEALTH_BAR_H);
+
+    if (is_close(aster_aux->health, 0)) {
+        aster_aux->game_over = true;
+    }
+}
+
+
 void create_destructive_collision_force_single(body_t *body1, body_t *body_immortal, vector_t axis, void *aux) {
     body_remove(body1);
 }
@@ -73,37 +90,40 @@ typedef struct boss_movement_collision_aux {
     scene_t *scene;
     body_t *left_trigger;
     body_t *right_trigger;
+    bool *tangible;
 } boss_movement_collision_aux_t;
 
-void init_boss_collisions(scene_t *scene, body_t *boss, body_t *movement_trigger, body_t *left_trigger, body_t *right_trigger) {
+void init_boss_collisions(scene_t *scene, body_t *boss, body_t *movement_trigger, body_t *left_trigger, body_t *right_trigger, bool *tangible) {
     boss_movement_collision_aux_t *aux = malloc(sizeof(boss_movement_collision_aux_t));
     aux->scene = scene;
     aux->left_trigger = left_trigger;
     aux->right_trigger = right_trigger;
+    aux->tangible = tangible;
     create_collision(scene, boss, movement_trigger, create_boss_movement_init_collision, aux, free);
 }
 
 // Causes boss to move to the left
-void create_boss_movement_left_collision(body_t *boss, body_t* trigger, vector_t axis, void *aux) {
+void create_boss_movement_left_collision(body_t *boss, body_t *trigger, vector_t axis, void *aux) {
     if (body_get_velocity(boss).x > 0) {
         body_set_velocity(boss, vec_x(-BOSS_SPEED));
     }
 }
 
 // Causes boss to move to the right
-void create_boss_movement_right_collision(body_t *boss, body_t* trigger, vector_t axis, void *aux) {
+void create_boss_movement_right_collision(body_t *boss, body_t *trigger, vector_t axis, void *aux) {
     if (body_get_velocity(boss).x < 0) {
         body_set_velocity(boss, vec_x(BOSS_SPEED));
     }
 }
 
 // Boss starts by moving down from top then hits this which begins normal behavior
-void create_boss_movement_init_collision(body_t *boss, body_t* trigger, vector_t axis, void *aux) {
+void create_boss_movement_init_collision(body_t *boss, body_t *trigger, vector_t axis, void *aux) {
     boss_movement_collision_aux_t *caux = (boss_movement_collision_aux_t *) aux;
     body_set_velocity(boss, vec_x(-BOSS_SPEED));
     body_remove(trigger);
 
     scene_t *scene = caux->scene;
+    *caux->tangible = true;
 
     body_t *health_bar_background = body_boss_health_bar_background_init();
     body_t *health_bar = body_boss_health_bar_init();
@@ -117,7 +137,7 @@ void create_boss_movement_init_collision(body_t *boss, body_t* trigger, vector_t
         aster_aux_t *other_aux = body_get_info(other_body);
         if (other_aux != NULL) {
             if (other_aux->body_type == BULLET) {
-                create_collision(scene, other_body, boss, create_health_collision, NULL, NULL);
+                create_collision(scene, other_body, boss, create_boss_health_collision, NULL, NULL);
             }
         }
     }

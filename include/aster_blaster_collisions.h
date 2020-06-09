@@ -6,6 +6,8 @@
 
 void create_health_collision(body_t *attacker, body_t *player, vector_t axis, void *aux);
 
+void create_boss_health_collision(body_t *attacker, body_t *boss, vector_t axis, void *aux);
+
 void create_destructive_collision_force_single(body_t *body1, body_t *body_immortal, vector_t axis, void *aux);
 
 void create_destructive_collision_single(scene_t *scene, body_t *body1, body_t *body_immortal);
@@ -22,12 +24,12 @@ void create_star_collision_force(body_t *star, body_t *bound, vector_t axis, voi
 
 void create_star_collision(scene_t *scene, body_t *star, body_t *bound);
 
-void init_boss_collisions(scene_t *scene, body_t *boss, body_t *movement_trigger, body_t *left_trigger, body_t *right_trigger);
+void init_boss_collisions(scene_t *scene, body_t *boss, body_t *movement_trigger, body_t *left_trigger, body_t *right_trigger, bool *tangible);
 
-void create_boss_movement_init_collision(body_t *boss, body_t* trigger, vector_t axis, void *aux);
+void create_boss_movement_init_collision(body_t *boss, body_t *trigger, vector_t axis, void *aux);
 
-void create_boss_movement_left_collision(body_t *boss, body_t* trigger, vector_t axis, void *aux);
+void create_boss_movement_left_collision(body_t *boss, body_t *trigger, vector_t axis, void *aux);
 
-void create_boss_movement_right_collision(body_t *boss, body_t* trigger, vector_t axis, void *aux);
+void create_boss_movement_right_collision(body_t *boss, body_t *trigger, vector_t axis, void *aux);
 
 #endif // #ifndef __ASTER_BLASTER_COLLISIONS__

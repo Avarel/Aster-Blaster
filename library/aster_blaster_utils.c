@@ -81,10 +81,11 @@ void shoot_handle(scene_t *scene,
                   double *bullet_time,
                   size_t key_down,
                   game_bounds_t bounds,
-                  ast_sprites_list_t ast_sprites_list) {
+                  ast_sprites_list_t ast_sprites_list,
+                  bool boss_tangible) {
     if (get_nth_bit(key_down, SPACE_BAR)) {
         if (*bullet_time > BULLET_COOLDOWN) {
-            spawn_bullet(scene, player, bounds, ast_sprites_list);
+            spawn_bullet(scene, player, bounds, ast_sprites_list, boss_tangible);
             *bullet_time = 0;
         }
     }
