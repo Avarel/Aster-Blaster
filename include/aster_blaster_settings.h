@@ -150,8 +150,8 @@ const rgb_color_t BOSS_BULLET_COLOR;
 const double BOSS_BULLET_SPEED;
 
 // Boss Health bar settings
-#define BOSS_HEALTH_BAR_BACKGROUND_POS ((vector_t){.x = 0.0125 * SDL_MAX.y, .y = 0.0125 * SDL_MAX.y})
-#define BOSS_HEALTH_BAR_BACKGROUND_W (0.75 * SDL_MAX.x)
+#define BOSS_HEALTH_BAR_BACKGROUND_POS ((vector_t){.x = 0.0125 * SDL_MAX.y, .y = 0.9875 * SDL_MAX.y})
+#define BOSS_HEALTH_BAR_BACKGROUND_W (0.975 * SDL_MAX.x)
 #define BOSS_HEALTH_BAR_BACKGROUND_H (0.075 * SDL_MAX.y)
 const rgb_color_t BOSS_HEALTH_BAR_BACKGROUND_COLOR;
 const size_t BOSS_HEALTH_BAR_PADDING;

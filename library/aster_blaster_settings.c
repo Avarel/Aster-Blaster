@@ -120,11 +120,11 @@ const rgb_color_t ENEMY_SHOOTER_BULLET_COLOR = (rgb_color_t){0.8, 0.8, 0.3};
 const double ENEMY_SHOOTER_BULLET_SPEED = 300;
 
 // Boss settings
-const double BOSS_OUT_RADIUS = 50;
-const double BOSS_IN_RADIUS = 40;
+const double BOSS_OUT_RADIUS = 100;
+const double BOSS_IN_RADIUS = 90;
 const double BOSS_POINTS = 16;
 const double BOSS_MASS = 100;
-#define BOSS_INIT_POS ((vector_t){.x = SDL_MAX.x / 2, .y = SDL_MAX.y + 50})
+#define BOSS_INIT_POS ((vector_t){.x = SDL_MAX.x / 2, .y = 1.1 * SDL_MAX.y})
 const double BOSS_HEALTH = 10000;
 const rgb_color_t BOSS_COLOR = (rgb_color_t){0.8, 0, 0};
 const double BOSS_OMEGA = 1.5 * M_PI;
@@ -149,8 +149,8 @@ const rgb_color_t BOSS_BULLET_COLOR = (rgb_color_t){0.8, 0.8, 0.3};
 const double BOSS_BULLET_SPEED = 300;
 
 // Boss Health bar settings
-#define BOSS_HEALTH_BAR_BACKGROUND_POS ((vector_t){.x = 0.0125 * SDL_MAX.y, .y = 0.0125 * SDL_MAX.y})
-#define BOSS_HEALTH_BAR_BACKGROUND_W (0.75 * SDL_MAX.x)
+#define BOSS_HEALTH_BAR_BACKGROUND_POS ((vector_t){.x = 0.0125 * SDL_MAX.y, .y = 0.9875 * SDL_MAX.y})
+#define BOSS_HEALTH_BAR_BACKGROUND_W (0.975 * SDL_MAX.x)
 #define BOSS_HEALTH_BAR_BACKGROUND_H (0.075 * SDL_MAX.y)
 const rgb_color_t BOSS_HEALTH_BAR_BACKGROUND_COLOR = (rgb_color_t){1.0, 1.0, 1.0};
 const size_t BOSS_HEALTH_BAR_PADDING = 5;

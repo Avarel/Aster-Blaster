@@ -39,6 +39,8 @@ void spawn_bullet(scene_t *scene, body_t *player, game_bounds_t bounds, ast_spri
             } else if (other_aux->body_type == BLACK_HOLE) {
                 create_newtonian_gravity(scene, G, bullet, other_body, true);
                 create_destructive_collision_single(scene, bullet, other_body);
+            } else if (other_aux->body_type == BOSS) {
+                create_collision(scene, bullet, other_body, create_health_collision, NULL, NULL);
             }
         }
     }
