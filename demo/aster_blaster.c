@@ -116,7 +116,8 @@ void game_loop() {
     double saw_time = 0;
     double shooter_spawn_time = 0;
     double shooter_shot_time = 0;
-    double boss_time = 0;
+    double boss_spawn_time = 0;
+    double boss_shot_time = 0;
 
     bool to_menu = false;
 
@@ -131,6 +132,7 @@ void game_loop() {
     double saw_spawn_rate = rate_variant(ENEMY_SAW_SPAWN_RATE);
     double shooter_spawn_rate = rate_variant(ENEMY_SHOOTER_SPAWN_RATE);
     double shooter_shot_rate = rate_variant(ENEMY_SHOOTER_SHOT_RATE);
+    double boss_shot_rate = rate_variant(BOSS_SHOT_RATE);
 
     while (!sdl_is_done(game_keypress_aux)) {
         double dt = time_since_last_tick();
@@ -140,11 +142,13 @@ void game_loop() {
         saw_time += dt;
         shooter_spawn_time += dt;
         shooter_shot_time += dt;
-        boss_time += dt;
+        boss_spawn_time += dt;
+        boss_shot_time += dt;
 
-        if (boss_time >= BOSS_SPAWN_TIME && !boss_tangible) {
+        if (boss_spawn_time >= BOSS_SPAWN_TIME && !boss_tangible) {
             spawn_boss(scene, boss_movement_trigger, boss_left_trigger, boss_right_trigger, &boss_tangible);
-            boss_time = 0;
+            boss_spawn_time = 0;
+            boss_shot_time = 0;
         }
 
         //ast_time completely resets when an asteroid spawns
@@ -153,9 +157,11 @@ void game_loop() {
             ast_time = ASTEROID_SPAWN_RATE / 2;
             double spawn_chance = drand48();
 
-            // If boss is present the chance of spawning is halved
+            // If boss is present the chance of spawning is halved and the spawn_chance
+            // stops increasing when an asteroid doesn't spawn
             if (boss_tangible) {
                 spawn_chance *= 2;
+                ast_time = 0;
             }
 
             if (spawn_chance < ASTEROID_SPAWN_CHANCE) {
@@ -195,6 +201,12 @@ void game_loop() {
             shooter_enemy_all_shoot(scene, player, bounds, ast_sprites_list);
             shooter_shot_time = 0;
             shooter_shot_rate = rate_variant(ENEMY_SHOOTER_SHOT_RATE);
+        }
+
+        if (boss_tangible && boss_shot_time >= BOSS_SHOT_RATE) {
+            spawn_boss_bomb(scene, bounds, ast_sprites_list);
+            boss_shot_time = 0;
+            boss_shot_rate = rate_variant(BOSS_SHOT_RATE);
         }
 
         if (player_aux->game_over) {

@@ -146,13 +146,100 @@ void spawn_boss(scene_t *scene, body_t *movement_trigger, body_t *left_trigger, 
     scene_add_body(scene, boss);
 }
 
-body_t *body_init_boss_bomb(scene_t *scene, body_t *boss, game_bounds_t bound);
+void boss_bomb_explode(scene_t *scene, body_t *bomb, game_bounds_t bound, ast_sprites_list_t ast_sprites_list) {
+    double angle = 2 * M_PI / BOSS_BULLETS_PER_BOMB;
+    for (size_t i = 0; i < BOSS_BULLETS_PER_BOMB; i++) {
+        body_t *bullet = body_init_boss_bullet(scene, bomb, bound, ast_sprites_list);
+        scene_add_body(scene, bullet);
+        vector_t vel = vec(BOSS_BULLET_SPEED * cos(i * angle), BOSS_BULLET_SPEED * sin(i * angle));
+        body_set_velocity(bullet, vel);
+    }
+    body_remove(bomb);
+}
 
-void spawn_boss_bomb(scene_t *scene, body_t *boss, game_bounds_t bound);
+typedef struct bomb_tick_aux {
+    scene_t *scene;
+    body_t *bomb;
+    game_bounds_t bound;
+    ast_sprites_list_t ast_sprites_list;
+} bomb_tick_aux_t;
 
-body_t *body_init_boss_bullet(scene_t *scene, body_t *bomb, game_bounds_t bound);
+void bomb_tick_force_handler(bomb_tick_aux_t *aux) {
+    aster_aux_t *aster_aux = body_get_info(aux->bomb);
+    aster_aux->timer--;
+    if (aster_aux->timer <= 0) {
+        boss_bomb_explode(aux->scene, aux->bomb, aux->bound, aux->ast_sprites_list);
+    }
+}
 
-void spawn_boss_bullet(scene_t *scene, body_t *bomb, game_bounds_t bound);
+void create_boss_bomb_tick_force(scene_t *scene, body_t *bomb, game_bounds_t bound, ast_sprites_list_t ast_sprites_list) {
+    bomb_tick_aux_t *aux = malloc(sizeof(bomb_tick_aux_t));
+    aux->bomb = bomb;
+    aux->bound = bound;
+    aux->ast_sprites_list = ast_sprites_list;
+    list_t *list = list_init(1, NULL);
+    list_add(list, bomb);
+    scene_add_bodies_force_creator(scene, (force_creator_t)bomb_tick_force_handler, aux, list, free);
+}
+
+body_t *body_init_boss_bullet(scene_t *scene, body_t *bomb, game_bounds_t bound, ast_sprites_list_t ast_sprites_list) {
+    vector_t bullet_center = body_get_centroid(bomb);
+    list_t *shape = polygon_star(bullet_center, BOSS_BULLET_OUT_RADIUS, BOSS_BULLET_IN_RADIUS, BOSS_BULLET_POINTS);
+    aster_aux_t *aux = malloc(sizeof(aster_aux_t));
+    aux->body_type = BOSS_BULLET;
+    body_t *bullet = body_init_with_info(shape, BOSS_BULLET_MASS, BOSS_BULLET_COLOR, aux, free);
+
+    for (size_t i = 0; i < scene_bodies(scene); i++) {
+        body_t *other_body = scene_get_body(scene, i);
+        aster_aux_t *other_aux = body_get_info(other_body);
+        if (other_aux != NULL) {
+            if (other_aux->body_type == ASTEROID) {
+                create_aster_bullet_collision(scene, other_body, bullet, bound, ast_sprites_list);
+            } else if (other_aux->body_type == BLACK_HOLE) {
+                create_newtonian_gravity(scene, G, bullet, other_body, true);
+                create_destructive_collision_single(scene, bullet, other_body);
+            } else if (other_aux->body_type == PLAYER) {
+                create_collision(scene, bullet, other_body, create_health_collision, NULL, NULL);
+                create_destructive_collision_single(scene, bullet, other_body);
+            }
+        }
+    }
+
+    destroy_at_bounds(scene, bullet, bound);
+
+    return bullet;
+}
+
+body_t *body_init_boss_bomb(scene_t *scene, body_t *boss, game_bounds_t bound, ast_sprites_list_t ast_sprites_list) {
+    vector_t bomb_center = body_get_centroid(boss);
+    list_t *shape = polygon_reg_ngon(bomb_center, BOSS_BOMB_RADIUS, BOSS_BOMB_POINTS);
+    aster_aux_t *aux = malloc(sizeof(aster_aux_t));
+    aux->body_type = BOSS_BOMB;
+    aux->timer = BOSS_BOMB_FUSE;
+    body_t *bomb = body_init_with_info(shape, 0, BOSS_BOMB_COLOR, aux, free);
+
+    create_boss_bomb_tick_force(scene, bomb, bound, ast_sprites_list);
+
+    destroy_at_bounds(scene, bomb, bound);
+
+    return bomb;
+}
+
+void spawn_boss_bomb(scene_t *scene, game_bounds_t bound, ast_sprites_list_t ast_sprites_list) {
+    body_t *boss = NULL;
+    for (size_t i = 0; i < scene_bodies(scene); i++) {
+        body_t *body = scene_get_body(scene, i);
+        aster_aux_t *body_aux = body_get_info(body);
+        if (body_aux != NULL) {
+            if (body_aux->body_type == BOSS) {
+                boss = body;
+                break;
+            }
+        }
+    }
+    body_t *bomb = body_init_boss_bomb(scene, boss, bound, ast_sprites_list);
+    scene_add_body(scene, bomb);
+}
 
 body_t *body_boss_health_bar_background_init() {
     list_t *shape = polygon_rect(BOSS_HEALTH_BAR_BACKGROUND_POS, BOSS_HEALTH_BAR_BACKGROUND_W, BOSS_HEALTH_BAR_BACKGROUND_H);

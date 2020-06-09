@@ -21,13 +21,15 @@ body_t *body_init_boss(scene_t *scene, body_t *movement_trigger, body_t *left_tr
 
 void spawn_boss(scene_t *scene, body_t *movement_trigger, body_t *left_trigger, body_t *right_trigger, bool *tangible);
 
-body_t *body_init_boss_bomb(scene_t *scene, body_t *boss, game_bounds_t bound);
+void boss_bomb_explode(scene_t *scene, body_t *bomb, game_bounds_t bound, ast_sprites_list_t ast_sprites_list);
 
-void spawn_boss_bomb(scene_t *scene, body_t *boss, game_bounds_t bound);
+void create_boss_bomb_tick_force(scene_t *scene, body_t *bomb, game_bounds_t bound, ast_sprites_list_t ast_sprites_list);
 
-body_t *body_init_boss_bullet(scene_t *scene, body_t *bomb, game_bounds_t bound);
+body_t *body_init_boss_bullet(scene_t *scene, body_t *bomb, game_bounds_t bound, ast_sprites_list_t ast_sprites_list);
 
-void spawn_boss_bullet(scene_t *scene, body_t *bomb, game_bounds_t bound);
+body_t *body_init_boss_bomb(scene_t *scene, body_t *boss, game_bounds_t bound, ast_sprites_list_t ast_sprites_list);
+
+void spawn_boss_bomb(scene_t *scene, game_bounds_t bound, ast_sprites_list_t ast_sprites_list);
 
 body_t *body_boss_health_bar_background_init();
 

@@ -81,7 +81,7 @@ list_t *body_get_shape_cloned(const body_t *body);
 /**
  * Gets the pointer to the current shape of a body.
  * Don't free this one!
- * 
+ *
  * @param body a pointer to a body returned from body_init()
  * @return the polygon describing the body's current position
  */

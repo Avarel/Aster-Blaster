@@ -18,7 +18,9 @@ typedef enum body_type {
     ENEMY_SHOOTER,
     ENEMY_SHOOTER_BULLET,
     BLACK_HOLE,
-    BOSS
+    BOSS,
+    BOSS_BULLET,
+    BOSS_BOMB
 } body_type_e;
 
 typedef struct aster_aux {
