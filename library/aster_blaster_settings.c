@@ -139,12 +139,12 @@ const double BOSS_HEALTH = 500;
 const rgb_color_t BOSS_COLOR = (rgb_color_t){0.8, 0, 0};
 const double BOSS_OMEGA = 1.5 * M_PI;
 const double BOSS_SPEED = 200;
-const double BOSS_SPAWN_TIME = 5;
+const double BOSS_SPAWN_TIME = 120;
 
 // Boss attack settings
 const double BOSS_SHOT_RATE = 3;
 const double BOSS_BOMB_RADIUS = 30;
-const double BOSS_BOMB_FUSE = 400;
+const double BOSS_BOMB_FUSE = 800;
 const double BOSS_BOMB_SPEED = 200;
 const size_t BOSS_BOMB_POINTS = 30;
 const rgb_color_t BOSS_BOMB_COLOR = (rgb_color_t){0.376, 0.376, 0.376};
@@ -153,7 +153,7 @@ const double BOSS_BULLET_OUT_RADIUS = 10;
 const double BOSS_BULLET_IN_RADIUS = 5;
 const size_t BOSS_BULLET_POINTS = 4;
 const double BOSS_BULLET_MASS = 400;
-const rgb_color_t BOSS_BULLET_COLOR = (rgb_color_t){0.8, 0.8, 0.3};
+const rgb_color_t BOSS_BULLET_COLOR = (rgb_color_t){1, 0, 0};
 const double BOSS_BULLET_SPEED = 300;
 
 // Boss Health bar settings

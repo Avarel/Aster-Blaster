@@ -9,8 +9,7 @@ int main() {
     sdl_init(SDL_MIN, SDL_MAX);
     sdl_set_font(&FONT_PATH_ASTER_BLASTER[0]);
     init_random();
-    // menu_loop();
-    victory_loop();
+    menu_loop();
 }
 
 void menu_loop() {
