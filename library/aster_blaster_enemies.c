@@ -132,6 +132,8 @@ body_t *body_init_boss(scene_t *scene, body_t *movement_trigger, body_t *right_t
 
     body_t *boss = body_init_with_info(boss_shape, BOSS_MASS, BOSS_COLOR, aster_aux, free);
 
+    body_set_velocity(boss, vec_y(-BOSS_SPEED));
+
     body_set_omega(boss, BOSS_OMEGA);
 
     init_boss_collisions(scene, boss, movement_trigger, left_trigger, right_trigger);

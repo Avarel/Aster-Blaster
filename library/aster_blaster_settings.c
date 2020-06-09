@@ -124,7 +124,7 @@ const double BOSS_OUT_RADIUS = 100;
 const double BOSS_IN_RADIUS = 90;
 const double BOSS_POINTS = 16;
 const double BOSS_MASS = 100;
-#define BOSS_INIT_POS ((vector_t){.x = SDL_MAX.x / 2, .y = 1.1 * SDL_MAX.y})
+#define BOSS_INIT_POS ((vector_t){.x = SDL_MAX.x / 2, .y = 1.2 * SDL_MAX.y})
 const double BOSS_HEALTH = 10000;
 const rgb_color_t BOSS_COLOR = (rgb_color_t){0.8, 0, 0};
 const double BOSS_OMEGA = 1.5 * M_PI;
@@ -135,7 +135,7 @@ const double BOSS_SPAWN_TIME = 180;
 const double BOSS_SHOT_RATE = 7;
 const double BOSS_BOMB_RADIUS = 30;
 const double BOSS_BOMB_FUSE = 4;
-const double BOSS_BOMB_SPEED = 100;
+const double BOSS_BOMB_SPEED = 200;
 const rgb_color_t BOSS_BOMB_COLOR_1 = (rgb_color_t){0.376, 0.376, 0.376};
 const rgb_color_t BOSS_BOMB_COLOR_2 = (rgb_color_t){1, 1, 0};
 const rgb_color_t BOSS_BOMB_COLOR_3 = (rgb_color_t){1, 0.5, 0};
