@@ -40,11 +40,21 @@ typedef struct game_bounds {
     body_t *bottom;
 } game_bounds_t;
 
+typedef struct ast_sprites_list {
+    SDL_Texture *circle;
+    SDL_Texture *heptagon;
+    SDL_Texture *hexagon;
+    SDL_Texture *pentagon;
+    // SDL_Texture *ship;
+} ast_sprites_list_t;
+
 typedef struct game_keypress_aux {
     scene_t *scene;
     body_t *player;
     size_t key_down;
     window_type_e window;
 } game_keypress_aux_t;
+
+void destroy_ast_sprite_list(ast_sprites_list_t list);
 
 #endif // #ifndef __ASTER_BLASTER_TYPEDEFS__

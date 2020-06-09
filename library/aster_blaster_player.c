@@ -1,6 +1,6 @@
 #include "aster_blaster_imports.h"
 
-body_t *body_init_player(body_t *health_bar) {
+body_t *body_init_player(body_t *health_bar, render_info_t render_info) {
     aster_aux_t *aster_aux = malloc(sizeof(aster_aux_t));
     aster_aux->body_type = PLAYER;
     aster_aux->health = HEALTH_TOTAL;
@@ -8,7 +8,7 @@ body_t *body_init_player(body_t *health_bar) {
     aster_aux->game_over = false;
 
     list_t *player_shape = polygon_ngon_sector(PLAYER_INIT_POS, PLAYER_RADIUS, PLAYER_SIDES, PLAYER_SECTOR_SIDES, PLAYER_ANGLE);
-    body_t *player = body_init_with_info(player_shape, PLAYER_MASS, PLAYER_COLOR, aster_aux, free);
+    body_t *player = body_init_texture_with_info(player_shape, PLAYER_MASS, render_info, aster_aux, free);
     return player;
 }
 
@@ -21,7 +21,7 @@ body_t *body_init_bullet(body_t *player) {
     return bullet;
 }
 
-void spawn_bullet(scene_t *scene, body_t *player, game_bounds_t bounds) {
+void spawn_bullet(scene_t *scene, body_t *player, game_bounds_t bounds, ast_sprites_list_t ast_sprites_list) {
     body_t *bullet = body_init_bullet(player);
 
     destroy_at_bounds(scene, bullet, bounds);
@@ -32,8 +32,10 @@ void spawn_bullet(scene_t *scene, body_t *player, game_bounds_t bounds) {
         body_t *other_body = scene_get_body(scene, i);
         aster_aux_t *other_aux = body_get_info(other_body);
         if (other_aux != NULL) {
-            if (other_aux->body_type == ASTEROID || other_aux->body_type == ENEMY_SAW || other_aux->body_type == ENEMY_SHOOTER) {
-                create_aster_bullet_collision(scene, other_body, bullet);
+            if (other_aux->body_type == ASTEROID) {
+                create_aster_bullet_collision(scene, other_body, bullet, bounds, ast_sprites_list);
+            } else if (other_aux->body_type == ENEMY_SAW || other_aux->body_type == ENEMY_SHOOTER) {
+                create_destructive_collision(scene, other_body, bullet);
             } else if (other_aux->body_type == BLACK_HOLE) {
                 create_newtonian_gravity(scene, G, bullet, other_body, true);
                 create_destructive_collision_single(scene, bullet, other_body);

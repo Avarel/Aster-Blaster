@@ -47,9 +47,8 @@ const rgb_color_t BULLET_COLOR;
 const double BULLET_COOLDOWN;
 
 // Asteroid settings
-const double ASTEROID_MASS;
-const double ASTEROID_SIDES_MIN;
-const double ASTEROID_SIDES_MAX;
+const double ASTEROID_MIN_MASS;
+const double ASTEROID_MAX_MASS;
 const double ASTEROID_SPEED;
 const double ASTEROID_RADIUS_MIN;
 const double ASTEROID_RADIUS_MAX;

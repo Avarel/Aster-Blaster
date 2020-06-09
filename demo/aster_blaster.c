@@ -81,8 +81,9 @@ void game_loop() {
     scene_add_body(scene, health_bar_background);
     scene_add_body(scene, health_bar);
 
+    SDL_Texture *player_texture = sdl_load_texture("./assets/ship.png");
     // player
-    body_t *player = body_init_player(health_bar);
+    body_t *player = body_init_player(health_bar, render_texture(player_texture, PLAYER_RADIUS * 1.5, PLAYER_RADIUS * 1.2));
     body_set_manual_acceleration(player, true);
     scene_add_body(scene, player);
     aster_aux_t *player_aux = body_get_info(player);
@@ -104,7 +105,13 @@ void game_loop() {
 
     bool to_menu = false;
 
-    SDL_Texture *tex = sdl_load_texture("./asteroid.png");
+    ast_sprites_list_t ast_sprites_list = {
+        .circle = sdl_load_texture("./assets/circle.png"),
+        .heptagon = sdl_load_texture("./assets/heptagon.png"),
+        .hexagon = sdl_load_texture("./assets/hexagon.png"),
+        .pentagon = sdl_load_texture("./assets/pentagon.png"),
+        // .ship = sdl_load_texture("./assets/ship.png"),
+    };
 
     double saw_spawn_rate = rate_variant(ENEMY_SAW_SPAWN_RATE);
     double shooter_spawn_rate = rate_variant(ENEMY_SHOOTER_SPAWN_RATE);
@@ -127,7 +134,7 @@ void game_loop() {
 
             if (spawn_chance < ASTEROID_SPAWN_CHANCE) {
                 ast_time = 0;
-                spawn_asteroid(scene, bounds, tex);
+                spawn_asteroid_top(scene, bounds, ast_sprites_list);
             }
         }
 
@@ -174,7 +181,7 @@ void game_loop() {
         } */
 
         velocity_handle(player, game_keypress_aux->key_down, bounds);
-        shoot_handle(scene, player, &bullet_time, game_keypress_aux->key_down, bounds);
+        shoot_handle(scene, player, &bullet_time, game_keypress_aux->key_down, bounds, ast_sprites_list);
 
         scene_tick(scene, dt);
         sdl_render_scene(scene);
@@ -183,7 +190,8 @@ void game_loop() {
 
     free(game_keypress_aux);
     scene_free(scene);
-    SDL_DestroyTexture(tex);
+    destroy_ast_sprite_list(ast_sprites_list);
+    SDL_DestroyTexture(player_texture);
 
     if (to_menu) {
         menu_loop();

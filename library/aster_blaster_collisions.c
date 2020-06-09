@@ -40,13 +40,33 @@ void create_aster_player_collision(scene_t *scene, body_t *ast, body_t *player) 
     create_physics_collision(scene, 1.0, player, ast);
 }
 
-void create_aster_bullet_collision(scene_t *scene, body_t *ast, body_t *bullet) {
-    // style 2: physics (maybe even reduce mass!)
-    // create_destructive_collision_single(scene, bullet, ast);
-    // create_physics_collision(scene, 1.0, ast, bullet);
+typedef struct aster_bullet_collision_aux {
+    scene_t *scene;
+    game_bounds_t bounds;
+    ast_sprites_list_t ast_sprites_list;
+} aster_bullet_collision_aux_t;
 
-    // style 1: simple
-    create_destructive_collision(scene, ast, bullet);
+void create_aster_fragments(body_t *ast, body_t *bullet, vector_t axis, void *aux) {
+    if (body_is_removed(ast) || body_is_removed(bullet)) return;
+    aster_bullet_collision_aux_t *caux = (aster_bullet_collision_aux_t *) aux;
+    double mass = body_get_mass(ast) / 1.5;
+    vector_t velocity = body_get_velocity(ast);
+    vector_t centroid = body_get_centroid(ast);
+    body_remove(bullet);
+    body_remove(ast);
+    if (mass > ASTEROID_MIN_MASS) {
+        // todo make it better
+        spawn_asteroid_general(caux->scene, mass, centroid, vec_rotate(velocity, 1.0), caux->bounds, caux->ast_sprites_list);
+        spawn_asteroid_general(caux->scene, mass, centroid, vec_rotate(velocity, -1.0), caux->bounds, caux->ast_sprites_list);
+    }
+}
+
+void create_aster_bullet_collision(scene_t *scene, body_t *ast, body_t *bullet, game_bounds_t bounds, ast_sprites_list_t ast_sprites_list) {
+    aster_bullet_collision_aux_t *aux = malloc(sizeof(aster_bullet_collision_aux_t));
+    aux->scene = scene;
+    aux->bounds = bounds;
+    aux->ast_sprites_list = ast_sprites_list;
+    create_collision(scene, ast, bullet, create_aster_fragments, aux, free);
 }
 
 /**

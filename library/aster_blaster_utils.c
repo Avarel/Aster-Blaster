@@ -4,26 +4,26 @@ vector_t get_pos_radius_off_screen(double radius) {
     size_t direction = irand_range(1, 4);
     double x, y;
     switch (direction) {
-        case 1: { // left
-            x = SDL_MIN.x - radius;
-            y = drand_range(SDL_MIN.y, SDL_MAX.y);
-            break;
-        }
-        case 2: { // right
-            x = SDL_MAX.x + radius;
-            y = drand_range(SDL_MIN.y, SDL_MAX.y);
-            break;
-        }
-        case 3: { // up
-            x = drand_range(SDL_MIN.x, SDL_MAX.x);
-            y = SDL_MAX.y + radius;
-            break;
-        }
-        case 4: { // down
-            x = drand_range(SDL_MIN.x, SDL_MAX.x);
-            y = SDL_MIN.y - radius;
-            break;
-        }
+    case 1: { // left
+        x = SDL_MIN.x - radius;
+        y = drand_range(SDL_MIN.y, SDL_MAX.y);
+        break;
+    }
+    case 2: { // right
+        x = SDL_MAX.x + radius;
+        y = drand_range(SDL_MIN.y, SDL_MAX.y);
+        break;
+    }
+    case 3: { // up
+        x = drand_range(SDL_MIN.x, SDL_MAX.x);
+        y = SDL_MAX.y + radius;
+        break;
+    }
+    case 4: { // down
+        x = drand_range(SDL_MIN.x, SDL_MAX.x);
+        y = SDL_MIN.y - radius;
+        break;
+    }
     }
     return vec(x, y);
 }
@@ -80,10 +80,11 @@ void shoot_handle(scene_t *scene,
                   body_t *player,
                   double *bullet_time,
                   size_t key_down,
-                  game_bounds_t bounds) {
+                  game_bounds_t bounds,
+                  ast_sprites_list_t ast_sprites_list) {
     if (get_nth_bit(key_down, SPACE_BAR)) {
         if (*bullet_time > BULLET_COOLDOWN) {
-            spawn_bullet(scene, player, bounds);
+            spawn_bullet(scene, player, bounds, ast_sprites_list);
             *bullet_time = 0;
         }
     }

@@ -1,18 +1,15 @@
 #include "aster_blaster_imports.h"
 
-void spawn_asteroid(scene_t *scene, game_bounds_t bounds, SDL_Texture *tex) {
+void spawn_asteroid_top(scene_t *scene, game_bounds_t bounds, ast_sprites_list_t ast_sprites_list) {
     // TODO: random later
     // TODO: magic number
     // TODO: split into spawn() and body_init() like everything else
     // TODO: image rendering should be factored out to sdl_wrapper
-    size_t num_sides = 10; //irand_range(ASTEROID_SIDES_MIN, ASTEROID_SIDES_MAX);
-    double ast_radius = drand_range(ASTEROID_RADIUS_MIN, ASTEROID_RADIUS_MAX);
+    double mass = drand_range(ASTEROID_MIN_MASS, ASTEROID_MAX_MASS);
+    double ast_radius = (mass - ASTEROID_MIN_MASS) / (ASTEROID_MAX_MASS - ASTEROID_MIN_MASS) * (ASTEROID_RADIUS_MAX - ASTEROID_RADIUS_MIN) + ASTEROID_RADIUS_MIN;
     double ast_x = drand_range(SDL_MIN.x, SDL_MAX.x);
     vector_t ast_center = vec(ast_x, SDL_MAX.y + ast_radius);
 
-    //if the asteroid spawns at the left of the screen,x velocity should be
-    //positive, so theta between 3*pi/2 and 2*pi
-    //otherwise, theta between pi and 3*pi/2, so x velocity is negative
     double theta = 0;
     double midpoint = (SDL_MAX.x - SDL_MIN.x) / 2;
     if (ast_x < midpoint) {
@@ -21,6 +18,37 @@ void spawn_asteroid(scene_t *scene, game_bounds_t bounds, SDL_Texture *tex) {
         theta = drand_range(M_PI, 3 * M_PI / 2);
     }
     vector_t ast_velocity = vec(ASTEROID_SPEED * cos(theta), ASTEROID_SPEED * sin(theta));
+
+    spawn_asteroid_general(scene, mass, ast_center, ast_velocity, bounds, ast_sprites_list);
+}
+
+void spawn_asteroid_general(scene_t *scene, double mass, vector_t ast_center, vector_t ast_velocity, game_bounds_t bounds, ast_sprites_list_t ast_sprites_list) {
+    size_t num_sides;
+    SDL_Texture *tex;
+
+    switch (irand_range(0, 3)) {
+    case 0:
+        num_sides = 5;
+        tex = ast_sprites_list.pentagon;
+        break;
+    case 1:
+        num_sides = 6;
+        tex = ast_sprites_list.hexagon;
+    case 2:
+        num_sides = 7;
+        tex = ast_sprites_list.heptagon;
+        break;
+    case 3:
+        num_sides = 10;
+        tex = ast_sprites_list.circle;
+        break;
+    default:
+        abort();
+    }
+    assert(tex != NULL);
+
+    double ast_radius = (mass - ASTEROID_MIN_MASS) / (ASTEROID_MAX_MASS - ASTEROID_MIN_MASS) * (ASTEROID_RADIUS_MAX - ASTEROID_RADIUS_MIN) + ASTEROID_RADIUS_MIN;
+
     double ast_omega = drand_range(-2.0 * M_PI, 2.0 * M_PI);
 
     aster_aux_t *asteroid_aux = malloc(sizeof(aster_aux_t));
@@ -29,7 +57,7 @@ void spawn_asteroid(scene_t *scene, game_bounds_t bounds, SDL_Texture *tex) {
     render_info_t texture = render_texture(tex, ast_radius * 2, ast_radius * 2);
 
     list_t *aster_shape = polygon_reg_ngon(ast_center, ast_radius, num_sides);
-    body_t *asteroid = body_init_texture_with_info(aster_shape, ASTEROID_MASS, texture, asteroid_aux, free);
+    body_t *asteroid = body_init_texture_with_info(aster_shape, mass, texture, asteroid_aux, free);
     body_set_velocity(asteroid, ast_velocity);
     body_set_omega(asteroid, ast_omega);
 
@@ -38,7 +66,7 @@ void spawn_asteroid(scene_t *scene, game_bounds_t bounds, SDL_Texture *tex) {
         aster_aux_t *other_aux = body_get_info(other_body);
         if (other_aux != NULL) {
             if (other_aux->body_type == BULLET) {
-                create_aster_bullet_collision(scene, asteroid, other_body);
+                create_aster_bullet_collision(scene, asteroid, other_body, bounds, ast_sprites_list);
             } else if (other_aux->body_type == PLAYER) { // TODO: is this different from health collision?
                 create_aster_player_collision(scene, asteroid, other_body);
             } else if (other_aux->body_type == BLACK_HOLE) {
@@ -49,7 +77,6 @@ void spawn_asteroid(scene_t *scene, game_bounds_t bounds, SDL_Texture *tex) {
     }
 
     destroy_at_bounds(scene, asteroid, bounds);
-
     scene_add_body(scene, asteroid);
 }
 
@@ -88,7 +115,6 @@ void create_background_stars(scene_t *scene, body_t *bound) {
 }
 
 body_t *body_init_black_hole(vector_t pos, scene_t *scene, game_bounds_t bounds) {
-
     list_t *shape = polygon_reg_ngon(pos, BLACK_HOLE_RADIUS, BLACK_HOLE_POINTS);
     aster_aux_t *aster_aux = malloc(sizeof(aster_aux_t));
     aster_aux->body_type = BLACK_HOLE;

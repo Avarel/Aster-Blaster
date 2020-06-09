@@ -41,15 +41,16 @@ const double BULLET_MASS = 10;
 const double BULLET_RADIUS = 12;
 const double BULLET_SIDES = 30;
 const rgb_color_t BULLET_COLOR = ((rgb_color_t){1, 1, 0});
-const double BULLET_COOLDOWN = 0.4;
+const double BULLET_COOLDOWN = 0.2;
 
 // Asteroid settings
-const double ASTEROID_MASS = 100;
+const double ASTEROID_MIN_MASS = 50;
+const double ASTEROID_MAX_MASS = 300;
 const double ASTEROID_SIDES_MIN = 5;
 const double ASTEROID_SIDES_MAX = 10;
 const double ASTEROID_SPEED = 200;
 const double ASTEROID_RADIUS_MIN = 30.0;
-const double ASTEROID_RADIUS_MAX = 50.0;
+const double ASTEROID_RADIUS_MAX = 80.0;
 const rgb_color_t ASTEROID_COLOR = (rgb_color_t){0.7, 0.7, 0.7};
 const double ASTEROID_SPAWN_CHANCE = 0.33;
 const double ASTEROID_SPAWN_RATE = 0.5;

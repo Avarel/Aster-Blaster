@@ -20,7 +20,7 @@ body_t *body_init_enemy_saw(vector_t pos, scene_t *scene, body_t *player) {
         aster_aux_t *other_aux = body_get_info(other_body);
         if (other_aux != NULL) {
             if (other_aux->body_type == BULLET) {
-                create_aster_bullet_collision(scene, saw_enemy, other_body);
+                create_destructive_collision(scene, saw_enemy, other_body);
             } else if (other_aux->body_type == BLACK_HOLE) {
                 create_newtonian_gravity(scene, G, saw_enemy, other_body, true);
                 create_destructive_collision_single(scene, saw_enemy, other_body);
@@ -48,7 +48,7 @@ body_t *body_init_enemy_shooter(vector_t pos, scene_t *scene, body_t *player) {
         aster_aux_t *other_aux = body_get_info(other_body);
         if (other_aux != NULL) {
             if (other_aux->body_type == BULLET) {
-                create_aster_bullet_collision(scene, shooter_enemy, other_body);
+                create_destructive_collision(scene, shooter_enemy, other_body);
             } else if (other_aux->body_type == BLACK_HOLE) {
                 create_newtonian_gravity(scene, G, shooter_enemy, other_body, true);
                 create_destructive_collision_single(scene, shooter_enemy, other_body);

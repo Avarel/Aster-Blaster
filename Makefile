@@ -30,7 +30,8 @@ STUDENT_LIBS = vector list \
 	aster_blaster_environment \
 	aster_blaster_player \
 	aster_blaster_utils \
-	aster_blaster_on_key
+	aster_blaster_on_key \
+	aster_blaster_typedefs
 
 STUDENT_TESTS = $(subst .c,, $(subst tests/student/,,$(wildcard tests/student/*.c)))
 
@@ -43,7 +44,7 @@ TEST_BINS = $(addprefix bin/test_suite_,$(STUDENT_LIBS)) bin/student_tests $(add
 # List of demo executables, i.e. "bin/bounce".
 DEMO_BINS = $(addprefix bin/,$(DEMOS))
 # All executables (the concatenation of TEST_BINS and DEMO_BINS)
-BINS = $(TEST_BINS) $(DEMO_BINS)
+BINS = $(DEMO_BINS) #$(TEST_BINS) too much to keep track of
 
 folders:
 	mkdir -p bin & mkdir -p out
