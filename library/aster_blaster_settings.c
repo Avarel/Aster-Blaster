@@ -26,6 +26,16 @@ const size_t VICTORY_FONT_SIZE = 64;
 #define VICTORY_ORIGIN ((vector_t){.x = 0.5 * SDL_MAX.x, .y = 0.75 * SDL_MAX.y})
 const justification_e VICTORY_JUSTIFICATION = CENTER;
 
+char VICTORY_GAME_START_TEXT[] = "Press space to begin!\0";
+const size_t VICTORY_GAME_START_FONT_SIZE = 32;
+#define VICTORY_GAME_START_ORIGIN ((vector_t){.x = 0.5 * SDL_MAX.x, .y = 0.6 * SDL_MAX.y})
+const justification_e VICTORY_GAME_START_JUSTIFICATION = CENTER;
+
+char VICTORY_MENU_TEXT[] = "Press escape to return to menu.\0";
+const size_t VICTORY_MENU_FONT_SIZE = 32;
+#define VICTORY_MENU_ORIGIN ((vector_t){.x = 0.5 * SDL_MAX.x, .y = 0.5 * SDL_MAX.y})
+const justification_e VICTORY_MENU_JUSTIFICATION = CENTER;
+
 // Global Settings
 const double G = 1000;
 

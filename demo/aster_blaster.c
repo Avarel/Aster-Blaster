@@ -63,17 +63,24 @@ void victory_loop() {
     menu_keypress_aux->window = VICTORY;
 
     text_box_t *victory_text_box = text_box_init(&VICTORY_TEXT[0], VICTORY_FONT_SIZE, VICTORY_ORIGIN, VICTORY_JUSTIFICATION);
-    text_box_t *menu_game_start_text_box = text_box_init(&MENU_GAME_START_TEXT[0], MENU_GAME_START_FONT_SIZE, MENU_GAME_START_ORIGIN, MENU_GAME_START_JUSTIFICATION);
-
+    text_box_t *victory_game_start_text_box = text_box_init(&VICTORY_GAME_START_TEXT[0], VICTORY_GAME_START_FONT_SIZE, VICTORY_GAME_START_ORIGIN, VICTORY_GAME_START_JUSTIFICATION);
+    text_box_t *victory_menu_text_box = text_box_init(&VICTORY_MENU_TEXT[0], VICTORY_MENU_FONT_SIZE, VICTORY_MENU_ORIGIN, VICTORY_MENU_JUSTIFICATION);
     scene_add_text_box(scene, victory_text_box);
-    scene_add_text_box(scene, menu_game_start_text_box);
+    scene_add_text_box(scene, victory_game_start_text_box);
+    scene_add_text_box(scene, victory_menu_text_box);
 
     bool to_game = false;
+    bool to_menu = false;
     while (!sdl_is_done(menu_keypress_aux)) {
         double dt = time_since_last_tick();
 
         if (menu_keypress_aux->window == GAME) {
             to_game = true;
+            break;
+        }
+
+        if (menu_keypress_aux->window == MENU) {
+            to_menu = true;
             break;
         }
 
@@ -86,6 +93,9 @@ void victory_loop() {
 
     if (to_game) {
         game_loop();
+    }
+    if (to_menu) {
+        menu_loop();
     }
 }
 

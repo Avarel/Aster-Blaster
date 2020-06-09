@@ -29,6 +29,11 @@ void on_key_victory(char key, key_event_type_t type, double held_time, menu_keyp
                 keypress_aux->window = GAME;
             }
             break;
+        case ESCAPE:
+            if (keypress_aux->window == VICTORY) {
+                keypress_aux->window = MENU;
+            }
+            break;
         }
         keypress_aux->key_down = set_nth_bit(keypress_aux->key_down, key);
     } else if (type == KEY_RELEASED) {

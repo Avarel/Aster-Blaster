@@ -29,6 +29,16 @@ const size_t VICTORY_FONT_SIZE;
 #define VICTORY_ORIGIN ((vector_t){.x = 0.5 * SDL_MAX.x, .y = 0.75 * SDL_MAX.y})
 const justification_e VICTORY_JUSTIFICATION;
 
+char VICTORY_GAME_START_TEXT[22];
+const size_t VICTORY_GAME_START_FONT_SIZE;
+#define VICTORY_GAME_START_ORIGIN ((vector_t){.x = 0.5 * SDL_MAX.x, .y = 0.6 * SDL_MAX.y})
+const justification_e VICTORY_GAME_START_JUSTIFICATION;
+
+char VICTORY_MENU_TEXT[32];
+const size_t VICTORY_MENU_FONT_SIZE;
+#define VICTORY_MENU_ORIGIN ((vector_t){.x = 0.5 * SDL_MAX.x, .y = 0.5 * SDL_MAX.y})
+const justification_e VICTORY_MENU_JUSTIFICATION;
+
 //Global Settings
 const double G;
 
