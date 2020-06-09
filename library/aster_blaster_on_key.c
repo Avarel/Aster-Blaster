@@ -21,7 +21,7 @@ void on_key_menu(char key, key_event_type_t type, double held_time, menu_keypres
     }
 }
 
-void on_key_victory(char key, key_event_type_t type, double held_time, game_keypress_aux_t *keypress_aux) {
+void on_key_victory(char key, key_event_type_t type, double held_time, menu_keypress_aux_t *keypress_aux) {
     if (type == KEY_PRESSED) {
         switch (key) {
         case SPACE_BAR:
