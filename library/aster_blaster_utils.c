@@ -1,5 +1,33 @@
 #include "aster_blaster_imports.h"
 
+vector_t get_pos_radius_off_screen(double radius) {
+    size_t direction = irand_range(1, 4);
+    double x, y;
+    switch (direction) {
+        case 1: { // left
+            x = SDL_MIN.x - radius;
+            y = drand_range(SDL_MIN.y, SDL_MAX.y);
+            break;
+        }
+        case 2: { // right
+            x = SDL_MAX.x + radius;
+            y = drand_range(SDL_MIN.y, SDL_MAX.y);
+            break;
+        }
+        case 3: { // up
+            x = drand_range(SDL_MIN.x, SDL_MAX.x);
+            y = SDL_MAX.y + radius;
+            break;
+        }
+        case 4: { // down
+            x = drand_range(SDL_MIN.x, SDL_MAX.x);
+            y = SDL_MIN.y - radius;
+            break;
+        }
+    }
+    return vec(x, y);
+}
+
 void print_bits(unsigned int num) {
     for (int bit = 0; bit < (sizeof(unsigned int) * 2); bit++) {
         printf("%i ", num & 0x01);

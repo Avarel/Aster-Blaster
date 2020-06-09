@@ -7,31 +7,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-/**
- * Macro to deflect objects off the edge.
- * Also kicks the polygon back to avoid
- * being stuck in a "negate loop" in the outer regions
- *
- * _POL_: body object pointer
- * __P__: vector_t value/point
- * __Z__: component of vector_t
- * __E__: elasticity
- * _FVC_: vector component function
- * _MAX_: max bound
- * _MIN_: min bound
- */
-#define EDGE_DEFLECT(_POL_, __P__, __Z__, __E__, _FVC_, _MIN_, _MAX_)       \
-    double __Z__ = (__P__.__Z__);                                           \
-    if ((__Z__) < (_MIN_.__Z__) || (__Z__) > (_MAX_.__Z__)) {               \
-        vector_t temp_z = body_get_velocity(_POL_);                         \
-        temp_z.__Z__ = -((__E__) * body_get_velocity(_POL_).__Z__);         \
-        body_set_velocity(_POL_, temp_z);                                   \
-        if ((__Z__) <= (_MIN_.__Z__)) {                                     \
-            body_translate(_POL_, _FVC_((_MIN_.__Z__) - (__Z__)));          \
-        } else {                                                            \
-            body_translate(_POL_, _FVC_((_MAX_.__Z__) - (__Z__)));          \
-        }                                                                   \
-    }
+double angle_to(vector_t to_point, vector_t point_to);
 
 vector_t *list_get_vector(list_t *list, size_t index);
 

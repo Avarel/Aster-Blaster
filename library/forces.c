@@ -129,20 +129,7 @@ void pointing_force_handler(pointing_force_aux_t *aux) {
     vector_t to_point_pos = body_get_centroid(aux->body_to_point);
     vector_t point_to_pos = body_get_centroid(aux->body_point_to);
 
-    bool right = to_point_pos.x > point_to_pos.x;
-
-    if (to_point_pos.y == point_to_pos.y) { // prevent DBZ
-        if (right) {
-            body_set_rotation(aux->body_to_point, M_PI);
-        } else {
-            body_set_rotation(aux->body_to_point, 0);
-        }
-    } else {
-        bool below = to_point_pos.y < point_to_pos.y;
-        double theta = atan((to_point_pos.x - point_to_pos.x) / (point_to_pos.y - to_point_pos.y));
-        theta += below ? 0.5 * M_PI : 1.5 * M_PI;
-        body_set_rotation(aux->body_to_point, theta);
-    }
+    body_set_rotation(aux->body_to_point, angle_to(to_point_pos, point_to_pos));
 }
 
 void create_pointing_force(scene_t *scene, body_t *body_to_point, body_t *body_point_to) {

@@ -16,6 +16,7 @@ typedef enum body_type {
     ASTEROID,
     ENEMY_SAW,
     ENEMY_SHOOTER,
+    ENEMY_SHOOTER_BULLET,
     BLACK_HOLE
 } body_type_e;
 

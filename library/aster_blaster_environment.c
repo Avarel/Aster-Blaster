@@ -3,6 +3,7 @@
 void spawn_asteroid(scene_t *scene, game_bounds_t bounds, SDL_Texture *tex) {
     // TODO: random later
     // TODO: magic number
+    // TODO: split into spawn() and body_init() like everything else
     // TODO: image rendering should be factored out to sdl_wrapper
     size_t num_sides = 10; //irand_range(ASTEROID_SIDES_MIN, ASTEROID_SIDES_MAX);
     double ast_radius = drand_range(ASTEROID_RADIUS_MIN, ASTEROID_RADIUS_MAX);
@@ -32,14 +33,13 @@ void spawn_asteroid(scene_t *scene, game_bounds_t bounds, SDL_Texture *tex) {
     body_set_velocity(asteroid, ast_velocity);
     body_set_omega(asteroid, ast_omega);
 
-    scene_add_body(scene, asteroid);
-    for (size_t i = 0; i < scene_bodies(scene) - 1; i++) {
+    for (size_t i = 0; i < scene_bodies(scene); i++) {
         body_t *other_body = scene_get_body(scene, i);
         aster_aux_t *other_aux = body_get_info(other_body);
         if (other_aux != NULL) {
             if (other_aux->body_type == BULLET) {
                 create_aster_bullet_collision(scene, asteroid, other_body);
-            } else if (other_aux->body_type == PLAYER) {
+            } else if (other_aux->body_type == PLAYER) { // TODO: is this different from health collision?
                 create_aster_player_collision(scene, asteroid, other_body);
             } else if (other_aux->body_type == BLACK_HOLE) {
                 create_newtonian_gravity(scene, G, asteroid, other_body, true);
@@ -47,7 +47,10 @@ void spawn_asteroid(scene_t *scene, game_bounds_t bounds, SDL_Texture *tex) {
             }
         }
     }
+
     destroy_at_bounds(scene, asteroid, bounds);
+
+    scene_add_body(scene, asteroid);
 }
 
 /**
@@ -104,7 +107,7 @@ body_t *body_init_black_hole(vector_t pos, scene_t *scene, game_bounds_t bounds)
     vector_t bh_velocity = vec(BLACK_HOLE_SPEED * cos(theta), BLACK_HOLE_SPEED * sin(theta));
     body_set_velocity(black_hole, bh_velocity);
 
-    for (size_t i = 0; i < scene_bodies(scene) - 1; i++) {
+    for (size_t i = 0; i < scene_bodies(scene); i++) {
         body_t *other_body = scene_get_body(scene, i);
         aster_aux_t *other_aux = body_get_info(other_body);
         if (other_aux != NULL) {

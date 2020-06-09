@@ -23,36 +23,24 @@ void menu_loop() {
     menu_keypress_aux->window = MENU;
 
     text_box_t *menu_title_text_box = text_box_init(&MENU_TITLE_TEXT[0], MENU_TITLE_FONT_SIZE, MENU_TITLE_ORIGIN, MENU_TITLE_JUSTIFICATION);
-    scene_add_text_box(scene, menu_title_text_box);
     text_box_t *menu_game_start_text_box = text_box_init(&MENU_GAME_START_TEXT[0], MENU_GAME_START_FONT_SIZE, MENU_GAME_START_ORIGIN, MENU_GAME_START_JUSTIFICATION);
-    scene_add_text_box(scene, menu_game_start_text_box);
 
-    size_t frame = 0;
+    scene_add_text_box(scene, menu_title_text_box);
+    scene_add_text_box(scene, menu_game_start_text_box);
 
     bool to_game = false;
     while (!sdl_is_done(menu_keypress_aux)) {
         double dt = time_since_last_tick();
 
-        if (frame % DEBUG_PRINT_RATE == 0) {
-            // printf("window: %s\n", keypress_aux->window == MENU ? "menu" : "game");
-        }
-
         if (menu_keypress_aux->window == GAME) {
-            // assumes specific text_box state
-            //scene_remove_text_box(scene, 1);
-            //scene_remove_text_box(scene, 0);
             to_game = true;
             break;
         }
 
         scene_tick(scene, dt);
         sdl_render_scene(scene);
-        frame++;
     }
 
-    //printf("Frames rendered: %zu\n", frame);
-
-    // free mallocs
     free(menu_keypress_aux);
     scene_free(scene);
 
@@ -69,6 +57,7 @@ void game_loop() {
     sdl_on_key((key_handler_t)on_key_game);
 
     // using ASTEROID_RADIUS for bounds because it's maximum size
+    // TODO: make a new variable for this?
     game_bounds_t bounds = (game_bounds_t){
         .top = body_init(polygon_rect(vec(SDL_MIN.x, SDL_MAX.y + 2 * ASTEROID_RADIUS_MAX), SDL_MAX.x, ASTEROID_RADIUS_MAX), INFINITY, COLOR_BLACK),
         .bottom = body_init(polygon_rect(vec(SDL_MIN.x, SDL_MIN.y - 3 * ASTEROID_RADIUS_MAX), SDL_MAX.x, ASTEROID_RADIUS_MAX), INFINITY, COLOR_BLACK),
@@ -81,7 +70,8 @@ void game_loop() {
     scene_add_body(scene, bounds.bottom);
 
     // when stars collide with this offscreen they'll teleport to just off the
-    // top of the scene so it loops.
+    // top of the scene so it loops
+    // TODO: magic numbers
     body_t *star_bound = body_init(polygon_rect(vec(SDL_MIN.x, SDL_MIN.y - 6 * STAR_RADIUS_MAX), SDL_MAX.x, 2 * STAR_RADIUS_MAX), INFINITY, COLOR_BLACK);
     create_background_stars(scene, star_bound);
 
@@ -109,9 +99,8 @@ void game_loop() {
     double bh_time = 0;
     double bullet_time = BULLET_COOLDOWN; // time since last bullet being fired
     double saw_time = 0;
-    double shooter_time = 0;
-
-    spawn_black_hole(scene, bounds);
+    double shooter_spawn_time = 0;
+    double shooter_shot_time = 0;
 
     bool to_menu = false;
 
@@ -119,6 +108,7 @@ void game_loop() {
 
     double saw_spawn_rate = rate_variant(ENEMY_SAW_SPAWN_RATE);
     double shooter_spawn_rate = rate_variant(ENEMY_SHOOTER_SPAWN_RATE);
+    double shooter_shot_rate = rate_variant(ENEMY_SHOOTER_SHOT_RATE);
 
     while (!sdl_is_done(game_keypress_aux)) {
         double dt = time_since_last_tick();
@@ -126,7 +116,8 @@ void game_loop() {
         bh_time += dt;
         bullet_time += dt;
         saw_time += dt;
-        shooter_time += dt;
+        shooter_spawn_time += dt;
+        shooter_shot_time += dt;
 
         //ast_time completely resets when an asteroid spawns
         //and decreases by half when it's met without an asteroid spawning
@@ -161,12 +152,16 @@ void game_loop() {
             saw_spawn_rate = rate_variant(ENEMY_SAW_SPAWN_RATE);
         }
 
-
-        // TODO: give random offset from target so they aren't all on top of each other
-        if (shooter_time >= shooter_spawn_rate) {     
+        if (shooter_spawn_time >= shooter_spawn_rate) {     
             spawn_enemy_shooter(scene, player);
-            shooter_time = 0;
+            shooter_spawn_time = 0;
             shooter_spawn_rate = rate_variant(ENEMY_SHOOTER_SPAWN_RATE);
+        }
+
+        if (shooter_shot_time >= shooter_shot_rate) {
+            shooter_enemy_all_shoot(scene, player);
+            shooter_shot_time = 0;
+            shooter_shot_rate = rate_variant(ENEMY_SHOOTER_SPAWN_RATE);
         }
 
         if (player_aux->game_over) {

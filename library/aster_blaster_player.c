@@ -22,7 +22,6 @@ body_t *body_init_bullet(body_t *player) {
 }
 
 void spawn_bullet(scene_t *scene, body_t *player, game_bounds_t bounds) {
-
     body_t *bullet = body_init_bullet(player);
 
     destroy_at_bounds(scene, bullet, bounds);

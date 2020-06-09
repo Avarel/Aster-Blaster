@@ -3,6 +3,8 @@
 
 #include "aster_blaster_imports.h"
 
+vector_t get_pos_radius_off_screen(double radius);
+
 void print_bits(unsigned int num);
 
 void velocity_handle(body_t *body, size_t key_down, game_bounds_t bounds);

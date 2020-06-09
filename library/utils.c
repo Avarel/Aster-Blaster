@@ -1,12 +1,26 @@
 #include "color.h"
 #include "list.h"
 #include "vector.h"
+#include "body.h"
 #include <assert.h>
 #include <math.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+
+double angle_to(vector_t to_point, vector_t point_to) {
+    bool right = to_point.x > point_to.x;
+
+    if (to_point.y == point_to.y) { // prevent DBZ
+        return right ? M_PI : 0;
+    } else {
+        bool below = to_point.y < point_to.y;
+        double theta = atan((to_point.x - point_to.x) / (point_to.y - to_point.y));
+        theta += below ? 0.5 * M_PI : 1.5 * M_PI;
+        return theta;
+    }
+}
 
 vector_t *list_get_vector(list_t *list, size_t index) {
     return (vector_t *)list_get(list, index);

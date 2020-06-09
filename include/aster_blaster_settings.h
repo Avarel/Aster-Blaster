@@ -38,7 +38,7 @@ const double PLAYER_VELOCITY;
 const double PLAYER_ACCELERATION;
 const double PLAYER_SPACE_FRICTION;
 
-// Bullet settings
+// Player bullet settings
 const double BULLET_MASS;
 #define BULLET_VELOCITY ((vector_t){.x = 0, .y = 2 * SDL_MAX.y})
 const double BULLET_RADIUS;
@@ -105,6 +105,15 @@ const double ENEMY_SHOOTER_MASS;
 const rgb_color_t ENEMY_SHOOTER_COLOR;
 const double ENEMY_SHOOTER_A;
 const double ENEMY_SHOOTER_SPAWN_RATE;
+
+// Shooter enemy bullet settings
+const double ENEMY_SHOOTER_SHOT_RATE;
+const double ENEMY_SHOOTER_BULLET_OUT_RADIUS;
+const double ENEMY_SHOOTER_BULLET_IN_RADIUS;
+const size_t ENEMY_SHOOTER_BULLET_POINTS;
+const double ENEMY_SHOOTER_BULLET_MASS;
+const rgb_color_t ENEMY_SHOOTER_BULLET_COLOR;
+const double ENEMY_SHOOTER_BULLET_SPEED;
 
 // Black Hole settings
 const double BLACK_HOLE_RADIUS;
