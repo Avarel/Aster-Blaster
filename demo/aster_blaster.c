@@ -49,6 +49,44 @@ void menu_loop() {
     }
 }
 
+void victory_loop() {
+    sdl_set_background_color(COLOR_WHITE);
+    scene_t *scene = scene_init();
+
+    sdl_on_key((key_handler_t)on_key_victory);
+
+    menu_keypress_aux_t *menu_keypress_aux = malloc(sizeof(menu_keypress_aux_t));
+    menu_keypress_aux->scene = scene;
+    menu_keypress_aux->key_down = 0;
+    menu_keypress_aux->window = VICTORY;
+
+    text_box_t *victory_text_box = text_box_init(&VICTORY_TEXT[0], VICTORY_FONT_SIZE, VICTORY_ORIGIN, VICTORY_JUSTIFICATION);
+    text_box_t *menu_game_start_text_box = text_box_init(&MENU_GAME_START_TEXT[0], MENU_GAME_START_FONT_SIZE, MENU_GAME_START_ORIGIN, MENU_GAME_START_JUSTIFICATION);
+
+    scene_add_text_box(scene, victory_text_box);
+    scene_add_text_box(scene, menu_game_start_text_box);
+
+    bool to_game = false;
+    while (!sdl_is_done(menu_keypress_aux)) {
+        double dt = time_since_last_tick();
+
+        if (menu_keypress_aux->window == GAME) {
+            to_game = true;
+            break;
+        }
+
+        scene_tick(scene, dt);
+        sdl_render_scene(scene);
+    }
+
+    free(menu_keypress_aux);
+    scene_free(scene);
+
+    if (to_game) {
+        game_loop();
+    }
+}
+
 void game_loop() {
     sdl_set_background_color(COLOR_BLACK);
 
@@ -120,6 +158,7 @@ void game_loop() {
     double boss_shot_time = 0;
 
     bool to_menu = false;
+    bool to_victory = false;
 
     ast_sprites_list_t ast_sprites_list = {
         .circle = sdl_load_texture("./assets/circle.png"),
@@ -133,6 +172,8 @@ void game_loop() {
     double shooter_spawn_rate = rate_variant(ENEMY_SHOOTER_SPAWN_RATE);
     double shooter_shot_rate = rate_variant(ENEMY_SHOOTER_SHOT_RATE);
     double boss_shot_rate = rate_variant(BOSS_SHOT_RATE);
+    body_t *boss = NULL;
+    aster_aux_t *boss_aux = NULL;
 
     while (!sdl_is_done(game_keypress_aux)) {
         double dt = time_since_last_tick();
@@ -149,6 +190,8 @@ void game_loop() {
             spawn_boss(scene, boss_movement_trigger, boss_left_trigger, boss_right_trigger, &boss_tangible);
             boss_spawn_time = 0;
             boss_shot_time = 0;
+            boss = scene_get_body(scene, scene_bodies(scene) - 1);
+            boss_aux = body_get_info(boss);
         }
 
         //ast_time completely resets when an asteroid spawns
@@ -209,6 +252,11 @@ void game_loop() {
             boss_shot_rate = rate_variant(BOSS_SHOT_RATE);
         }
 
+        if (boss_tangible && boss_aux->game_over) {
+            to_victory = true;
+            break;
+        }
+
         if (player_aux->game_over) {
             to_menu = true;
             break;
@@ -233,5 +281,8 @@ void game_loop() {
 
     if (to_menu) {
         menu_loop();
+    }
+    if (to_victory) {
+        victory_loop();
     }
 }

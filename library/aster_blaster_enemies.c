@@ -218,6 +218,7 @@ body_t *body_init_boss_bomb(scene_t *scene, body_t *boss, game_bounds_t bounds, 
     aux->body_type = BOSS_BOMB;
     aux->timer = BOSS_BOMB_FUSE;
     body_t *bomb = body_init_with_info(shape, 0, BOSS_BOMB_COLOR, aux, free);
+    body_set_velocity(bomb, vec_y(-BOSS_BOMB_SPEED));
 
     create_boss_bomb_tick_force(scene, bomb, bounds, ast_sprites_list);
 

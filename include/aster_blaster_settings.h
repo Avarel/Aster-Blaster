@@ -25,7 +25,7 @@ const justification_e MENU_GAME_START_JUSTIFICATION;
 
 // Victory Screen settings
 char VICTORY_TEXT[8];
-const size_t VICTORY_SIZE;
+const size_t VICTORY_FONT_SIZE;
 #define VICTORY_ORIGIN ((vector_t){.x = 0.5 * SDL_MAX.x, .y = 0.75 * SDL_MAX.y})
 const justification_e VICTORY_JUSTIFICATION;
 

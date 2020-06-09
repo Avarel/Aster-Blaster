@@ -8,6 +8,7 @@ typedef enum window_type {
     MENU = 1,
     CONTROLS = 2,
     GAME = 3,
+    VICTORY = 4
 } window_type_e;
 
 typedef enum body_type {

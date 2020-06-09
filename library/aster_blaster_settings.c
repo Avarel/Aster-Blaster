@@ -22,7 +22,7 @@ const justification_e MENU_GAME_START_JUSTIFICATION = CENTER;
 
 // Victory Screen settings
 char VICTORY_TEXT[] = "Victory\0";
-const size_t VICTORY_SIZE = 64;
+const size_t VICTORY_FONT_SIZE = 64;
 #define VICTORY_ORIGIN ((vector_t){.x = 0.5 * SDL_MAX.x, .y = 0.75 * SDL_MAX.y})
 const justification_e VICTORY_JUSTIFICATION = CENTER;
 
@@ -129,12 +129,12 @@ const double BOSS_HEALTH = 500;
 const rgb_color_t BOSS_COLOR = (rgb_color_t){0.8, 0, 0};
 const double BOSS_OMEGA = 1.5 * M_PI;
 const double BOSS_SPEED = 200;
-const double BOSS_SPAWN_TIME = 15;
+const double BOSS_SPAWN_TIME = 5;
 
 // Boss attack settings
-const double BOSS_SHOT_RATE = 7;
+const double BOSS_SHOT_RATE = 3;
 const double BOSS_BOMB_RADIUS = 30;
-const double BOSS_BOMB_FUSE = 200;
+const double BOSS_BOMB_FUSE = 400;
 const double BOSS_BOMB_SPEED = 100;
 const size_t BOSS_BOMB_POINTS = 30;
 const rgb_color_t BOSS_BOMB_COLOR = (rgb_color_t){0.376, 0.376, 0.376};
