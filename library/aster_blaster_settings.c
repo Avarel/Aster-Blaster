@@ -139,7 +139,7 @@ const double BOSS_HEALTH = 500;
 const rgb_color_t BOSS_COLOR = (rgb_color_t){0.8, 0, 0};
 const double BOSS_OMEGA = 1.5 * M_PI;
 const double BOSS_SPEED = 200;
-const double BOSS_SPAWN_TIME = 120;
+const double BOSS_SPAWN_TIME = 60;
 
 // Boss attack settings
 const double BOSS_SHOT_RATE = 3;
@@ -174,7 +174,7 @@ const double BLACK_HOLE_MASS = 5e4;
 const double BLACK_HOLE_SPEED = 100;
 const rgb_color_t BLACK_HOLE_COLOR = (rgb_color_t){0.2, 0.2, 0.2};
 const double BLACK_HOLE_SPAWN_CHANCE = 0.5;
-const double BLACK_HOLE_SPAWN_RATE = 10;
+const double BLACK_HOLE_SPAWN_RATE = 15;
 
 const double RATE_VARIANT_LOWER = 0.8;
 const double RATE_VARIANT_UPPER = 1.2;
