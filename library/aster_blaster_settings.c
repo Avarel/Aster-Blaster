@@ -129,7 +129,7 @@ const double BOSS_HEALTH = 500;
 const rgb_color_t BOSS_COLOR = (rgb_color_t){0.8, 0, 0};
 const double BOSS_OMEGA = 1.5 * M_PI;
 const double BOSS_SPEED = 200;
-const double BOSS_SPAWN_TIME = 180;
+const double BOSS_SPAWN_TIME = 15;
 
 // Boss attack settings
 const double BOSS_SHOT_RATE = 7;
