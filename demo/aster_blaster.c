@@ -89,11 +89,11 @@ void game_loop() {
     aster_aux_t *player_aux = body_get_info(player);
 
     // Boss movement triggers
-    list_t *boss_movement_trigger_shape = polygon_rect(vec(0.5 * SDL_MAX.x - BOSS_OUT_RADIUS, 0.6 * SDL_MIN.y), BOSS_OUT_RADIUS * 2, BOSS_OUT_RADIUS * 2);
+    list_t *boss_movement_trigger_shape = polygon_rect(vec(0.5 * SDL_MAX.x - BOSS_OUT_RADIUS, 0.8 * SDL_MIN.y), BOSS_OUT_RADIUS * 2, BOSS_OUT_RADIUS * 2);
     body_t *boss_movement_trigger = body_init(boss_movement_trigger_shape, INFINITY, COLOR_BLACK);
-    list_t *boss_left_trigger_shape = polygon_rect(vec(0.125 * SDL_MAX.x - BOSS_OUT_RADIUS, 0.7 * SDL_MIN.y), BOSS_OUT_RADIUS * 2, BOSS_OUT_RADIUS * 2);
+    list_t *boss_left_trigger_shape = polygon_rect(vec(0.125 * SDL_MAX.x - BOSS_OUT_RADIUS, 0.8 * SDL_MIN.y), BOSS_OUT_RADIUS * 2, BOSS_OUT_RADIUS * 2);
     body_t *boss_left_trigger = body_init(boss_left_trigger_shape, INFINITY, COLOR_BLACK);
-    list_t *boss_right_trigger_shape = polygon_rect(vec(0.875 * SDL_MAX.x + BOSS_OUT_RADIUS, 0.7 * SDL_MIN.y), BOSS_OUT_RADIUS * 2, BOSS_OUT_RADIUS * 2);
+    list_t *boss_right_trigger_shape = polygon_rect(vec(0.875 * SDL_MAX.x - BOSS_OUT_RADIUS, 0.8 * SDL_MIN.y), BOSS_OUT_RADIUS * 2, BOSS_OUT_RADIUS * 2);
     body_t *boss_right_trigger = body_init(boss_right_trigger_shape, INFINITY, COLOR_BLACK);
 
     spawn_boss(scene, boss_movement_trigger, boss_left_trigger, boss_right_trigger);
