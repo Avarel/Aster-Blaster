@@ -144,6 +144,7 @@ void game_loop() {
 
         if (boss_time >= BOSS_SPAWN_TIME && !boss_tangible) {
             spawn_boss(scene, boss_movement_trigger, boss_left_trigger, boss_right_trigger, &boss_tangible);
+            boss_time = 0;
         }
 
         //ast_time completely resets when an asteroid spawns
