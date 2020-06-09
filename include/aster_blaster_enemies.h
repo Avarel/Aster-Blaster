@@ -2,7 +2,6 @@
 #define __ASTER_BLASTER_ENEMIES__
 
 #include "aster_blaster_imports.h"
-#include "aster_blaster_collisions.h"
 
 body_t *body_init_enemy_saw(vector_t pos, scene_t *scene, body_t *player);
 

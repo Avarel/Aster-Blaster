@@ -22,6 +22,8 @@ void create_star_collision_force(body_t *star, body_t *bound, vector_t axis, voi
 
 void create_star_collision(scene_t *scene, body_t *star, body_t *bound);
 
+void init_boss_collisions(scene_t *scene, body_t *boss, body_t *movement_trigger, body_t *left_trigger, body_t *right_trigger);
+
 void create_boss_movement_init_collision(body_t *boss, body_t* trigger, vector_t axis, void *aux);
 
 void create_boss_movement_left_collision(body_t *boss, body_t* trigger, vector_t axis, void *aux);

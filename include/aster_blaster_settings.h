@@ -125,7 +125,7 @@ const double BOSS_OUT_RADIUS;
 const double BOSS_IN_RADIUS;
 const double BOSS_POINTS;
 const double BOSS_MASS;
-#define BOSS_INIT_POS ((vector_t){.x = SDL_MAX.x / 2, .y = 0.1 * SDL_MAX.y})
+#define BOSS_INIT_POS ((vector_t){.x = SDL_MAX.x / 2, .y = 1.1 * SDL_MAX.y})
 const double BOSS_HEALTH;
 const rgb_color_t BOSS_COLOR;
 const double BOSS_OMEGA;

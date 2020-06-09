@@ -1,4 +1,5 @@
 #include "aster_blaster_imports.h"
+#include "aster_blaster_collisions.h"
 
 body_t *body_init_enemy_saw(vector_t pos, scene_t *scene, body_t *player) {
     list_t *shape = polygon_star(pos, ENEMY_SAW_OUT_RADIUS, ENEMY_SAW_IN_RADIUS, ENEMY_SAW_POINTS);
