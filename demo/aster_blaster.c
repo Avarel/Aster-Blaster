@@ -69,6 +69,17 @@ void game_loop() {
     scene_add_body(scene, bounds.top);
     scene_add_body(scene, bounds.bottom);
 
+    // Boss movement triggers (made before stars so they aren't seen)
+    list_t *boss_movement_trigger_shape = polygon_rect(vec(SDL_MIN.x, 0.5 * SDL_MAX.y), SDL_MAX.x, BOSS_OUT_RADIUS * 2);
+    body_t *boss_movement_trigger = body_init(boss_movement_trigger_shape, INFINITY, COLOR_BLACK);
+    list_t *boss_right_trigger_shape = polygon_rect(vec(0.125 * SDL_MAX.x - BOSS_OUT_RADIUS, SDL_MIN.y), BOSS_OUT_RADIUS * 2, SDL_MAX.y);
+    body_t *boss_right_trigger = body_init(boss_right_trigger_shape, INFINITY, COLOR_BLACK);
+    list_t *boss_left_trigger_shape = polygon_rect(vec(0.875 * SDL_MAX.x - BOSS_OUT_RADIUS, SDL_MIN.y), BOSS_OUT_RADIUS * 2, SDL_MAX.y);
+    body_t *boss_left_trigger = body_init(boss_left_trigger_shape, INFINITY, COLOR_BLACK);
+    scene_add_body(scene, boss_movement_trigger);
+    scene_add_body(scene, boss_left_trigger);
+    scene_add_body(scene, boss_right_trigger);
+
     // when stars collide with this offscreen they'll teleport to just off the
     // top of the scene so it loops
     // TODO: magic numbers
@@ -88,15 +99,8 @@ void game_loop() {
     scene_add_body(scene, player);
     aster_aux_t *player_aux = body_get_info(player);
 
-    // Boss movement triggers
-    list_t *boss_movement_trigger_shape = polygon_rect(vec(SDL_MIN.x, 0.5 * SDL_MAX.y), SDL_MAX.x, BOSS_OUT_RADIUS * 2);
-    body_t *boss_movement_trigger = body_init(boss_movement_trigger_shape, INFINITY, COLOR_BLACK);
-    list_t *boss_left_trigger_shape = polygon_rect(vec(0.125 * SDL_MAX.x - BOSS_OUT_RADIUS, SDL_MIN.y), BOSS_OUT_RADIUS * 2, SDL_MAX.y);
-    body_t *boss_left_trigger = body_init(boss_left_trigger_shape, INFINITY, COLOR_BLACK);
-    list_t *boss_right_trigger_shape = polygon_rect(vec(0.875 * SDL_MAX.x - BOSS_OUT_RADIUS, SDL_MIN.y), BOSS_OUT_RADIUS * 2, SDL_MAX.y);
-    body_t *boss_right_trigger = body_init(boss_right_trigger_shape, INFINITY, COLOR_BLACK);
+    // Spawn Boss
     bool boss_tangible = false;
-
     spawn_boss(scene, boss_movement_trigger, boss_left_trigger, boss_right_trigger, &boss_tangible);
 
     // keypress aux
