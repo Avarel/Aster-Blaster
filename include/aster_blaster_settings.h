@@ -23,6 +23,12 @@ const size_t MENU_GAME_START_FONT_SIZE;
 #define MENU_GAME_START_ORIGIN ((vector_t){.x = 0.5 * SDL_MAX.x, .y = 0.6 * SDL_MAX.y})
 const justification_e MENU_GAME_START_JUSTIFICATION;
 
+// Victory Screen settings
+char VICTORY_TEXT[8];
+const size_t VICTORY_SIZE;
+#define VICTORY_ORIGIN ((vector_t){.x = 0.5 * SDL_MAX.x, .y = 0.75 * SDL_MAX.y})
+const justification_e VICTORY_JUSTIFICATION;
+
 //Global Settings
 const double G;
 
@@ -113,6 +119,46 @@ const size_t ENEMY_SHOOTER_BULLET_POINTS;
 const double ENEMY_SHOOTER_BULLET_MASS;
 const rgb_color_t ENEMY_SHOOTER_BULLET_COLOR;
 const double ENEMY_SHOOTER_BULLET_SPEED;
+
+// Boss settings
+const double BOSS_OUT_RADIUS;
+const double BOSS_IN_RADIUS;
+const double BOSS_POINTS;
+const double BOSS_MASS;
+#define BOSS_INIT_POS ((vector_t){.x = SDL_MAX.x / 2, .y = 0.1 * SDL_MAX.y})
+const doubel BOSS_HEALTH;
+const rgb_color_t BOSS_COLOR;
+const double BOSS_OMEGA;
+const double BOSS_SPEED;
+const double BOSS_SPAWN_TIME;
+
+// Boss bullet settings
+const double BOSS_SHOT_RATE;
+const double BOSS_BOMB_RADIUS;
+const double BOSS_BOMB_FUSE;
+const double BOSS_BOMB_SPEED;
+const rgb_color_t BOSS_BOMB_COLOR_1;
+const rgb_color_t BOSS_BOMB_COLOR_2;
+const rgb_color_t BOSS_BOMB_COLOR_3;
+const rgb_color_t BOSS_BOMB_COLOR_4;
+const size_t BOSS_BULLETS_PER_BOMB;
+const double BOSS_BULLET_OUT_RADIUS = 10;
+const double BOSS_BULLET_IN_RADIUS = 5;
+const size_t BOSS_BULLET_POINTS = 4;
+const double BOSS_BULLET_MASS = 200;
+const rgb_color_t BOSS_BULLET_COLOR;
+const double BOSS_BULLET_SPEED = 300;
+
+// Boss Health bar settings
+#define BOSS_HEALTH_BAR_BACKGROUND_POS ((vector_t){.x = 0.0125 * SDL_MAX.y, .y = 0.0125 * SDL_MAX.y})
+#define BOSS_HEALTH_BAR_BACKGROUND_W (0.75 * SDL_MAX.x)
+#define BOSS_HEALTH_BAR_BACKGROUND_H (0.075 * SDL_MAX.y)
+const rgb_color_t BOSS_HEALTH_BAR_BACKGROUND_COLOR;
+const size_t BOSS_HEALTH_BAR_PADDING;
+#define BOSS_HEALTH_BAR_POS ((vector_t){.x = BOSS_HEALTH_BAR_BACKGROUND_POS.x + BOSS_HEALTH_BAR_PADDING, .y = BOSS_HEALTH_BAR_BACKGROUND_POS.y + BOSS_HEALTH_BAR_PADDING})
+#define BOSS_HEALTH_BAR_W (BOSS_HEALTH_BAR_BACKGROUND_W - 2 * BOSS_HEALTH_BAR_PADDING)
+#define BOSS_HEALTH_BAR_H (BOSS_HEALTH_BAR_BACKGROUND_H - 2 * BOSS_HEALTH_BAR_PADDING)
+const rgb_color_t BOSS_HEALTH_BAR_COLOR;
 
 // Black Hole settings
 const double BLACK_HOLE_RADIUS;

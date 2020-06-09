@@ -119,3 +119,43 @@ void spawn_enemy_shooter_bullet(scene_t *scene, body_t *player, body_t *shooter,
     body_t *bullet = body_init_enemy_shooter_bullet(scene, player, shooter, bounds, ast_sprites_list);
     scene_add_body(scene, bullet);
 }
+
+body_t *body_init_boss(scene_t *scene, body_t *health_bar, body_t *movement_trigger, body_t *right_trigger, body_t *left_trigger) {
+    list_t *boss_shape =  polygon_star(BOSS_INIT_POS, BOSS_OUT_RADIUS, BOSS_IN_RADIUS, BOSS_POINTS);
+
+    aster_aux_t *aster_aux = malloc(sizeof(aster_aux_t));
+    aster_aux->body_type = BOSS;
+    aster_aux->health = BOSS_HEALTH;
+    aster_aux->health_bar = health_bar;
+    aster_game_over->false;
+
+    body_t *boss = body_init_with_info(boss_shape, BOSS_MASS, BOSS_COLOR, aster_aux, free);
+
+    body_set_omega(boss, BOSS_OMEGA);
+
+    // TODO: similar code in spawn_asteroid, can factor out
+    for (size_t i = 0; i < scene_bodies(scene); i++) {
+        body_t *other_body = scene_get_body(scene, i);
+        aster_aux_t *other_aux = body_get_info(other_body);
+        if (other_aux != NULL) {
+            if (other_aux->body_type == BULLET) {
+                create_destructive_collision(scene, saw_enemy, other_body);
+            } else if (other_aux->body_type == BLACK_HOLE) {
+                create_newtonian_gravity(scene, G, saw_enemy, other_body, true);
+                create_destructive_collision_single(scene, saw_enemy, other_body);
+            }
+        }
+    }
+
+    return saw_enemy;
+}
+
+void spawn_boss(scene_t *scene, body_t *movement_trigger, body_t *right_trigger, body_t *left_trigger);
+
+body_t *body_init_boss_bomb(scene_t *scene, bosy_t *boss, game_bounds_t bound);
+
+void spawn_boss_bomb(scene_t *scene, bosy_t *boss, game_bounds_t bound);
+
+body_t *body_init_boss_bullet(scene_t *scene, bosy_t *bomb, game_bounds_t bound);
+
+void spawn_boss_bullet(scene_t *scene, bosy_t *bomb, game_bounds_t bound);

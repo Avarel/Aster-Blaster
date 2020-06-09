@@ -69,6 +69,25 @@ void create_aster_bullet_collision(scene_t *scene, body_t *ast, body_t *bullet, 
     create_collision(scene, ast, bullet, create_aster_fragments, aux, free);
 }
 
+void create_boss_movement_init_collision(body_t *boss, body_t* trigger, vector_t axis, void *aux) {
+    body_set_velocity(boss, vec_x(-BOSS_SPEED));
+    body_remove(trigger);
+}
+
+void create_boss_movement_left_collision(body_t *boss, body_t* trigger, vector_t axis, void *aux) {
+    if (body_get_velocity(boss) > 0) {
+        body_set_velocity(boss, vec_x(-BOSS_SPEED));
+    }
+}
+
+void create_boss_movement_right_collision(body_t *boss, body_t* trigger, vector_t axis, void *aux) {
+    if (body_get_velocity(boss) < 0) {
+        body_set_velocity(boss, vec_x(BOSS_SPEED));
+    }
+}
+
+
+
 /**
   * Handles looping of the background sars. When the yhit the bound below the
   * bottom of the screen they teleport back to the top.

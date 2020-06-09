@@ -20,6 +20,12 @@ const size_t MENU_GAME_START_FONT_SIZE = 32;
 #define MENU_GAME_START_ORIGIN ((vector_t){.x = 0.5 * SDL_MAX.x, .y = 0.6 * SDL_MAX.y})
 const justification_e MENU_GAME_START_JUSTIFICATION = CENTER;
 
+// Victory Screen settings
+char VICTORY_TEXT[] = "Victory\0";
+const size_t VICTORY_SIZE = 64;
+#define VICTORY_ORIGIN ((vector_t){.x = 0.5 * SDL_MAX.x, .y = 0.75 * SDL_MAX.y})
+const justification_e VICTORY_JUSTIFICATION = CENTER;
+
 // Global Settings
 const double G = 1000;
 
@@ -112,6 +118,46 @@ const size_t ENEMY_SHOOTER_BULLET_POINTS = 4;
 const double ENEMY_SHOOTER_BULLET_MASS = 200;
 const rgb_color_t ENEMY_SHOOTER_BULLET_COLOR = (rgb_color_t){0.8, 0.8, 0.3};
 const double ENEMY_SHOOTER_BULLET_SPEED = 300;
+
+// Boss settings
+const double BOSS_OUT_RADIUS = 50;
+const double BOSS_IN_RADIUS = 40;
+const double BOSS_POINTS = 16;
+const double BOSS_MASS = 100;
+#define BOSS_INIT_POS ((vector_t){.x = SDL_MAX.x / 2, .y = SDL_MAX.y + 50})
+const doubel BOSS_HEALTH = 10000;
+const rgb_color_t BOSS_COLOR = (rgb_color_t){0.8, 0, 0};
+const double BOSS_OMEGA = 1.5 * M_PI;
+const double BOSS_SPEED = 100;
+const double BOSS_SPAWN_TIME = 180;
+
+// Boss attack settings
+const double BOSS_SHOT_RATE = 7;
+const double BOSS_BOMB_RADIUS = 30;
+const double BOSS_BOMB_FUSE = 4;
+const double BOSS_BOMB_SPEED = 100;
+const rgb_color_t BOSS_BOMB_COLOR_1 = (rgb_color_t){0.376, 0.376, 0.376};
+const rgb_color_t BOSS_BOMB_COLOR_2 = (rgb_color_t){1, 1, 0};
+const rgb_color_t BOSS_BOMB_COLOR_3 = (rgb_color_t){1, 0.5, 0};
+const rgb_color_t BOSS_BOMB_COLOR_4 = (rgb_color_t){1, 0, 0};
+const size_t BOSS_BULLETS_PER_BOMB = 8;
+const double BOSS_BULLET_OUT_RADIUS = 10;
+const double BOSS_BULLET_IN_RADIUS = 5;
+const size_t BOSS_BULLET_POINTS = 4;
+const double BOSS_BULLET_MASS = 200;
+const rgb_color_t BOSS_BULLET_COLOR = (rgb_color_t){0.8, 0.8, 0.3};
+const double BOSS_BULLET_SPEED = 300;
+
+// Boss Health bar settings
+#define BOSS_HEALTH_BAR_BACKGROUND_POS ((vector_t){.x = 0.0125 * SDL_MAX.y, .y = 0.0125 * SDL_MAX.y})
+#define BOSS_HEALTH_BAR_BACKGROUND_W (0.75 * SDL_MAX.x)
+#define BOSS_HEALTH_BAR_BACKGROUND_H (0.075 * SDL_MAX.y)
+const rgb_color_t BOSS_HEALTH_BAR_BACKGROUND_COLOR = (rgb_color_t){1.0, 1.0, 1.0};
+const size_t BOSS_HEALTH_BAR_PADDING = 5;
+#define BOSS_HEALTH_BAR_POS ((vector_t){.x = BOSS_HEALTH_BAR_BACKGROUND_POS.x + BOSS_HEALTH_BAR_PADDING, .y = BOSS_HEALTH_BAR_BACKGROUND_POS.y + BOSS_HEALTH_BAR_PADDING})
+#define BOSS_HEALTH_BAR_W (BOSS_HEALTH_BAR_BACKGROUND_W - 2 * BOSS_HEALTH_BAR_PADDING)
+#define BOSS_HEALTH_BAR_H (BOSS_HEALTH_BAR_BACKGROUND_H - 2 * BOSS_HEALTH_BAR_PADDING)
+const rgb_color_t BOSS_HEALTH_BAR_COLOR = ((rgb_color_t){1.0, 0.25, 0.25});
 
 // Black Hole settings
 const double BLACK_HOLE_RADIUS = 50;

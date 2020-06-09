@@ -21,4 +21,10 @@ void create_star_collision_force(body_t *star, body_t *bound, vector_t axis, voi
 
 void create_star_collision(scene_t *scene, body_t *star, body_t *bound);
 
+void create_boss_movement_init_collision(scene_t *scene, body_t *boss, body_t* trigger);
+
+void create_boss_movement_left_collision(scene_t *scene, body_t *boss, body_t* trigger);
+
+void create_boss_movement_right_collision(scene_t *scene, body_t *boss, body_t* trigger);
+
 #endif // #ifndef __ASTER_BLASTER_COLLISIONS__

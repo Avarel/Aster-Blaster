@@ -17,7 +17,8 @@ typedef enum body_type {
     ENEMY_SAW,
     ENEMY_SHOOTER,
     ENEMY_SHOOTER_BULLET,
-    BLACK_HOLE
+    BLACK_HOLE,
+    BOSS
 } body_type_e;
 
 typedef struct aster_aux {
@@ -25,6 +26,7 @@ typedef struct aster_aux {
     double health;
     body_t *health_bar;
     bool game_over;
+    double timer;
 } aster_aux_t;
 
 typedef struct menu_keypress_aux {
