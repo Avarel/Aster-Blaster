@@ -122,7 +122,7 @@ void spawn_enemy_shooter_bullet(scene_t *scene, body_t *player, body_t *shooter,
 }
 
 
-body_t *body_init_boss(scene_t *scene, body_t *movement_trigger, body_t *right_trigger, body_t *left_trigger, bool *tangible) {
+body_t *body_init_boss(scene_t *scene, body_t *movement_trigger, body_t *left_trigger, body_t *right_trigger, bool *tangible) {
     list_t *boss_shape =  polygon_star(BOSS_INIT_POS, BOSS_OUT_RADIUS, BOSS_IN_RADIUS, BOSS_POINTS);
 
     aster_aux_t *aster_aux = malloc(sizeof(aster_aux_t));
@@ -141,7 +141,7 @@ body_t *body_init_boss(scene_t *scene, body_t *movement_trigger, body_t *right_t
     return boss;
 }
 
-void spawn_boss(scene_t *scene, body_t *movement_trigger, body_t *right_trigger, body_t *left_trigger, bool *tangible) {
+void spawn_boss(scene_t *scene, body_t *movement_trigger, body_t *left_trigger, body_t *right_trigger, bool *tangible) {
     body_t *boss = body_init_boss(scene, movement_trigger, left_trigger, right_trigger, tangible);
     scene_add_body(scene, boss);
 }

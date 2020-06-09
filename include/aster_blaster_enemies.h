@@ -17,9 +17,9 @@ body_t *body_init_enemy_shooter_bullet(scene_t *scene, body_t *player, body_t *s
 
 void spawn_enemy_shooter_bullet(scene_t *scene, body_t *player, body_t *shooter, game_bounds_t bounds, ast_sprites_list_t ast_sprites_list);
 
-body_t *body_init_boss(scene_t *scene, body_t *movement_trigger, body_t *right_trigger, body_t *left_trigger, bool *tangible);
+body_t *body_init_boss(scene_t *scene, body_t *movement_trigger, body_t *left_trigger, body_t *right_trigger, bool *tangible);
 
-void spawn_boss(scene_t *scene, body_t *movement_trigger, body_t *right_trigger, body_t *left_trigger, bool *tangible);
+void spawn_boss(scene_t *scene, body_t *movement_trigger, body_t *left_trigger, body_t *right_trigger, bool *tangible);
 
 body_t *body_init_boss_bomb(scene_t *scene, body_t *boss, game_bounds_t bound);
 

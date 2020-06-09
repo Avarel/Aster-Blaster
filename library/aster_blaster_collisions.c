@@ -138,6 +138,7 @@ void create_boss_movement_init_collision(body_t *boss, body_t *trigger, vector_t
         if (other_aux != NULL) {
             if (other_aux->body_type == BULLET) {
                 create_collision(scene, other_body, boss, create_boss_health_collision, NULL, NULL);
+                create_destructive_collision_single(scene, other_body, boss);
             }
         }
     }
