@@ -142,7 +142,7 @@ void game_loop() {
         shooter_shot_time += dt;
         boss_time += dt;
 
-        if (boss_time >= BOSS_SPAWN_TIME) {
+        if (boss_time >= BOSS_SPAWN_TIME && !boss_tangible) {
             spawn_boss(scene, boss_movement_trigger, boss_left_trigger, boss_right_trigger, &boss_tangible);
         }
 
