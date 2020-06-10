@@ -291,6 +291,7 @@ void game_loop() {
 
     free(game_keypress_aux);
     scene_free(scene);
+    list_free(boss_bombs);
     destroy_ast_sprite_list(ast_sprites_list);
     SDL_DestroyTexture(player_texture);
 

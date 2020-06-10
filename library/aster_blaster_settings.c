@@ -146,9 +146,9 @@ const double BOSS_SPEED = 200;
 const double BOSS_SPAWN_TIME = 10;
 
 // Boss attack settings
-const double BOSS_SHOT_RATE = 3;
+const double BOSS_SHOT_RATE = 1;
 const double BOSS_BOMB_RADIUS = 30;
-const double BOSS_BOMB_FUSE = 2;
+const double BOSS_BOMB_FUSE = 1.5;
 const double BOSS_BOMB_SPEED = 200;
 const size_t BOSS_BOMB_POINTS = 30;
 // const rgb_color_t BOSS_BOMB_COLOR = (rgb_color_t){0.376, 0.376, 0.376};
