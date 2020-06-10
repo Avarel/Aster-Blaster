@@ -179,11 +179,12 @@ void game_loop() {
         // .ship = sdl_load_texture("./assets/ship.png"),
     };
 
+    list_t *boss_bombs = list_init(1, NULL);
+
     double saw_spawn_rate = rate_variant(ENEMY_SAW_SPAWN_RATE);
     double shooter_spawn_rate = rate_variant(ENEMY_SHOOTER_SPAWN_RATE);
     double shooter_shot_rate = rate_variant(ENEMY_SHOOTER_SHOT_RATE);
     double boss_shot_rate = rate_variant(BOSS_SHOT_RATE);
-    body_t *boss = NULL;
     aster_aux_t *boss_aux = NULL;
 
     while (!sdl_is_done(game_keypress_aux)) {
@@ -201,8 +202,7 @@ void game_loop() {
             spawn_boss(scene, boss_movement_trigger, boss_left_trigger, boss_right_trigger, &boss_tangible);
             boss_spawn_time = 0;
             boss_shot_time = 0;
-            boss = scene_get_body(scene, scene_bodies(scene) - 1);
-            boss_aux = body_get_info(boss);
+            boss_aux = body_get_info(scene_get_body(scene, scene_bodies(scene) - 1));
         }
 
         //ast_time completely resets when an asteroid spawns
@@ -258,9 +258,13 @@ void game_loop() {
         }
 
         if (boss_tangible && boss_shot_time >= BOSS_SHOT_RATE) {
-            spawn_boss_bomb(scene, bounds, ast_sprites_list);
+            spawn_boss_bomb(scene, bounds, ast_sprites_list, boss_bombs);
             boss_shot_time = 0;
             boss_shot_rate = rate_variant(BOSS_SHOT_RATE);
+        }
+
+        for (size_t i = 0; i < list_size(boss_bombs); i++) {
+            boss_bomb_tick(scene, list_get(boss_bombs, i), dt, bounds, ast_sprites_list);
         }
 
         if (boss_tangible && boss_aux->game_over) {

@@ -25,11 +25,13 @@ void boss_bomb_explode(scene_t *scene, body_t *bomb, game_bounds_t bound, ast_sp
 
 void create_boss_bomb_tick_force(scene_t *scene, body_t *bomb, game_bounds_t bound, ast_sprites_list_t ast_sprites_list);
 
+void boss_bomb_tick(scene_t *scene, body_t *bomb, double dt, game_bounds_t bounds, ast_sprites_list_t ast_sprites_list);
+
 body_t *body_init_boss_bullet(scene_t *scene, body_t *bomb, game_bounds_t bound, ast_sprites_list_t ast_sprites_list);
 
 body_t *body_init_boss_bomb(scene_t *scene, body_t *boss, game_bounds_t bound, ast_sprites_list_t ast_sprites_list);
 
-void spawn_boss_bomb(scene_t *scene, game_bounds_t bound, ast_sprites_list_t ast_sprites_list);
+void spawn_boss_bomb(scene_t *scene, game_bounds_t bound, ast_sprites_list_t ast_sprites_list, list_t *bombs);
 
 body_t *body_boss_health_bar_background_init();
 

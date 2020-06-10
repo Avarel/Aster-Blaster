@@ -183,6 +183,15 @@ void create_boss_bomb_tick_force(scene_t *scene, body_t *bomb, game_bounds_t bou
     scene_add_bodies_force_creator(scene, (force_creator_t)bomb_tick_force_handler, aux, list, free);
 }
 
+void boss_bomb_tick(scene_t *scene, body_t *bomb, double dt, game_bounds_t bounds, ast_sprites_list_t ast_sprites_list) {
+    aster_aux_t *aux = body_get_info(bomb);
+    aux->timer -= dt;
+    if (aux->timer <= 0) {
+        boss_bomb_explode(scene, bomb, bounds, ast_sprites_list);
+    }
+}
+
+
 body_t *body_init_boss_bullet(scene_t *scene, body_t *bomb, game_bounds_t bounds, ast_sprites_list_t ast_sprites_list) {
     vector_t bullet_center = body_get_centroid(bomb);
     list_t *shape = polygon_star(bullet_center, BOSS_BULLET_OUT_RADIUS, BOSS_BULLET_IN_RADIUS, BOSS_BULLET_POINTS);
@@ -220,14 +229,14 @@ body_t *body_init_boss_bomb(scene_t *scene, body_t *boss, game_bounds_t bounds, 
     body_t *bomb = body_init_with_info(shape, 0, BOSS_BOMB_COLOR, aux, free);
     body_set_velocity(bomb, vec_y(-BOSS_BOMB_SPEED));
 
-    create_boss_bomb_tick_force(scene, bomb, bounds, ast_sprites_list);
+    // create_boss_bomb_tick_force(scene, bomb, bounds, ast_sprites_list);
 
     destroy_at_bounds(scene, bomb, bounds);
 
     return bomb;
 }
 
-void spawn_boss_bomb(scene_t *scene, game_bounds_t bounds, ast_sprites_list_t ast_sprites_list) {
+void spawn_boss_bomb(scene_t *scene, game_bounds_t bounds, ast_sprites_list_t ast_sprites_list, list_t *bombs) {
     body_t *boss = NULL;
     for (size_t i = 0; i < scene_bodies(scene); i++) {
         body_t *body = scene_get_body(scene, i);
@@ -240,6 +249,7 @@ void spawn_boss_bomb(scene_t *scene, game_bounds_t bounds, ast_sprites_list_t as
         }
     }
     body_t *bomb = body_init_boss_bomb(scene, boss, bounds, ast_sprites_list);
+    list_add(bombs, bomb);
     scene_add_body(scene, bomb);
 }
 
