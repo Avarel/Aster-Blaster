@@ -146,7 +146,7 @@ void spawn_boss(scene_t *scene, body_t *movement_trigger, body_t *left_trigger, 
     scene_add_body(scene, boss);
 }
 
-void boss_bomb_explode(scene_t *scene, body_t *bomb, game_bounds_t bounds, ast_sprites_list_t ast_sprites_list) {
+void boss_bomb_explode(scene_t *scene, body_t *bomb, game_bounds_t bounds, ast_sprites_list_t ast_sprites_list, list_t *bombs) {
     double angle = 2 * M_PI / BOSS_BULLETS_PER_BOMB;
     for (size_t i = 0; i < BOSS_BULLETS_PER_BOMB; i++) {
         body_t *bullet = body_init_boss_bullet(scene, bomb, bounds, ast_sprites_list);
@@ -155,39 +155,14 @@ void boss_bomb_explode(scene_t *scene, body_t *bomb, game_bounds_t bounds, ast_s
         body_set_velocity(bullet, vel);
     }
     body_remove(bomb);
+    list_remove_item(bombs, bomb);
 }
 
-typedef struct bomb_tick_aux {
-    scene_t *scene;
-    body_t *bomb;
-    game_bounds_t bounds;
-    ast_sprites_list_t ast_sprites_list;
-} bomb_tick_aux_t;
-
-void bomb_tick_force_handler(bomb_tick_aux_t *aux) {
-    aster_aux_t *aster_aux = body_get_info(aux->bomb);
-    aster_aux->timer--;
-    if (aster_aux->timer <= 0) {
-        boss_bomb_explode(aux->scene, aux->bomb, aux->bounds, aux->ast_sprites_list);
-    }
-}
-
-void create_boss_bomb_tick_force(scene_t *scene, body_t *bomb, game_bounds_t bounds, ast_sprites_list_t ast_sprites_list) {
-    bomb_tick_aux_t *aux = malloc(sizeof(bomb_tick_aux_t));
-    aux->scene = scene;
-    aux->bomb = bomb;
-    aux->bounds = bounds;
-    aux->ast_sprites_list = ast_sprites_list;
-    list_t *list = list_init(1, NULL);
-    list_add(list, bomb);
-    scene_add_bodies_force_creator(scene, (force_creator_t)bomb_tick_force_handler, aux, list, free);
-}
-
-void boss_bomb_tick(scene_t *scene, body_t *bomb, double dt, game_bounds_t bounds, ast_sprites_list_t ast_sprites_list) {
+void boss_bomb_tick(scene_t *scene, body_t *bomb, double dt, game_bounds_t bounds, ast_sprites_list_t ast_sprites_list, list_t *bombs) {
     aster_aux_t *aux = body_get_info(bomb);
     aux->timer -= dt;
     if (aux->timer <= 0) {
-        boss_bomb_explode(scene, bomb, bounds, ast_sprites_list);
+        boss_bomb_explode(scene, bomb, bounds, ast_sprites_list, bombs);
     }
 }
 

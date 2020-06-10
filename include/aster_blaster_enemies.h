@@ -21,11 +21,9 @@ body_t *body_init_boss(scene_t *scene, body_t *movement_trigger, body_t *left_tr
 
 void spawn_boss(scene_t *scene, body_t *movement_trigger, body_t *left_trigger, body_t *right_trigger, bool *tangible);
 
-void boss_bomb_explode(scene_t *scene, body_t *bomb, game_bounds_t bound, ast_sprites_list_t ast_sprites_list);
+void boss_bomb_explode(scene_t *scene, body_t *bomb, game_bounds_t bound, ast_sprites_list_t ast_sprites_list, list_t *bombs);
 
-void create_boss_bomb_tick_force(scene_t *scene, body_t *bomb, game_bounds_t bound, ast_sprites_list_t ast_sprites_list);
-
-void boss_bomb_tick(scene_t *scene, body_t *bomb, double dt, game_bounds_t bounds, ast_sprites_list_t ast_sprites_list);
+void boss_bomb_tick(scene_t *scene, body_t *bomb, double dt, game_bounds_t bounds, ast_sprites_list_t ast_sprites_list, list_t *bombs);
 
 body_t *body_init_boss_bullet(scene_t *scene, body_t *bomb, game_bounds_t bound, ast_sprites_list_t ast_sprites_list);
 

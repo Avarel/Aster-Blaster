@@ -264,7 +264,7 @@ void game_loop() {
         }
 
         for (size_t i = 0; i < list_size(boss_bombs); i++) {
-            boss_bomb_tick(scene, list_get(boss_bombs, i), dt, bounds, ast_sprites_list);
+            boss_bomb_tick(scene, list_get(boss_bombs, i), dt, bounds, ast_sprites_list, boss_bombs);
         }
 
         if (boss_tangible && boss_aux->game_over) {
