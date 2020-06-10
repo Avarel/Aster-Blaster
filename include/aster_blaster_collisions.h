@@ -20,6 +20,8 @@ void create_aster_player_collision(scene_t *scene, body_t *ast, body_t *player);
 
 void create_aster_bullet_collision(scene_t *scene, body_t *ast, body_t *bullet, game_bounds_t bounds, ast_sprites_list_t ast_sprites_list);
 
+void create_aster_laser_collision(scene_t *scene, body_t *ast, body_t *bullet, game_bounds_t bounds, ast_sprites_list_t ast_sprites_list);
+
 void create_star_collision_force(body_t *star, body_t *bound, vector_t axis, void *aux);
 
 void create_star_collision(scene_t *scene, body_t *star, body_t *bound);

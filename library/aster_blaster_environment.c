@@ -72,6 +72,8 @@ void spawn_asteroid_general(scene_t *scene, double mass, vector_t ast_center, ve
             } else if (other_aux->body_type == BLACK_HOLE) {
                 create_newtonian_gravity(scene, G, asteroid, other_body, true);
                 create_destructive_collision_single(scene, asteroid, other_body);
+            } else if (other_aux->body_type == ASTEROID) {
+                create_physics_collision(scene, 1.0, asteroid, other_body);
             }
         }
     }

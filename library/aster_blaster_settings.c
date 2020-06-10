@@ -53,11 +53,15 @@ const double PLAYER_SPACE_FRICTION = 10.0;
 
 // Player bullet settings
 const double BULLET_MASS = 10;
-#define BULLET_VELOCITY ((vector_t){.x = 0, .y = 2 * SDL_MAX.y})
+const vector_t BULLET_VELOCITY = ((vector_t){.x = 0, .y = 1600});
 const double BULLET_RADIUS = 12;
 const double BULLET_SIDES = 30;
 const rgb_color_t BULLET_COLOR = ((rgb_color_t){1, 1, 0});
 const double BULLET_COOLDOWN = 0.2;
+
+const vector_t LASER_VELOCITY = ((vector_t){.x = 0, .y = 6000});
+const rgb_color_t LASER_COLOR = ((rgb_color_t){1, 0, 0});
+const double LASER_COOLDOWN = 0.06;
 
 // Asteroid settings
 const double ASTEROID_MIN_MASS = 50;

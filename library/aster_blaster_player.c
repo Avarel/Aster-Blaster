@@ -47,6 +47,40 @@ void spawn_bullet(scene_t *scene, body_t *player, game_bounds_t bounds, ast_spri
     }
 }
 
+body_t *body_init_laser(body_t *player) {
+    aster_aux_t *aux = malloc(sizeof(aster_aux_t));
+    aux->body_type = LASER;
+    list_t *bullet_shape = polygon_rect(vec_add(body_get_centroid(player), vec_y(PLAYER_RADIUS)), 2, 500);
+    body_t *bullet = body_init_with_info(bullet_shape, BULLET_MASS, LASER_COLOR, aux, free);
+    body_set_velocity(bullet, LASER_VELOCITY);
+    return bullet;
+}
+
+void spawn_laser(scene_t *scene, body_t *player, game_bounds_t bounds, ast_sprites_list_t ast_sprites_list, bool boss_tangible) {
+    body_t *bullet = body_init_laser(player);
+
+    destroy_at_bounds(scene, bullet, bounds);
+
+    scene_add_body(scene, bullet);
+
+    for (size_t i = 0; i < scene_bodies(scene) - 1; i++) {
+        body_t *other_body = scene_get_body(scene, i);
+        aster_aux_t *other_aux = body_get_info(other_body);
+        if (other_aux != NULL) {
+            if (other_aux->body_type == ASTEROID) {
+                create_aster_laser_collision(scene, other_body, bullet, bounds, ast_sprites_list);
+            }
+            // else if (other_aux->body_type == ENEMY_SAW || other_aux->body_type == ENEMY_SHOOTER) {
+            //     create_destructive_collision(scene, other_body, bullet);
+            // }
+            //  else if (other_aux->body_type == BOSS && boss_tangible) {
+            //     create_collision(scene, bullet, other_body, create_boss_health_collision, NULL, NULL);
+            //     create_destructive_collision_single(scene, bullet, other_body);
+            // }
+        }
+    }
+}
+
 body_t *body_health_bar_background_init() {
     list_t *shape = polygon_rect(HEALTH_BAR_BACKGROUND_POS, HEALTH_BAR_BACKGROUND_W, HEALTH_BAR_BACKGROUND_H);
     body_t *health_bar_background = body_init(shape, 0, HEALTH_BAR_BACKGROUND_COLOR);

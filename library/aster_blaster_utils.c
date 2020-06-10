@@ -83,9 +83,14 @@ void shoot_handle(scene_t *scene,
                   game_bounds_t bounds,
                   ast_sprites_list_t ast_sprites_list,
                   bool boss_tangible) {
-    if (get_nth_bit(key_down, SPACE_BAR)) {
+    if (get_nth_bit(key_down, ATTACK1_BUTTON)) {
         if (*bullet_time > BULLET_COOLDOWN) {
             spawn_bullet(scene, player, bounds, ast_sprites_list, boss_tangible);
+            *bullet_time = 0;
+        }
+    } else if (get_nth_bit(key_down, ATTACK2_BUTTON)) {
+        if (*bullet_time > LASER_COOLDOWN) {
+            spawn_laser(scene, player, bounds, ast_sprites_list, boss_tangible);
             *bullet_time = 0;
         }
     }

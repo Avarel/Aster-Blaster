@@ -14,8 +14,9 @@
 #define UP_ARROW 2
 #define RIGHT_ARROW 3
 #define DOWN_ARROW 4
-#define SPACE_BAR 5
-#define ESCAPE 6
+#define ATTACK1_BUTTON 5
+#define ATTACK2_BUTTON 6
+#define ESCAPE 7
 
 /**
  * The possible types of key events.

@@ -212,6 +212,8 @@ void collision_aux_free(collision_aux_t *ptr) {
 }
 
 void collision_handle(collision_aux_t *aux) {
+    if (body_is_removed(aux->body1) || body_is_removed(aux->body2)) return;
+
     const list_t *shape1 = body_borrow_shape(aux->body1);
     const list_t *shape2 = body_borrow_shape(aux->body2);
 

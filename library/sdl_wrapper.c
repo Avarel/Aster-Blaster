@@ -113,13 +113,26 @@ char get_keycode(SDL_Keycode key) {
     case SDLK_DOWN:
         return DOWN_ARROW;
     case SDLK_SPACE:
-        return SPACE_BAR;
+        return ATTACK1_BUTTON;
+    case SDLK_RETURN:
+        return ATTACK2_BUTTON;
     case SDLK_ESCAPE:
         return ESCAPE;
     default:
         // Only process 7-bit ASCII characters
         return '\0';
         // return key == (SDL_Keycode) (char) key ? key : '\0';
+    }
+}
+
+char get_mousecode(Uint8 button) {
+    switch (button) {
+    case SDL_BUTTON_LEFT:
+        return ATTACK1_BUTTON;
+    case SDL_BUTTON_RIGHT:
+        return ATTACK2_BUTTON;
+    default:
+        return '\0';
     }
 }
 
@@ -175,10 +188,15 @@ bool sdl_is_done(void *aux) {
             key_handler(key, type, held_time, aux);
             break;
         case SDL_MOUSEBUTTONDOWN:
-            key_handler(SPACE_BAR, KEY_PRESSED, 0, aux);
-            break;
         case SDL_MOUSEBUTTONUP:
-            key_handler(SPACE_BAR, KEY_RELEASED, 0, aux);
+            if (key_handler == NULL)
+                break;
+            char mousekey = get_mousecode(event->button.button);
+            if (mousekey == '\0')
+                break;
+            key_event_type_t mouse_type =
+                event->type == SDL_MOUSEBUTTONDOWN ? KEY_PRESSED : KEY_RELEASED;
+            key_handler(mousekey, mouse_type, 0, aux);
             break;
         }
     }
@@ -296,18 +314,18 @@ int sdl_render_text(const text_box_t *text_box) {
     SDL_FreeSurface(textSurface);
 
     switch (text_box_get_justification(text_box)) {
-        case LEFT: {
-            textRect.x = WINDOW_WIDTH - text_box_get_origin(text_box).x;
-            break;
-        }
-        case RIGHT: {
-            textRect.x = WINDOW_WIDTH - text_box_get_origin(text_box).x - textRect.w;
-            break;
-        }
-        case CENTER: {
-            textRect.x = WINDOW_WIDTH - text_box_get_origin(text_box).x - (textRect.w / 2.0);
-            break;
-        }
+    case LEFT: {
+        textRect.x = WINDOW_WIDTH - text_box_get_origin(text_box).x;
+        break;
+    }
+    case RIGHT: {
+        textRect.x = WINDOW_WIDTH - text_box_get_origin(text_box).x - textRect.w;
+        break;
+    }
+    case CENTER: {
+        textRect.x = WINDOW_WIDTH - text_box_get_origin(text_box).x - (textRect.w / 2.0);
+        break;
+    }
     }
     textRect.y = WINDOW_HEIGHT - text_box_get_origin(text_box).y;
 

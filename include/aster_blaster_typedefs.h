@@ -13,6 +13,7 @@ typedef enum window_type {
 
 typedef enum body_type {
     BULLET,
+    LASER,
     PLAYER,
     ASTEROID,
     ENEMY_SAW,

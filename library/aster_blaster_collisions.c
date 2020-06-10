@@ -71,10 +71,23 @@ void create_aster_fragments(body_t *ast, body_t *bullet, vector_t axis, void *au
     vector_t centroid = body_get_centroid(ast);
     body_remove(bullet);
     body_remove(ast);
+    // split into 2 masses
     if (mass > ASTEROID_MIN_MASS) {
-        // todo make it better
         spawn_asteroid_general(caux->scene, mass, centroid, vec_rotate(velocity, 1.0), caux->bounds, caux->ast_sprites_list);
         spawn_asteroid_general(caux->scene, mass, centroid, vec_rotate(velocity, -1.0), caux->bounds, caux->ast_sprites_list);
+    }
+}
+
+void create_aster_smaller(body_t *ast, body_t *bullet, vector_t axis, void *aux) {
+    if (body_is_removed(ast) || body_is_removed(bullet)) return;
+    aster_bullet_collision_aux_t *caux = (aster_bullet_collision_aux_t *) aux;
+    double mass = body_get_mass(ast) / 1.25;
+    vector_t velocity = body_get_velocity(ast);
+    vector_t centroid = body_get_centroid(ast);
+    // body_remove(bullet);
+    body_remove(ast);
+    if (mass > ASTEROID_MIN_MASS) {
+        spawn_asteroid_general(caux->scene, mass, centroid, velocity, caux->bounds, caux->ast_sprites_list);
     }
 }
 
@@ -84,6 +97,14 @@ void create_aster_bullet_collision(scene_t *scene, body_t *ast, body_t *bullet, 
     aux->bounds = bounds;
     aux->ast_sprites_list = ast_sprites_list;
     create_collision(scene, ast, bullet, create_aster_fragments, aux, free);
+}
+
+void create_aster_laser_collision(scene_t *scene, body_t *ast, body_t *bullet, game_bounds_t bounds, ast_sprites_list_t ast_sprites_list) {
+    aster_bullet_collision_aux_t *aux = malloc(sizeof(aster_bullet_collision_aux_t));
+    aux->scene = scene;
+    aux->bounds = bounds;
+    aux->ast_sprites_list = ast_sprites_list;
+    create_collision(scene, ast, bullet, create_aster_smaller, aux, free);
 }
 
 typedef struct boss_movement_collision_aux {
