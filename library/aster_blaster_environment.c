@@ -22,7 +22,7 @@ void spawn_asteroid_top(scene_t *scene, game_bounds_t bounds, ast_sprites_list_t
     spawn_asteroid_general(scene, mass, ast_center, ast_velocity, bounds, ast_sprites_list);
 }
 
-void spawn_asteroid_general(scene_t *scene, double mass, vector_t ast_center, vector_t ast_velocity, game_bounds_t bounds, ast_sprites_list_t ast_sprites_list) {
+body_t *spawn_asteroid_general(scene_t *scene, double mass, vector_t ast_center, vector_t ast_velocity, game_bounds_t bounds, ast_sprites_list_t ast_sprites_list) {
     size_t num_sides;
     SDL_Texture *tex;
 
@@ -80,6 +80,7 @@ void spawn_asteroid_general(scene_t *scene, double mass, vector_t ast_center, ve
 
     destroy_at_bounds(scene, asteroid, bounds);
     scene_add_body(scene, asteroid);
+    return asteroid;
 }
 
 /**
@@ -116,11 +117,11 @@ void create_background_stars(scene_t *scene, body_t *bound) {
     }
 }
 
-body_t *body_init_black_hole(vector_t pos, scene_t *scene, game_bounds_t bounds) {
+body_t *body_init_black_hole(vector_t pos, scene_t *scene, game_bounds_t bounds, SDL_Texture *texture) {
     list_t *shape = polygon_reg_ngon(pos, BLACK_HOLE_RADIUS, BLACK_HOLE_POINTS);
     aster_aux_t *aster_aux = malloc(sizeof(aster_aux_t));
     aster_aux->body_type = BLACK_HOLE;
-    body_t *black_hole = body_init_with_info(shape, BLACK_HOLE_MASS, BLACK_HOLE_COLOR, aster_aux, free);
+    body_t *black_hole = body_init_texture_with_info(shape, BLACK_HOLE_MASS, render_texture(texture, 2.0 * BLACK_HOLE_RADIUS, 2.0 * BLACK_HOLE_RADIUS), aster_aux, free);
 
     //if the black hole spawns at the left of the screen, x velocity should be
     //positive, so theta between 3*pi/2 and 2*pi
@@ -134,6 +135,7 @@ body_t *body_init_black_hole(vector_t pos, scene_t *scene, game_bounds_t bounds)
     }
     vector_t bh_velocity = vec(BLACK_HOLE_SPEED * cos(theta), BLACK_HOLE_SPEED * sin(theta));
     body_set_velocity(black_hole, bh_velocity);
+    body_set_omega(black_hole, - 2 * M_PI);
 
     for (size_t i = 0; i < scene_bodies(scene); i++) {
         body_t *other_body = scene_get_body(scene, i);
@@ -158,9 +160,9 @@ body_t *body_init_black_hole(vector_t pos, scene_t *scene, game_bounds_t bounds)
     return black_hole;
 }
 
-void spawn_black_hole(scene_t *scene, game_bounds_t bounds) {
+void spawn_black_hole(scene_t *scene, game_bounds_t bounds, SDL_Texture *texture) {
     double bh_x = drand_range(SDL_MIN.x, SDL_MAX.x);
     vector_t bh_center = vec(bh_x, SDL_MAX.y + BLACK_HOLE_RADIUS);
-    body_t *black_hole = body_init_black_hole(bh_center, scene, bounds);
+    body_t *black_hole = body_init_black_hole(bh_center, scene, bounds, texture);
     scene_add_body(scene, black_hole);
 }

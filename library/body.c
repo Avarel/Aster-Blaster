@@ -173,6 +173,10 @@ void body_set_omega(body_t *body, double o) {
     body->omega = o;
 }
 
+void body_set_mass(body_t *body, double mass) {
+    body->mass = mass;
+}
+
 void body_rotate(body_t *body, double angle) {
     polygon_rotate(body->shape, angle, body_get_centroid(body));
     body->theta += angle;

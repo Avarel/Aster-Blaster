@@ -1,13 +1,13 @@
 #include "aster_blaster_imports.h"
 #include "aster_blaster_collisions.h"
 
-body_t *body_init_enemy_saw(vector_t pos, scene_t *scene, body_t *player) {
+body_t *body_init_enemy_saw(vector_t pos, scene_t *scene, body_t *player, SDL_Texture *texture) {
     list_t *shape = polygon_star(pos, ENEMY_SAW_OUT_RADIUS, ENEMY_SAW_IN_RADIUS, ENEMY_SAW_POINTS);
 
     aster_aux_t *aster_aux = malloc(sizeof(aster_aux_t));
     aster_aux->body_type = ENEMY_SAW;
 
-    body_t *saw_enemy = body_init_with_info(shape, ENEMY_SAW_MASS, ENEMY_SAW_COLOR, aster_aux, free);
+    body_t *saw_enemy = body_init_texture_with_info(shape, ENEMY_SAW_MASS, render_texture(texture, 2.0 * ENEMY_SAW_OUT_RADIUS, 2.0 * ENEMY_SAW_OUT_RADIUS), aster_aux, free);
 
     body_set_omega(saw_enemy, ENEMY_SAW_OMEGA);
 
@@ -32,13 +32,13 @@ body_t *body_init_enemy_saw(vector_t pos, scene_t *scene, body_t *player) {
     return saw_enemy;
 }
 
-body_t *body_init_enemy_shooter(vector_t pos, scene_t *scene, body_t *player) {
-    list_t *shape = polygon_ngon_sector(pos, ENEMY_SHOOTER_RADIUS, ENEMY_SHOOTER_POINTS, ENEMY_SHOOTER_SECTOR_POINTS, ENEMY_SHOOTER_INIT_ANGLE);
+body_t *body_init_enemy_shooter(vector_t pos, scene_t *scene, body_t *player, SDL_Texture *texture) {
+    list_t *shape = polygon_reg_ngon(pos, ENEMY_SHOOTER_RADIUS, ENEMY_SHOOTER_POINTS);
 
     aster_aux_t *aster_aux = malloc(sizeof(aster_aux_t));
     aster_aux->body_type = ENEMY_SHOOTER;
 
-    body_t *shooter_enemy = body_init_with_info(shape, ENEMY_SHOOTER_MASS, ENEMY_SHOOTER_COLOR, aster_aux, free);
+    body_t *shooter_enemy = body_init_texture_with_info(shape, ENEMY_SHOOTER_MASS, render_texture(texture, 2.0 * ENEMY_SHOOTER_RADIUS, 2.0 * ENEMY_SHOOTER_RADIUS), aster_aux, free);
 
     create_attraction_mirrored(scene, ENEMY_SHOOTER_A, shooter_enemy, player, SDL_MAX, rand_vec(vec(-3 * ENEMY_SHOOTER_RADIUS, -3 * ENEMY_SHOOTER_RADIUS), vec(3 * ENEMY_SHOOTER_RADIUS, 3 * ENEMY_SHOOTER_RADIUS)));
     create_pointing_force(scene, shooter_enemy, player);
@@ -61,13 +61,13 @@ body_t *body_init_enemy_shooter(vector_t pos, scene_t *scene, body_t *player) {
 }
 
 // TODO: offsets so they don't stack
-void spawn_enemy_saw(scene_t *scene, body_t *player) {
-    body_t *saw_enemy = body_init_enemy_saw(get_pos_radius_off_screen(ENEMY_SAW_OUT_RADIUS), scene, player);
+void spawn_enemy_saw(scene_t *scene, body_t *player, SDL_Texture *texture) {
+    body_t *saw_enemy = body_init_enemy_saw(get_pos_radius_off_screen(ENEMY_SAW_OUT_RADIUS), scene, player, texture);
     scene_add_body(scene, saw_enemy);
 }
 
-void spawn_enemy_shooter(scene_t *scene, body_t *player) {
-    body_t *shooter_enemy = body_init_enemy_shooter(get_pos_radius_off_screen(ENEMY_SHOOTER_RADIUS), scene, player);
+void spawn_enemy_shooter(scene_t *scene, body_t *player, SDL_Texture *texture) {
+    body_t *shooter_enemy = body_init_enemy_shooter(get_pos_radius_off_screen(ENEMY_SHOOTER_RADIUS), scene, player, texture);
     scene_add_body(scene, shooter_enemy);
 }
 
@@ -122,7 +122,7 @@ void spawn_enemy_shooter_bullet(scene_t *scene, body_t *player, body_t *shooter,
 }
 
 
-body_t *body_init_boss(scene_t *scene, body_t *movement_trigger, body_t *left_trigger, body_t *right_trigger, bool *tangible) {
+body_t *body_init_boss(scene_t *scene, body_t *movement_trigger, body_t *left_trigger, body_t *right_trigger, bool *tangible, SDL_Texture *texture) {
     list_t *boss_shape =  polygon_star(BOSS_INIT_POS, BOSS_OUT_RADIUS, BOSS_IN_RADIUS, BOSS_POINTS);
 
     aster_aux_t *aster_aux = malloc(sizeof(aster_aux_t));
@@ -130,7 +130,7 @@ body_t *body_init_boss(scene_t *scene, body_t *movement_trigger, body_t *left_tr
     aster_aux->health = BOSS_HEALTH;
     aster_aux->game_over= false;
 
-    body_t *boss = body_init_with_info(boss_shape, BOSS_MASS, BOSS_COLOR, aster_aux, free);
+    body_t *boss = body_init_texture_with_info(boss_shape, BOSS_MASS, render_texture(texture, 2 * BOSS_OUT_RADIUS, 2 * BOSS_OUT_RADIUS), aster_aux, free);
 
     body_set_velocity(boss, vec_y(-BOSS_SPEED));
 
@@ -141,8 +141,8 @@ body_t *body_init_boss(scene_t *scene, body_t *movement_trigger, body_t *left_tr
     return boss;
 }
 
-void spawn_boss(scene_t *scene, body_t *movement_trigger, body_t *left_trigger, body_t *right_trigger, bool *tangible) {
-    body_t *boss = body_init_boss(scene, movement_trigger, left_trigger, right_trigger, tangible);
+void spawn_boss(scene_t *scene, body_t *movement_trigger, body_t *left_trigger, body_t *right_trigger, bool *tangible, SDL_Texture *texture) {
+    body_t *boss = body_init_boss(scene, movement_trigger, left_trigger, right_trigger, tangible, texture);
     scene_add_body(scene, boss);
 }
 

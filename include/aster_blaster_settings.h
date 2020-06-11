@@ -62,9 +62,13 @@ const double BULLET_SIDES;
 const rgb_color_t BULLET_COLOR;
 const double BULLET_COOLDOWN;
 
+const double LASER_MASS;
 const vector_t LASER_VELOCITY;
 const rgb_color_t LASER_COLOR;
 const double LASER_COOLDOWN;
+const vector_t LASER_TRANSLATE;
+
+const double MIN_MASS;
 
 // Asteroid settings
 const double ASTEROID_MIN_MASS;

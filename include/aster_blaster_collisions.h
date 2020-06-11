@@ -12,6 +12,10 @@ void create_destructive_collision_force_single(body_t *body1, body_t *body_immor
 
 void create_destructive_collision_single(scene_t *scene, body_t *body1, body_t *body_immortal);
 
+void create_mass_laser_collision_force(body_t *body1, body_t *body_laser, vector_t axis, void *aux);
+
+void create_mass_laser_collision(scene_t *scene, body_t *body_1, body_t *body_laser);
+
 void destroy_at_bounds(scene_t *scene, body_t *body, game_bounds_t bounds);
 
 void create_special_collision_force(body_t *ast, body_t *player, vector_t axis, void *aux);

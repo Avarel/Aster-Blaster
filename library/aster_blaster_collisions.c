@@ -32,6 +32,19 @@ void create_boss_health_collision(body_t *attacker, body_t *boss, vector_t axis,
     }
 }
 
+void create_mass_laser_collision_force(body_t *body1, body_t *body_laser, vector_t axis, void *aux) {
+    double mass = body_get_mass(body1);
+    if (mass < MIN_MASS) {
+        body_remove(body1);
+    } else {
+        body_set_mass(body1, mass - body_get_mass(body_laser) * DAMAGE_PER_MASS);
+        body_translate(body1, LASER_TRANSLATE);
+    }
+}
+
+void create_mass_laser_collision(scene_t *scene, body_t *body1, body_t *body_laser) {
+    create_collision(scene, body1, body_laser, create_mass_laser_collision_force, NULL, NULL);
+}
 
 void create_destructive_collision_force_single(body_t *body1, body_t *body_immortal, vector_t axis, void *aux) {
     body_remove(body1);
@@ -73,17 +86,20 @@ void create_aster_fragments(body_t *ast, body_t *bullet, vector_t axis, void *au
     body_remove(ast);
     // split into 2 masses
     if (mass > ASTEROID_MIN_MASS) {
-        spawn_asteroid_general(caux->scene, mass, centroid, vec_rotate(velocity, 1.0), caux->bounds, caux->ast_sprites_list);
-        spawn_asteroid_general(caux->scene, mass, centroid, vec_rotate(velocity, -1.0), caux->bounds, caux->ast_sprites_list);
+        body_t *ast_1 = spawn_asteroid_general(caux->scene, mass, centroid, vec_rotate(velocity, 1.0), caux->bounds, caux->ast_sprites_list);
+        body_t *ast_2 = spawn_asteroid_general(caux->scene, mass, centroid, vec_rotate(velocity, -1.0), caux->bounds, caux->ast_sprites_list);
+        body_translate(ast_1, LASER_TRANSLATE);
+        body_translate(ast_2, LASER_TRANSLATE);
     }
 }
 
 void create_aster_smaller(body_t *ast, body_t *bullet, vector_t axis, void *aux) {
     if (body_is_removed(ast) || body_is_removed(bullet)) return;
     aster_bullet_collision_aux_t *caux = (aster_bullet_collision_aux_t *) aux;
-    double mass = body_get_mass(ast) / 1.25;
+    double mass = body_get_mass(ast) - (body_get_mass(bullet) * DAMAGE_PER_MASS);
     vector_t velocity = body_get_velocity(ast);
     vector_t centroid = body_get_centroid(ast);
+    centroid = vec_add(centroid, LASER_TRANSLATE);
     // body_remove(bullet);
     body_remove(ast);
     if (mass > ASTEROID_MIN_MASS) {

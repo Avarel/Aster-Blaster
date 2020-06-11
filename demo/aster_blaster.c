@@ -179,6 +179,11 @@ void game_loop() {
         // .ship = sdl_load_texture("./assets/ship.png"),
     };
 
+    SDL_Texture *blackhole_texture = sdl_load_texture("./assets/blackhole.png");
+    SDL_Texture *boss_alien_texture = sdl_load_texture("./assets/boss_alien.png");
+    SDL_Texture *saw_alien_texture = sdl_load_texture("./assets/saw_alien.png");
+    SDL_Texture *shooting_alien_texture = sdl_load_texture("./assets/shooting_alien.png");
+
     list_t *boss_bombs = list_init(1, NULL);
 
     double saw_spawn_rate = rate_variant(ENEMY_SAW_SPAWN_RATE);
@@ -199,7 +204,7 @@ void game_loop() {
         boss_shot_time += dt;
 
         if (boss_spawn_time >= BOSS_SPAWN_TIME && !boss_tangible) {
-            spawn_boss(scene, boss_movement_trigger, boss_left_trigger, boss_right_trigger, &boss_tangible);
+            spawn_boss(scene, boss_movement_trigger, boss_left_trigger, boss_right_trigger, &boss_tangible, boss_alien_texture);
             boss_spawn_time = 0;
             boss_shot_time = 0;
             boss_aux = body_get_info(scene_get_body(scene, scene_bodies(scene) - 1));
@@ -232,21 +237,21 @@ void game_loop() {
             double spawn_chance = drand48();
             if (spawn_chance < BLACK_HOLE_SPAWN_CHANCE) {
                 bh_time = 0;
-                spawn_black_hole(scene, bounds);
+                spawn_black_hole(scene, bounds, blackhole_texture);
             }
         }
 
         if (saw_time >= saw_spawn_rate) {
             size_t to_spawn = irand_range(ENEMY_SAW_SWARM_SIZE_MIN, ENEMY_SAW_SWARM_SIZE_MAX);
             for (size_t i = 0; i < to_spawn; i++) {
-                spawn_enemy_saw(scene, player);
+                spawn_enemy_saw(scene, player, saw_alien_texture);
             }
             saw_time = 0;
             saw_spawn_rate = rate_variant(ENEMY_SAW_SPAWN_RATE);
         }
 
         if (shooter_spawn_time >= shooter_spawn_rate) {
-            spawn_enemy_shooter(scene, player);
+            spawn_enemy_shooter(scene, player, shooting_alien_texture);
             shooter_spawn_time = 0;
             shooter_spawn_rate = rate_variant(ENEMY_SHOOTER_SPAWN_RATE);
         }
@@ -294,6 +299,10 @@ void game_loop() {
     list_free(boss_bombs);
     destroy_ast_sprite_list(ast_sprites_list);
     SDL_DestroyTexture(player_texture);
+    SDL_DestroyTexture(blackhole_texture);
+    SDL_DestroyTexture(saw_alien_texture);
+    SDL_DestroyTexture(shooting_alien_texture);
+    SDL_DestroyTexture(boss_alien_texture);
 
     if (to_menu) {
         menu_loop();

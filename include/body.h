@@ -202,6 +202,8 @@ void body_set_acceleration(body_t *body, vector_t v);
  */
 void body_set_omega(body_t *body, double o);
 
+void body_set_mass(body_t *body, double mass);
+
 /**
  * Changes a body's orientation in the plane.
  * The body is rotated about its center of mass.

@@ -50,8 +50,8 @@ void spawn_bullet(scene_t *scene, body_t *player, game_bounds_t bounds, ast_spri
 body_t *body_init_laser(body_t *player) {
     aster_aux_t *aux = malloc(sizeof(aster_aux_t));
     aux->body_type = LASER;
-    list_t *bullet_shape = polygon_rect(vec_add(body_get_centroid(player), vec_y(PLAYER_RADIUS)), 2, 500);
-    body_t *bullet = body_init_with_info(bullet_shape, BULLET_MASS, LASER_COLOR, aux, free);
+    list_t *bullet_shape = polygon_rect(vec_add(body_get_centroid(player), vec_y(PLAYER_RADIUS)), 2, 100);
+    body_t *bullet = body_init_with_info(bullet_shape, LASER_MASS, LASER_COLOR, aux, free);
     body_set_velocity(bullet, LASER_VELOCITY);
     return bullet;
 }
@@ -69,14 +69,14 @@ void spawn_laser(scene_t *scene, body_t *player, game_bounds_t bounds, ast_sprit
         if (other_aux != NULL) {
             if (other_aux->body_type == ASTEROID) {
                 create_aster_laser_collision(scene, other_body, bullet, bounds, ast_sprites_list);
+            } else if (other_aux->body_type == BLACK_HOLE) {
+                create_destructive_collision_single(scene, bullet, other_body);
+            } else if (other_aux->body_type == ENEMY_SAW || other_aux->body_type == ENEMY_SHOOTER) {
+                create_mass_laser_collision(scene, other_body, bullet);
+            } else if (other_aux->body_type == BOSS && boss_tangible) {
+                create_collision(scene, bullet, other_body, create_boss_health_collision, NULL, NULL);
+                create_destructive_collision_single(scene, bullet, other_body);
             }
-            // else if (other_aux->body_type == ENEMY_SAW || other_aux->body_type == ENEMY_SHOOTER) {
-            //     create_destructive_collision(scene, other_body, bullet);
-            // }
-            //  else if (other_aux->body_type == BOSS && boss_tangible) {
-            //     create_collision(scene, bullet, other_body, create_boss_health_collision, NULL, NULL);
-            //     create_destructive_collision_single(scene, bullet, other_body);
-            // }
         }
     }
 }

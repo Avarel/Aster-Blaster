@@ -52,19 +52,23 @@ const double PLAYER_ACCELERATION = 3000;
 const double PLAYER_SPACE_FRICTION = 10.0;
 
 // Player bullet settings
-const double BULLET_MASS = 10;
+const double BULLET_MASS = 25;
 const vector_t BULLET_VELOCITY = ((vector_t){.x = 0, .y = 1600});
 const double BULLET_RADIUS = 12;
 const double BULLET_SIDES = 30;
 const rgb_color_t BULLET_COLOR = ((rgb_color_t){1, 1, 0});
 const double BULLET_COOLDOWN = 0.2;
 
+const double LASER_MASS = 5;
 const vector_t LASER_VELOCITY = ((vector_t){.x = 0, .y = 6000});
 const rgb_color_t LASER_COLOR = ((rgb_color_t){1, 0, 0});
-const double LASER_COOLDOWN = 0.06;
+const double LASER_COOLDOWN = 0.05;
+const vector_t LASER_TRANSLATE = ((vector_t){.x = 0, .y = 2});
+
+const double MIN_MASS = 20;
 
 // Asteroid settings
-const double ASTEROID_MIN_MASS = 50;
+const double ASTEROID_MIN_MASS = 20;
 const double ASTEROID_MAX_MASS = 300;
 const double ASTEROID_SIDES_MIN = 5;
 const double ASTEROID_SIDES_MAX = 10;
@@ -139,7 +143,7 @@ const double BOSS_IN_RADIUS = 90;
 const double BOSS_POINTS = 16;
 const double BOSS_MASS = 100;
 #define BOSS_INIT_POS ((vector_t){.x = SDL_MAX.x / 2, .y = 1.2 * SDL_MAX.y})
-const double BOSS_HEALTH = 500;
+const double BOSS_HEALTH = 1000;
 const rgb_color_t BOSS_COLOR = (rgb_color_t){0.8, 0, 0};
 const double BOSS_OMEGA = 1.5 * M_PI;
 const double BOSS_SPEED = 200;

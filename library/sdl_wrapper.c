@@ -356,7 +356,9 @@ void sdl_on_key(key_handler_t handler) {
 }
 
 SDL_Texture *sdl_load_texture(char *file) {
-    return IMG_LoadTexture(renderer, file);
+    SDL_Texture *ptr = IMG_LoadTexture(renderer, file);
+    assert(ptr != NULL);
+    return ptr;
 }
 
 double time_since_last_tick(void) {
