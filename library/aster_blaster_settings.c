@@ -60,9 +60,9 @@ const rgb_color_t BULLET_COLOR = ((rgb_color_t){1, 1, 0});
 const double BULLET_COOLDOWN = 0.2;
 
 const double LASER_MASS = 5;
-const vector_t LASER_VELOCITY = ((vector_t){.x = 0, .y = 6000});
+const vector_t LASER_VELOCITY = ((vector_t){.x = 0, .y = 3000});
 const rgb_color_t LASER_COLOR = ((rgb_color_t){1, 0, 0});
-const double LASER_COOLDOWN = 0.05;
+const double LASER_COOLDOWN = 0.075;
 const vector_t LASER_TRANSLATE = ((vector_t){.x = 0, .y = 2});
 
 const double MIN_MASS = 20;
